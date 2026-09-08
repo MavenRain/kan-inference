@@ -162,8 +162,13 @@ The recorded 2026-09-08 comparisons cover [train](../results/challenge-train-bas
 the unchanged deterministic baseline each score 2/8 in each split, with all
 selected terms type-accepted and zero disagreements across kernel, Node and
 Wasmtime. The baseline preserves candidate order for these unsupported hints.
-No model was run. Implementers inspected the entire corpus and evaluated the
+These baseline-only runs did not use a model. Implementers inspected the entire corpus and evaluated the
 test split to validate the infrastructure; it is not a sealed independent test.
+
+The subsequent [prompt experiment](../experiments/README.md) uses the same frozen
+bytes and unchanged baselines. It compares the original prompt and a train-derived
+primer on train and validation, saves the validation choice, then evaluates that
+choice on test. All prompt candidates and the tie rule are fixed by its plan.
 
 Each report records `corpus.path`, `split.manifest_path` and `compiler.path` from
 the operator's own checkout. Those paths are provenance, not a reproduction

@@ -2,6 +2,7 @@
 """A bounded, offline, untrusted Kanon term proposer using pinned ONNX data."""
 
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -15,6 +16,10 @@ import time
 
 
 ROOT = Path(__file__).resolve().parent
+# The provider uses python -I, so load only this trusted sibling by absolute path.
+_prompts_spec = importlib.util.spec_from_file_location("kanon_inference_prompts", ROOT / "prompts.py")
+prompts = importlib.util.module_from_spec(_prompts_spec)
+_prompts_spec.loader.exec_module(prompts)
 MODEL_DIR = ROOT / "models" / "SmolLM2-135M-Instruct-int8"
 MODEL_ID = "HuggingFaceTB/SmolLM2-135M-Instruct"
 REVISION = "12fd25f77366fa6b3b4b768ec3050bf629380bac"
@@ -26,8 +31,9 @@ MAX_PROMPT_TOKENS = 1024
 MAX_NEW_TOKENS = 96
 MAX_CANDIDATES = 8
 MAX_CANDIDATE_BYTES = 2048
+CHAT_MARKERS = ("<|im_start|>", "<|im_end|>")
 WALL_SECONDS = 60
-PROMPT_VERSION = "kanon-source-completion-v3"
+PROMPT_VERSION = prompts.PROFILES[prompts.DEFAULT_PROFILE]["version"]
 
 
 class Failure(Exception):
@@ -75,6 +81,9 @@ def validate_request(value):
         not isinstance(item, str) or len(item.encode("utf-8")) > 256 for item in axioms
     ):
         raise Failure("invalid_request", "allowed_axioms must be a bounded array of names")
+    texts = [value[name] for name in ("hint", "expected_type", "context", "declaration")] + axioms
+    if any(marker in item for item in texts for marker in CHAT_MARKERS):
+        raise Failure("invalid_request", "request text must not contain chat template markers")
     for name, default in (("max_new_tokens", MAX_NEW_TOKENS), ("max_candidates", MAX_CANDIDATES)):
         item = value.get(name, default)
         if type(item) is not int or not 1 <= item <= default:
@@ -103,24 +112,16 @@ def sha256(path):
     return digest.hexdigest()
 
 
-def build_prompt(request):
-    context = request["context"]
-    user = (
-        "Complete this functional program. Return only the expression replacing ?.\n"
-        f"{context}\n-- {request['hint']}\n"
-        f"def {request['declaration']} : {request['expected_type']} := ?"
-    )
-    system = "You are a helpful programming assistant. Follow the requirement in the comment."
-    # This is the fixed publisher ChatML layout, not executable remote template code.
-    return (
-        f"<|im_start|>system\n{system}<|im_end|>\n"
-        f"<|im_start|>user\n{user}<|im_end|>\n<|im_start|>assistant\n"
-    )
+def build_prompt(request, profile=prompts.DEFAULT_PROFILE):
+    return prompts.build_prompt(request, profile)
 
 
 class Engine:
-    def __init__(self, profile="135m"):
+    def __init__(self, profile="135m", prompt_profile=prompts.DEFAULT_PROFILE):
         self.started = time.monotonic()
+        if prompt_profile not in prompts.PROFILES:
+            raise Failure("invalid_profile", "prompt profile must be source-v3 or kanon-primer-v1")
+        self.prompt_profile = prompt_profile
         if profile == "135m":
             model_id, revision, expected_sha, model_dir = MODEL_ID, REVISION, MODEL_SHA256, MODEL_DIR
         elif profile == "360m":
@@ -164,7 +165,7 @@ class Engine:
             "numpy_version": np.__version__, "quantization": "publisher-onnx-int8",
             "model_size_bytes": model_path.stat().st_size,
             "tokenizer_size_bytes": tokenizer_path.stat().st_size,
-            "prompt_version": PROMPT_VERSION, "cpu_threads": 4,
+            **prompts.provenance(prompt_profile), "cpu_threads": 4,
             "python": platform.python_version(), "platform": platform.platform(),
             "provider_code_sha256": sha256(Path(__file__).resolve()),
         }
@@ -185,7 +186,7 @@ class Engine:
 
     def propose(self, request):
         started = time.monotonic()
-        prompt = build_prompt(request)
+        prompt = build_prompt(request, self.prompt_profile)
         prompt_ids = self.tokenizer.encode(prompt, add_special_tokens=False).ids
         if len(prompt_ids) > MAX_PROMPT_TOKENS:
             raise Failure("prompt_budget", f"prompt has {len(prompt_ids)} tokens; maximum is {MAX_PROMPT_TOKENS}")
@@ -265,29 +266,37 @@ def deadline(_signal, _frame):
     raise Failure("timeout", "local provider exceeded its 60-second deadline")
 
 
+def parse_arguments(arguments):
+    worker = bool(arguments and arguments[0] == "--worker")
+    arguments = arguments[1:] if worker else arguments
+    options = {"--profile": "135m", "--prompt-profile": prompts.DEFAULT_PROFILE}
+    allowed = {"--profile": ("135m", "360m"), "--prompt-profile": prompts.PROFILES}
+    seen = set()
+    if len(arguments) % 2:
+        raise Failure("invalid_request", "each provider option requires a value")
+    for name, value in zip(arguments[::2], arguments[1::2]):
+        if name not in allowed or name in seen or value not in allowed[name]:
+            raise Failure("invalid_request", "invalid or duplicate provider option")
+        seen.add(name)
+        options[name] = value
+    return worker, options["--profile"], options["--prompt-profile"]
+
+
 def main():
     signal.signal(signal.SIGALRM, deadline)
     signal.alarm(WALL_SECONDS)
     try:
         request, raw = read_request()
-        arguments = sys.argv[1:]
-        worker = bool(arguments and arguments[0] == "--worker")
-        if worker:
-            arguments = arguments[1:]
-        if not arguments:
-            profile = "135m"
-        elif len(arguments) == 2 and arguments[0] == "--profile" and arguments[1] in ("135m", "360m"):
-            profile = arguments[1]
-        else:
-            raise Failure("invalid_request", "valid arguments are --profile 135m or --profile 360m")
+        worker, profile, prompt_profile = parse_arguments(sys.argv[1:])
         if worker:
             resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
             resource.setrlimit(resource.RLIMIT_CPU, (WALL_SECONDS, WALL_SECONDS))
-            emit(Engine(profile).propose(request))
+            emit(Engine(profile, prompt_profile).propose(request))
         else:
             # A separate process makes the deadline cover native inference calls.
             process = subprocess.Popen(
-                [sys.executable, "-I", str(Path(__file__).resolve()), "--worker", "--profile", profile],
+                [sys.executable, "-I", str(Path(__file__).resolve()), "--worker",
+                 "--profile", profile, "--prompt-profile", prompt_profile],
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 cwd=ROOT,
             )

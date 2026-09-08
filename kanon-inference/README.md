@@ -46,6 +46,17 @@ Without a pool, the model generates a proposed expression greedily until its end
 
 Responses contain `protocol_version`, `candidates`, `provenance` and `metrics`. Provenance includes the model revision, model/tokenizer hashes, runtime versions, quantization, prompt hash and provider source hash. Metrics include model-load time, inference time, scores, prompt tokens and process peak RSS. A failure contains `error.code` and `error.message` and has no candidates. Stdout is reserved for one JSON response; runtime diagnostics use stderr.
 
+The default prompt profile is `source-v3`, preserving the original prompt bytes.
+`provider-primer` selects `kanon-primer-v1`, with a Kanon syntax explanation and
+the fixed train demonstrations `tariff_3_2` and `capacity_5`. The equivalent
+option is `provider --prompt-profile kanon-primer-v1`; it can be combined with
+`--profile 360m` for a separate experiment. Unknown or duplicate options are
+errors. Prompt selection does not change likelihood scoring or resource limits.
+Provenance also records the prompt profile, the hash of `prompts.py`, and the
+primer's training task IDs and frozen corpus hashes. See the
+[experiment procedure](experiments/README.md) for validation selection and test
+replay with the default 135M model.
+
 The provider enforces these limits:
 
 - 65,536 request bytes and a 1,024-token model prompt, without silent truncation.
@@ -81,4 +92,6 @@ splits before any model adaptation. From the repository root, run
 or `make benchmark-challenge-135m SPLIT=validation` with the installed provider.
 Use `CHALLENGE_OUTPUT=PATH` to choose a fresh report path. The test split is
 reserved for evaluating a frozen approach; inspecting or tuning against it must
-be disclosed in any later report. No model result on this corpus is recorded yet.
+be disclosed in any later report. The subsequent
+[prompt comparison](experiments/README.md) records both train and validation
+profiles and the selected test run with the required exposure disclosure.

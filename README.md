@@ -26,11 +26,25 @@ so changes to sources, candidate pools or behavior examples invalidate its
 manifest. This is evaluation infrastructure and developer-authored coverage;
 independent model usefulness remains unmeasured.
 
+The [prompt experiment](kanon-inference/experiments/README.md) compares the
+original 135M prompt with a versioned Kanon primer derived from two train
+examples. It evaluates both on train and validation, freezes the validation
+choice with code and evidence hashes, then evaluates the selected profile on
+test. The recorded exposure disclosure and the small corpus still preclude an
+independent usefulness claim.
+
+In the [recorded comparison](kanon-inference/experiments/README.md), the original
+prompt scored 3/8 on validation against 1/8 for the primer, so it was selected.
+It then scored 0/8 on test against 2/8 for each baseline. All selected terms
+type-checked and all three hosts agreed. The experiment provides no evidence
+for promoting either prompt to a useful model configuration.
+
 | Location | Purpose |
 | --- | --- |
 | [kanon-synth](kanon-synth/SYNTHESIS.md) | Compiler snapshot, checked synthesis CLI, tests and saved demonstration |
 | [kanon-inference](kanon-inference/README.md) | ONNX CPU provider, pinned model setup and original pilot evidence |
 | [Diagnostic benchmark](kanon-inference/benchmarks/README.md) | Behavioral corpus and deterministic baseline |
+| [Prompt experiment](kanon-inference/experiments/README.md) | Train demonstrations, validation selection and checked test replay |
 | [Implementation status](implementation-status.md) | Completed work, measured results and remaining milestones |
 | [Evaluation contract](evaluation-contract.json) | Proposed model, correctness and performance requirements |
 | [Design](kanon-llm-design.md) | Trust boundary and broader language goals |

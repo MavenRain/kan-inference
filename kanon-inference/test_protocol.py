@@ -12,8 +12,8 @@ VALID = {"protocol_version": 1, "hint": "Return zero.", "expected_type": "Nat", 
 
 
 class ProtocolTests(unittest.TestCase):
-    def assert_failure(self, raw, code):
-        process = subprocess.run([str(PROVIDER)], input=raw, capture_output=True, timeout=10)
+    def assert_failure(self, raw, code, arguments=(), provider=PROVIDER):
+        process = subprocess.run([str(provider), *arguments], input=raw, capture_output=True, timeout=10)
         self.assertEqual(process.returncode, 0, process.stderr)
         response = json.loads(process.stdout)
         self.assertEqual(response["error"]["code"], code, response)
@@ -40,6 +40,25 @@ class ProtocolTests(unittest.TestCase):
 
     def test_missing_newline_is_rejected(self):
         self.assert_failure(json.dumps(VALID).encode(), "invalid_request")
+
+    def test_invalid_prompt_profile_is_rejected_before_model_load(self):
+        self.assert_failure((json.dumps(VALID) + "\n").encode(), "invalid_request",
+                            ["--prompt-profile", "unknown"])
+
+    def test_duplicate_prompt_profile_is_rejected_before_model_load(self):
+        self.assert_failure((json.dumps(VALID) + "\n").encode(), "invalid_request",
+                            ["--prompt-profile", "source-v3", "--prompt-profile", "source-v3"])
+
+    def test_primer_wrapper_rejects_a_second_prompt_profile_option(self):
+        """The wrapper adds its own profile, so a forwarded profile is a duplicate.
+
+        This does not pin the wrapper's profile string. experiment.provider_identity
+        enforces the recorded profile at run time, and tests/test_prompts.py checks
+        the wrapper bytes.
+        """
+        self.assert_failure((json.dumps(VALID) + "\n").encode(), "invalid_request",
+                            ["--prompt-profile", "source-v3"],
+                            provider=PROVIDER.with_name("provider-primer"))
 
 
 if __name__ == "__main__":

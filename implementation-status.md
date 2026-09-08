@@ -1,4 +1,45 @@
-Update, 2026-09-08: frozen module splits and challenge coverage
+Update, 2026-09-08: reproducible prompt comparison and validation selection
+
+The [prompt experiment](kanon-inference/experiments/README.md) now freezes an
+explicit plan, implementation hashes, compiler identity and split evidence.
+It evaluates two fixed 135M prompt profiles on train and validation, saves the
+validation choice before test, and supports replay after verifying the saved
+selection. Ties use plan order and failed tasks remain in the denominator.
+Incomplete, stale, edited or internally inconsistent evidence cannot select a
+profile. A replay that fails verification retains an incomplete public report.
+
+`source-v3` preserves the existing prompt bytes and scoring. `kanon-primer-v1`
+adds a Kanon syntax primer and two fixed train demonstrations, `tariff_3_2` and
+`capacity_5`. Model weights, resource limits, compiler sources, both corpora,
+split assignments and the deterministic baseline remain unchanged. Providers
+receive no evaluation oracles; compiler checks still precede behavior tests.
+
+The completed comparison selected the original prompt: it scored 3/8 on train
+and 3/8 on validation, while the primer scored 8/8 on train and 1/8 on validation.
+The selected original prompt scored 0/8 on test. Candidate order and the unchanged
+deterministic baseline each scored 2/8 in every comparison. All selected terms
+type-checked and kernel, Node and Wasmtime agreed. Every model miss was a semantic
+mismatch. The primer's train score includes its two demonstrations and does not
+establish transfer. The model usefulness gate remains unmet.
+
+[Validation evidence](validation-prompts-2026-09-08.json) records 121 Python tests,
+114 synthesis boundary cases, 47 driver tests and 10 provider protocol tests,
+all passing without skips. The 10 provider protocol tests come from a separate
+command, `make test-provider`, which needs the local provider virtual
+environment; `make test-all` runs both commands. Independent review verified fixes for replay reports
+that could remain marked complete after rejection, and for selection evidence
+that was not bound to ranking order. The full experiment and its selection
+retain code, model, corpus, manifest and report hashes.
+
+This completes a small train/validation/test prompt experiment, with prior test
+exposure disclosed. The next model-development slice should investigate a
+different ranking or adaptation method using development data, freeze a new
+plan, and retain these unsuccessful results. Broader independently authored
+tasks and stronger comparisons are still needed for a usefulness claim. Live
+Kanon integration, Lean parity, Kan-only foundations, OCaml speed comparisons
+and browser/all-Wasm inference remain separate unfinished work.
+
+Historical update, 2026-09-08: frozen module splits and challenge coverage
 
 The evaluator now accepts a frozen split manifest alongside a diagnostic corpus.
 It validates the complete corpus hash, module coverage and template assignments

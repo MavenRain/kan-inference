@@ -46,6 +46,10 @@ MAX_CASES = 32
 MAX_ARGUMENTS = 16
 MAX_NAT = 1073741823
 HOSTS = {"kernel", "node", "wasmtime"}
+# Fixed disclosure strings of every report. Experiment validation compares them.
+GATE = {"status": "unmet", "reason": "Diagnostic corpus; independent 500-task contract is not established"}
+TIMING_NOTE = "Fresh processes only; no warm latency or model usefulness claim"
+CONFIDENCE_NOTE = "Wilson 95% intervals describe task-level results on correlated developer-authored diagnostic families; they do not establish independent generalization"
 # Hosts that need an external binary. The kernel evaluates inside the compiler.
 HOST_BINARIES = {"node": "node", "wasmtime": "wasmtime"}
 
@@ -450,7 +454,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                             selected_modules=sorted({task["module_id"] for task in tasks}))
     report: dict[str, Any] = {
         "schema_version": 1, "complete": False, "purpose": "diagnostic",
-        "gate": {"status": "unmet", "reason": "Diagnostic corpus; independent 500-task contract is not established"},
+        "gate": dict(GATE),
         "corpus": {"path": str(args.corpus.resolve()), "name": corpus["name"],
                    "sha256": driver.sha256(corpus_bytes), "available_tasks": len(corpus["tasks"]),
                    "selected_tasks": len(tasks)},
@@ -463,8 +467,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "configuration": {"hosts": args.hosts, "provider_timeout": args.timeout,
                           "check_timeout": args.check_timeout, "max_candidates": driver.MAX_CANDIDATES,
                           "max_new_tokens": 96},
-        "timing_note": "Fresh processes only; no warm latency or model usefulness claim",
-        "confidence_note": "Wilson 95% intervals describe task-level results on correlated developer-authored diagnostic families; they do not establish independent generalization",
+        "timing_note": TIMING_NOTE,
+        "confidence_note": CONFIDENCE_NOTE,
         "strategies": ["candidate_order", "deterministic"] + (["provider"] if args.provider else []),
         "provider": None, "results": [], "summary": {}, "failure": None,
     }

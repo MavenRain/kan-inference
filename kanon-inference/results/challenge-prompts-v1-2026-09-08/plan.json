@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "name": "challenge-prompts-v1",
+  "corpus": "kanon-inference/benchmarks/challenge-v1.json",
+  "split_manifest": "kanon-inference/benchmarks/challenge-v1.splits.json",
+  "approaches": [
+    {
+      "id": "source-v3",
+      "provider": "kanon-inference/provider",
+      "prompt_profile": "source-v3"
+    },
+    {
+      "id": "kanon-primer-v1",
+      "provider": "kanon-inference/provider-primer",
+      "prompt_profile": "kanon-primer-v1"
+    }
+  ],
+  "hosts": ["kernel", "node", "wasmtime"],
+  "provider_timeout": 60,
+  "check_timeout": 5,
+  "selection_rule": "maximum_validation_semantic_count_then_plan_order",
+  "exposure_disclosure": "Developer-authored diagnostic corpus. Earlier implementers inspected all splits, checked every candidate against finite behavior examples, and ran deterministic test baselines before this experiment. This adaptation uses only train examples tariff_3_2 and capacity_5. Both prompt profiles and the tie rule were fixed before model comparisons. Validation chooses the profile; test is evaluated only after selection is saved. Neither independent authorship nor a sealed test is claimed."
+}

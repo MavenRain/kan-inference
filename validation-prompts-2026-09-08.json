@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-08",
+  "scope": "Versioned train-derived prompts, validation selection and checked test replay",
+  "complete": true,
+  "checks": [
+    {
+      "name": "Final Python suite",
+      "command": "make test-unit PYTHON=\"python3 -P\"",
+      "exit_code": 0,
+      "python_tests": 121,
+      "skipped_tests": 0,
+      "artifact_note": "/Users/oobi/Documents/gpt2/kanon-inference-continue/.kanon-exec/run-Ak3fzE is an earlier operator run directory in the separate working checkout /Users/oobi/Documents/gpt2/kanon-inference-continue. It is not part of this evidence bundle; the counts above come from the command named here, re-run in this checkout."
+    },
+    {
+      "name": "Synthesis boundary and driver suites",
+      "command": "make test PYTHON=\"python3 -P\"",
+      "exit_code": 0,
+      "python_tests": 121,
+      "synthesis_boundary_cases": 114,
+      "driver_tests": 47,
+      "skipped_tests": 0,
+      "note": "This combined command and the final Python suite above ran the same 121 unit tests on the final bytes of this slice.",
+      "artifact_note": "/Users/oobi/Documents/gpt2/kanon-inference-continue/.kanon-exec/run-UiJoG8 is an earlier operator run directory in the separate working checkout /Users/oobi/Documents/gpt2/kanon-inference-continue. It is not part of this evidence bundle; the counts above come from the command named here, re-run in this checkout."
+    },
+    {
+      "name": "Provider protocol suite",
+      "command": "make test-provider",
+      "exit_code": 0,
+      "python_tests": 10,
+      "skipped_tests": 0,
+      "artifact_note": "/Users/oobi/Documents/gpt2/kanon-inference-continue/.kanon-exec/run-61Hs2R is an earlier operator run directory in the separate working checkout /Users/oobi/Documents/gpt2/kanon-inference-continue. It is not part of this evidence bundle; the counts above come from the command named here, re-run in this checkout."
+    },
+    {
+      "name": "Prompt unit suite",
+      "command": "python3 -P -m unittest discover -s kanon-inference/tests -p 'test_prompts.py'",
+      "exit_code": 0,
+      "python_tests": 16,
+      "artifact_note": "/Users/oobi/Documents/gpt2/kanon-inference-continue/.kanon-exec/run-TIp71P is an earlier operator run directory in the separate working checkout /Users/oobi/Documents/gpt2/kanon-inference-continue. It is not part of this evidence bundle; the counts above come from the command named here, re-run in this checkout."
+    },
+    {
+      "name": "Experiment unit suite including review regressions",
+      "command": "python3 -P -m unittest discover -s kanon-inference/tests -p 'test_experiment.py'",
+      "exit_code": 0,
+      "python_tests": 31,
+      "artifact_note": "/Users/oobi/Documents/gpt2/kanon-inference-continue/.kanon-exec/run-kXXEju is an earlier operator run directory in the separate working checkout /Users/oobi/Documents/gpt2/kanon-inference-continue. It is not part of this evidence bundle; the counts above come from the command named here, re-run in this checkout."
+    },
+    {
+      "name": "Complete real-model experiment",
+      "command": "make experiment-challenge EXPERIMENT_OUTPUT=<fresh directory>",
+      "exit_code": 0,
+      "artifact_note": "/Users/oobi/Documents/gpt2/kanon-inference-continue/.kanon-exec/run-3YXRST is an earlier operator run directory in the separate working checkout /Users/oobi/Documents/gpt2/kanon-inference-continue. It is not part of this evidence bundle; the counts above come from the command named here, re-run in this checkout."
+    }
+  ],
+  "compiler": {
+    "path": "kanon-synth/_build/default/bin/kanon.exe",
+    "scope": "root",
+    "sha256": "ba750e67cad5714606de0eec9b7bacb9248a140784d4d0bb42c7c65e13b27b67"
+  },
+  "source_hashes": {
+    "kanon-inference/baseline.py": "1d75e5b5479dc73f28d2f5ff3ed8d5db534974f66dddca4e04c0a3a3d8e5bed6",
+    "kanon-inference/benchmark.py": "b06dd9b47f7d4dc67e40af29f4e1a544770872983efcb50b94f3f48ce87d2f9d",
+    "kanon-inference/benchmarks/challenge-v1.json": "9210f281dc8109c1bbbcc4e1b5fa5b4f9e19b418f6722cb7a736fbd3c9d5d7d8",
+    "kanon-inference/benchmarks/challenge-v1.splits.json": "930779ceb4fd081238fdfbdc1e3c36670a9e62d9c6abad1f498d882b62528d6a",
+    "kanon-inference/experiment.py": "c51c1a6e2ea9dda0f73693e50037d116fe728d993c2a50c1aaa5c991344a0de7",
+    "kanon-inference/experiments/challenge-prompts-v1.json": "44ab29cdf1ebe433637225e6c693a4081410f222acd893c80ffc791684cffb9a",
+    "kanon-inference/prompts.py": "7b260176e7953ecd72900bb68e0d27bf2907f0bc53dabb7ce39f18b60b118915",
+    "kanon-inference/provider": "a5e3ce694a9bfc5a0557684ff14023b985ede4d575aab73705be04689ce811c6",
+    "kanon-inference/provider-primer": "ba89fc9e4c9a6f21ea4fb6b0450d84213ba993c2e0754353eb4266a69157f7ef",
+    "kanon-inference/runtime.py": "2e81ce8ad44b8fa18291c33aa54933c63cc7a97bdb5d8b7f8cb2567e39b2facb",
+    "kanon-inference/splits.py": "fae5bb76fc1f7e34d767f6e9404ed70835edb441136421a01b91766cec66c23e",
+    "kanon-synth/dev/synth.py": "21abd39fe42689fc3230317c6555fc50969ef348987f7f10b4f349018fca3d97"
+  },
+  "model_identity": {
+    "backend": "onnxruntime-cpu",
+    "backend_version": "1.29.0",
+    "cpu_threads": 4,
+    "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "model_size_bytes": 137147867,
+    "numpy_version": "2.5.3",
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "python": "3.12.12",
+    "quantization": "publisher-onnx-int8",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "sha256": "a7c33f9ef85d06734cc9d1f943f7e2ba57c77e769df727f4d3e217d9f672b0cc",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+    "tokenizer_size_bytes": 2104556,
+    "tokenizers_version": "0.22.2"
+  },
+  "selection": {
+    "path": "kanon-inference/results/challenge-prompts-v1-2026-09-08/selection.json",
+    "sha256": "77b4d359e2c398d3a3cad074bae1d61153f70526d479b93f44a92c43751994e1",
+    "winner": "source-v3",
+    "scores": [
+      {
+        "approach_id": "source-v3",
+        "denominator": 8,
+        "failures": 5,
+        "semantic_correct": 3
+      },
+      {
+        "approach_id": "kanon-primer-v1",
+        "denominator": 8,
+        "failures": 7,
+        "semantic_correct": 1
+      }
+    ],
+    "rule": "maximum_validation_semantic_count_then_plan_order"
+  },
+  "experiment": {
+    "path": "kanon-inference/results/challenge-prompts-v1-2026-09-08/experiment.json",
+    "sha256": "b8ef0754bb4e030d7a7ea08871ce01fddbf68af05e038d067e59f1ae514a9589"
+  },
+  "comparisons": [
+    {
+      "evidence": "kanon-inference/results/challenge-prompts-v1-2026-09-08/train-source-v3.json",
+      "sha256": "c1780c449f9b1d21517101f45640bdc1dc6fbc15a7b518b0e95d0ce0f506cdcf",
+      "complete": true,
+      "split": "train",
+      "prompt_profile": "source-v3",
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "provider": {
+          "type_accepted": 8,
+          "semantic_correct": 3,
+          "host_disagreement": 0
+        }
+      }
+    },
+    {
+      "evidence": "kanon-inference/results/challenge-prompts-v1-2026-09-08/train-kanon-primer-v1.json",
+      "sha256": "78748b85425aaad9cd9de7df3c459d666f2b0636e3928b6a33fa26f964cc9220",
+      "complete": true,
+      "split": "train",
+      "prompt_profile": "kanon-primer-v1",
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "provider": {
+          "type_accepted": 8,
+          "semantic_correct": 8,
+          "host_disagreement": 0
+        }
+      }
+    },
+    {
+      "evidence": "kanon-inference/results/challenge-prompts-v1-2026-09-08/validation-source-v3.json",
+      "sha256": "26ec2bd87bdc38a227601728810ee965a159addedc9fdb8cc53610011a29f5fa",
+      "complete": true,
+      "split": "validation",
+      "prompt_profile": "source-v3",
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "provider": {
+          "type_accepted": 8,
+          "semantic_correct": 3,
+          "host_disagreement": 0
+        }
+      }
+    },
+    {
+      "evidence": "kanon-inference/results/challenge-prompts-v1-2026-09-08/validation-kanon-primer-v1.json",
+      "sha256": "ca327e7b4a038e20aaa05d3487dbe4b28ec73b2bad7caecedd596994db6f6026",
+      "complete": true,
+      "split": "validation",
+      "prompt_profile": "kanon-primer-v1",
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "provider": {
+          "type_accepted": 8,
+          "semantic_correct": 1,
+          "host_disagreement": 0
+        }
+      }
+    },
+    {
+      "evidence": "kanon-inference/results/challenge-prompts-v1-2026-09-08/test.json",
+      "sha256": "ace4eb964e9ae615473b882125ca139e07fce2b1186c4c6725e6d51ea88aa810",
+      "complete": true,
+      "split": "test",
+      "prompt_profile": "source-v3",
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "provider": {
+          "type_accepted": 8,
+          "semantic_correct": 0,
+          "host_disagreement": 0
+        }
+      }
+    }
+  ],
+  "reproduce_command": "make experiment-challenge EXPERIMENT_OUTPUT=/tmp/challenge-prompts-v1",
+  "replay_command": "make experiment-test SELECTION=kanon-inference/results/challenge-prompts-v1-2026-09-08/selection.json FROZEN_OUTPUT=/tmp/challenge-prompts-test-replay.json",
+  "execution_note": "The recorded run executed experiment.py run from this repository root through make experiment-challenge, with the plan, compiler and output directory recorded here, and the eight reports were then copied into kanon-inference/results/challenge-prompts-v1-2026-09-08. The binding evidence is content, not path: every frozen.sources sha256 equals the bytes committed in this checkout and frozen.compiler.sha256 equals the built compiler binary. The compiler was inside that run's root, so frozen.compiler has scope root with a path relative to the repository root; a run from a separate working checkout records scope absolute with a full local path instead. Choose fresh output paths. Matching result hashes identify this run; timing-dependent report hashes are not expected to reproduce.",
+  "review": {
+    "result": "Both source findings fixed and independently verified; final source/evidence audit passed",
+    "fixed": [
+      "Rejected standalone replay could leave its public report complete; publication now remains incomplete until postflight checks pass.",
+      "Attempt and selected-candidate evidence was not bound to ranking; validation now requires ranking-consistent attempts and the first successful terminal attempt."
+    ],
+    "ci_weakening": false
+  },
+  "limitations": [
+    "Developer-authored correlated diagnostic tasks with eight tasks per split do not establish independent model usefulness or satisfy the proposed 500-task-per-family contract.",
+    "Prior full-corpus inspection and deterministic test evaluation are disclosed in the frozen plan.",
+    "The primer includes two train demonstration tasks. A one-task primer preflight used a train demonstration, retained no report and produced no artifact in this bundle, and it did not change either prompt or the plan.",
+    "Only the validation-selected original prompt was evaluated on test. The primer was not selected and has no test result.",
+    "All model failures were semantic mismatches after type acceptance; finite behavior examples do not prove all-input correctness.",
+    "The original compiler binary was reused because compiler sources did not change. The selection records its path relative to the repository root and exact hash, plus runtime identity; it is not a portable build receipt.",
+    "Cold process timing on a shared machine does not establish warm latency or a speed comparison.",
+    "Hashes establish local consistency, not report authorship, unseen test data or protection from rewriting an entire evidence bundle.",
+    "Both primer demonstrations and the primer syntax line show a one-argument function, every train task takes one argument, and every validation task takes two, so the primer's validation drop mixes prompt content with an argument-shape change. The test split holds four two-argument interior tasks and four one-argument clamp tasks.",
+    "The corpus, split manifest, compiler and provider paths inside each report, and the run directories named beside the checks, are provenance of the machine that ran them and are not part of the checked evidence."
+  ]
+}

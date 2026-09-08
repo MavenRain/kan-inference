@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "status": "frozen_split_challenge_implemented_model_selection_gate_unmet",
-  "prepared_on": "2026-09-07",
+  "status": "frozen_prompt_comparison_implemented_model_selection_gate_unmet",
+  "prepared_on": "2026-09-08",
   "language": "kanon",
   "synthesis_phase": "development_time",
   "primitive_requirement": {
@@ -103,6 +103,24 @@
         "host_disagreements": 0,
         "selection_gate_passed": false,
         "evidence": "kanon-inference/results/diagnostic-135m-2026-09-07.json"
+      },
+      {
+        "kind": "challenge_prompt_comparison",
+        "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "tasks_per_split": 8,
+        "semantic_correct": {
+          "source-v3": {"train": 3, "validation": 3, "test": 0},
+          "kanon-primer-v1": {"train": 8, "validation": 1, "test": null}
+        },
+        "selected_prompt": "source-v3",
+        "selection_rule": "maximum_validation_semantic_count_then_plan_order",
+        "candidate_order_correct_per_split": 2,
+        "deterministic_correct_per_split": 2,
+        "all_selected_terms_type_accepted": true,
+        "host_disagreements": 0,
+        "independent_held_out": false,
+        "selection_gate_passed": false,
+        "evidence": "kanon-inference/results/challenge-prompts-v1-2026-09-08/experiment.json"
       }
     ]
   },
@@ -166,9 +184,21 @@
       "corpus_bytes_and_oracles_hash_bound": true,
       "template_groups_disjoint_by_declared_split": true,
       "independent_held_out": false,
-      "model_evaluated": false,
+      "model_evaluated": true,
       "selection_gate_passed": false,
-      "validation_evidence": "validation-2026-09-08.json"
+      "validation_evidence": "validation-2026-09-08.json",
+      "model_evidence": "validation-prompts-2026-09-08.json",
+      "model_evaluated_scope": "prompt comparison only; the corpus record covers no model run",
+      "prompt_experiment": {
+        "plan": "kanon-inference/experiments/challenge-prompts-v1.json",
+        "runner": "kanon-inference/experiment.py",
+        "selection": "kanon-inference/results/challenge-prompts-v1-2026-09-08/selection.json",
+        "validation_evidence": "validation-prompts-2026-09-08.json",
+        "selected_prompt": "source-v3",
+        "training_demonstrations": ["tariff_3_2", "capacity_5"],
+        "prior_test_exposure_disclosed": true,
+        "selection_saved_before_test": true
+      }
     }
   }
 }
