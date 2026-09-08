@@ -21,6 +21,8 @@ import tempfile
 import time
 from typing import Any
 
+import splits
+
 
 def load_driver() -> Any:
     path = Path(os.environ.get(
@@ -395,6 +397,10 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--output", required=True, type=Path)
     result.add_argument("--provider", type=Path)
     result.add_argument("--limit", type=positive_count)
+    result.add_argument("--split-manifest", type=Path,
+                        help="Frozen corpus hash and module/template split assignments")
+    result.add_argument("--split", choices=splits.SPLITS,
+                        help="Evaluate this split only; requires --split-manifest")
     result.add_argument("--hosts", type=host_list, default=["kernel"])
     result.add_argument("--timeout", type=driver.positive_seconds, default=60.0)
     result.add_argument("--check-timeout", type=driver.positive_seconds, default=5.0)
@@ -414,17 +420,44 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                     "Requested host binaries are not on PATH: " + ", ".join(missing))
     corpus_bytes = driver.read_bounded(args.corpus, CORPUS_LIMIT, "Corpus")
     corpus = validate_corpus(driver.strict_json(corpus_bytes, "corpus"))
+    if (args.split_manifest is None) != (args.split is None):
+        raise Error("invalid_split_selection", "Use --split-manifest and --split together")
+    eligible = corpus["tasks"]
+    split_record = None
+    if args.split_manifest is not None:
+        manifest_bytes = driver.read_bounded(args.split_manifest, CORPUS_LIMIT, "Split manifest")
+        try:
+            manifest = splits.validate_manifest(
+                driver.strict_json(manifest_bytes, "split manifest"), corpus,
+                driver.sha256(corpus_bytes))
+            eligible = splits.select_tasks(corpus, manifest, args.split)
+        except splits.SplitError as exc:
+            raise Error("invalid_split_manifest", str(exc)) from exc
+        assignments = [module for module in manifest["modules"] if module["split"] == args.split]
+        split_record = {
+            "name": args.split, "manifest_path": str(args.split_manifest.resolve()),
+            "manifest_name": manifest["name"], "manifest_sha256": driver.sha256(manifest_bytes),
+            "split_unit": manifest["split_unit"], "available_tasks": len(eligible),
+            "available_modules": sorted(module["module_id"] for module in assignments),
+            "template_groups": sorted({module["template_group"] for module in assignments}),
+            "independence": "Assignments are checked; independent authorship and semantic separation are not established",
+        }
     compiler = args.compiler.resolve(strict=True)
     compiler_hash = driver.file_sha256(compiler)
-    tasks = corpus["tasks"][:args.limit]
+    tasks = eligible[:args.limit]
+    if split_record is not None:
+        split_record.update(selected_tasks=len(tasks), limited=len(tasks) < len(eligible),
+                            selected_modules=sorted({task["module_id"] for task in tasks}))
     report: dict[str, Any] = {
         "schema_version": 1, "complete": False, "purpose": "diagnostic",
         "gate": {"status": "unmet", "reason": "Diagnostic corpus; independent 500-task contract is not established"},
         "corpus": {"path": str(args.corpus.resolve()), "name": corpus["name"],
                    "sha256": driver.sha256(corpus_bytes), "available_tasks": len(corpus["tasks"]),
                    "selected_tasks": len(tasks)},
+        "split": split_record,
         "compiler": {"path": str(compiler), "sha256": compiler_hash},
         "implementation": {"benchmark_sha256": driver.file_sha256(Path(__file__)),
+                           "splits_sha256": driver.file_sha256(Path(splits.__file__)),
                            "driver_sha256": driver.file_sha256(Path(driver.__file__)),
                            "baseline_sha256": driver.file_sha256(Path(__file__).with_name("baseline.py"))},
         "configuration": {"hosts": args.hosts, "provider_timeout": args.timeout,

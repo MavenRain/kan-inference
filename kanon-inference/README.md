@@ -73,3 +73,12 @@ and 8/32 for candidate order, with compiler acceptance and all three execution
 hosts checked separately. The older `evaluate.py` above remains the original
 six-case exact-expression smoke harness. Neither dataset satisfies the proposed
 independent 500-task selection contract.
+
+The next corpus, [challenge-v1](benchmarks/README.md#frozen-challenge-splits),
+freezes sources, candidate pools, finite behavior oracles and module/template
+splits before any model adaptation. From the repository root, run
+`make benchmark-challenge-baseline SPLIT=train` for the deterministic comparison,
+or `make benchmark-challenge-135m SPLIT=validation` with the installed provider.
+Use `CHALLENGE_OUTPUT=PATH` to choose a fresh report path. The test split is
+reserved for evaluating a frozen approach; inspecting or tuning against it must
+be disclosed in any later report. No model result on this corpus is recorded yet.

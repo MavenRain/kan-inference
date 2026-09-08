@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "diagnostic_benchmark_implemented_model_selection_gate_unmet",
+  "status": "frozen_split_challenge_implemented_model_selection_gate_unmet",
   "prepared_on": "2026-09-07",
   "language": "kanon",
   "synthesis_phase": "development_time",
@@ -140,7 +140,7 @@
     "kernel_vs_target_semantic_agreement_required": true,
     "validated_profiles": []
   },
-  "updated_on": "2026-09-07",
+  "updated_on": "2026-09-08",
   "evaluation_harness": {
     "entrypoint": "kanon-inference/benchmark.py",
     "corpus": "kanon-inference/benchmarks/diagnostic-v1.json",
@@ -153,6 +153,22 @@
     "failed_tasks_remain_in_denominator": true,
     "interrupted_reports_marked_incomplete": true,
     "supports_task_count_up_to": 10000,
-    "confidence_intervals": "descriptive Wilson intervals; task independence not established"
+    "confidence_intervals": "descriptive Wilson intervals; task independence not established",
+    "challenge": {
+      "corpus": "kanon-inference/benchmarks/challenge-v1.json",
+      "split_manifest": "kanon-inference/benchmarks/challenge-v1.splits.json",
+      "purpose": "diagnostic",
+      "tasks": 24,
+      "modules": 12,
+      "template_groups": 6,
+      "tasks_per_split": {"train": 8, "validation": 8, "test": 8},
+      "frozen_before_model_adaptation": true,
+      "corpus_bytes_and_oracles_hash_bound": true,
+      "template_groups_disjoint_by_declared_split": true,
+      "independent_held_out": false,
+      "model_evaluated": false,
+      "selection_gate_passed": false,
+      "validation_evidence": "validation-2026-09-08.json"
+    }
   }
 }

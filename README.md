@@ -19,6 +19,13 @@ candidate order. All selected terms type-checked, and kernel evaluation, Node
 and Wasmtime agreed. The corpus and baseline were developed together; these
 results describe diagnostic coverage, not independent generalization.
 
+The [challenge corpus](kanon-inference/benchmarks/README.md#frozen-challenge-splits)
+adds 24 tasks with module and template assignments frozen into train, validation
+and test splits. The evaluator checks the corpus hash before selecting a split,
+so changes to sources, candidate pools or behavior examples invalidate its
+manifest. This is evaluation infrastructure and developer-authored coverage;
+independent model usefulness remains unmeasured.
+
 | Location | Purpose |
 | --- | --- |
 | [kanon-synth](kanon-synth/SYNTHESIS.md) | Compiler snapshot, checked synthesis CLI, tests and saved demonstration |
@@ -39,7 +46,9 @@ make build
 make test
 ```
 
-For Python-only unit checks, use `make test-unit`. The model provider has
+`make test` stops first when the compiler is not built, so no compiler-backed
+check can skip inside it. For Python-only unit checks, which skip those
+compiler-backed cases, use `make test-unit`. The model provider has
 separate local dependencies and pinned weight downloads; follow its
 [setup instructions](kanon-inference/README.md), then run
 `make test-provider`. Models and environments are local installations,
@@ -52,6 +61,7 @@ profile:
 ```sh
 make benchmark-baseline HOSTS=kernel OUTPUT=/tmp/kan-baseline.json
 make benchmark-135m HOSTS=kernel,node,wasmtime OUTPUT=/tmp/kan-135m.json
+make benchmark-challenge-baseline SPLIT=test CHALLENGE_OUTPUT=/tmp/kan-challenge.json
 ```
 
 The default is `HOSTS=kernel`, which needs no external host binary. On a

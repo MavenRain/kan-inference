@@ -109,6 +109,105 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(report, json.loads(args.output.read_text()))
         return report
 
+    def split_arguments(self, split="test"):
+        items = [task("train", module_id="train_module"),
+                 task("test_first", module_id="test_module"),
+                 task("test_second", module_id="test_module")]
+        for item in items:
+            item["source"] += "-- " + item["id"] + "\n"
+        args = self.arguments(corpus(items))
+        manifest = {
+            "schema_version": 1, "name": "frozen fixture",
+            "corpus_sha256": benchmark.driver.file_sha256(args.corpus),
+            "split_unit": "independent_module_before_synthetic_augmentation",
+            "modules": [
+                {"module_id": "train_module", "split": "train", "template_group": "train_template"},
+                {"module_id": "test_module", "split": "test", "template_group": "test_template"},
+            ],
+        }
+        args.split_manifest = self.directory / "splits.json"
+        args.split_manifest.write_text(json.dumps(manifest))
+        args.split = split
+        return args
+
+    def test_split_filters_before_limit_and_records_frozen_provenance(self):
+        args = self.split_arguments()
+        args.limit = 1
+        report = benchmark.run(args)
+        self.assertEqual([item["id"] for item in report["results"]], ["test_first"])
+        self.assertEqual(report["corpus"]["available_tasks"], 3)
+        self.assertEqual(report["corpus"]["selected_tasks"], 1)
+        self.assertEqual(report["split"]["available_tasks"], 2)
+        self.assertEqual(report["split"]["selected_tasks"], 1)
+        self.assertEqual(report["split"]["selected_modules"], ["test_module"])
+        self.assertTrue(report["split"]["limited"])
+        self.assertEqual(report["split"]["manifest_sha256"],
+                         benchmark.driver.file_sha256(args.split_manifest))
+        self.assertEqual(report["gate"]["status"], "unmet")
+        for summary in report["summary"].values():
+            self.assertEqual(summary["overall"]["tasks"], 1)
+            self.assertEqual(set(summary["by_module_id"]), {"test_module"})
+
+    def test_split_selection_requires_both_arguments_before_creating_report(self):
+        for missing in ("split", "split_manifest"):
+            args = self.split_arguments()
+            setattr(args, missing, None)
+            with self.subTest(missing=missing), self.assertRaises(benchmark.Error) as caught:
+                benchmark.run(args)
+            self.assertEqual(caught.exception.code, "invalid_split_selection")
+            self.assertFalse(args.output.exists())
+
+    def test_changed_oracle_is_rejected_before_compiler_or_provider_runs(self):
+        args = self.split_arguments()
+        changed = json.loads(args.corpus.read_text())
+        changed["tasks"][0]["tests"][0]["expected"] = 2
+        args.corpus.write_text(json.dumps(changed))
+        with patch.object(benchmark, "evaluate") as evaluate:
+            with self.assertRaises(benchmark.Error) as caught:
+                benchmark.run(args)
+            evaluate.assert_not_called()
+        self.assertEqual(caught.exception.code, "invalid_split_manifest")
+        self.assertFalse(args.output.exists())
+
+    def test_empty_split_is_rejected_before_creating_report(self):
+        args = self.split_arguments("validation")
+        with self.assertRaises(benchmark.Error) as caught:
+            benchmark.run(args)
+        self.assertEqual(caught.exception.code, "invalid_split_manifest")
+        self.assertFalse(args.output.exists())
+
+    def test_split_interrupt_preserves_only_selected_denominators(self):
+        args = self.split_arguments()
+        with patch.object(benchmark, "evaluate", side_effect=KeyboardInterrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                benchmark.run(args)
+        report = json.loads(args.output.read_text())
+        self.assertFalse(report["complete"])
+        self.assertEqual(report["split"]["name"], "test")
+        self.assertFalse(report["split"]["limited"])
+        for summary in report["summary"].values():
+            self.assertEqual(summary["overall"]["pending"], 2)
+            self.assertEqual(set(summary["by_module_id"]), {"test_module"})
+
+    def test_split_provider_never_receives_metadata_or_behavioral_oracles(self):
+        args = self.split_arguments()
+        args.provider = self.executable("provider", '''
+            import json, sys
+            request = json.loads(sys.stdin.readline())
+            assert set(request) == {"protocol_version", "declaration", "hint", "expected_type",
+                "context", "allowed_axioms", "candidates", "max_candidates", "max_new_tokens"}
+            print(json.dumps({"protocol_version": 1, "candidates": ["1", "0"],
+                "provenance": {"request_keys": sorted(request)}, "metrics": {}}))
+        ''')
+        report = benchmark.run(args)
+        self.assertEqual(report["summary"]["provider"]["overall"]["semantic_correct"]["count"], 2)
+        self.assertEqual([item["id"] for item in report["results"]], ["test_first", "test_second"])
+
+    def test_diagnostic_without_manifest_keeps_all_tasks(self):
+        report = self.run_report()
+        self.assertIsNone(report["split"])
+        self.assertEqual(report["corpus"]["selected_tasks"], 1)
+
     def test_wrong_well_typed_candidate_stops_selection_before_oracle(self):
         report = self.run_report()
         result = report["results"][0]["strategies"]["candidate_order"]

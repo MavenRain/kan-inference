@@ -1,4 +1,41 @@
-Update, 2026-09-07: repository initialization and behavioral evaluation
+Update, 2026-09-08: frozen module splits and challenge coverage
+
+The evaluator now accepts a frozen split manifest alongside a diagnostic corpus.
+It validates the complete corpus hash, module coverage and template assignments
+before selecting train, validation or test tasks. Reports preserve split hashes,
+module IDs and counts; limits apply after selection. Changed oracles, missing
+assignments and shared template groups across splits are explicit failures.
+
+The [challenge corpus](kanon-inference/benchmarks/README.md#frozen-challenge-splits)
+adds 24 tasks, 12 modules and six semantic template groups, with eight tasks per
+split. Practical hints and local let expressions extend diagnostic coverage
+beyond the unchanged baseline grammar. Compiler/kernel checks verify all 96
+candidates: 24 intended answers pass and 72 decoys fail behavior. Every pool
+holds at least two `let` candidates, no pool makes the intended term its single
+longest candidate, and every task has a distinct pool and intended term. The
+corpus was corrected on 2026-09-08, after its first freeze and before its first
+commit, because those two surface cues named the intended term in all eight
+validation tasks and all eight test tasks. The
+original diagnostic corpus remains unchanged. Candidate order and the unchanged
+deterministic baseline each score 2/8 on every challenge split, with all selected
+terms type-accepted and zero disagreements across kernel, Node and Wasmtime.
+Implementers inspected every split for corpus validation, so these results are
+not a sealed independent evaluation.
+
+This completes the split infrastructure and a small developer-authored challenge
+set. It does not establish independent generalization or satisfy the proposed
+500-task-per-family model-selection contract. No model or prompt was adapted,
+and no model result on the new corpus has been recorded. Next, develop an approach
+using the train split, choose it using validation, then evaluate a frozen approach
+on test while disclosing any test exposure. Independently authored tasks and a
+stronger comparison remain necessary before claiming model usefulness.
+
+Current validation and deterministic comparison evidence are recorded in
+[validation-2026-09-08.json](validation-2026-09-08.json). Live Kanon integration,
+Lean parity, Kan-only foundations, OCaml speed comparisons and browser/all-Wasm
+inference remain separate unfinished work.
+
+Historical update, 2026-09-07: repository initialization and behavioral evaluation
 
 The workspace is now a Git repository on `main`, with private GitHub remote
 `MavenRain/kan-inference`. Repository source and results are staged separately

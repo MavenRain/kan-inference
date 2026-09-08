@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "name": "challenge-v1-splits",
+  "corpus_sha256": "9210f281dc8109c1bbbcc4e1b5fa5b4f9e19b418f6722cb7a736fbd3c9d5d7d8",
+  "split_unit": "independent_module_before_synthetic_augmentation",
+  "modules": [
+    {
+      "module_id": "parcel_tariffs",
+      "split": "train",
+      "template_group": "affine_charge"
+    },
+    {
+      "module_id": "storage_tariffs",
+      "split": "train",
+      "template_group": "affine_charge"
+    },
+    {
+      "module_id": "flow_capacity",
+      "split": "train",
+      "template_group": "capacity_cap"
+    },
+    {
+      "module_id": "seat_capacity",
+      "split": "train",
+      "template_group": "capacity_cap"
+    },
+    {
+      "module_id": "line_distance",
+      "split": "validation",
+      "template_group": "absolute_gap"
+    },
+    {
+      "module_id": "quantity_gap",
+      "split": "validation",
+      "template_group": "absolute_gap"
+    },
+    {
+      "module_id": "tank_refill",
+      "split": "validation",
+      "template_group": "staged_consumption"
+    },
+    {
+      "module_id": "warehouse_refill",
+      "split": "validation",
+      "template_group": "staged_consumption"
+    },
+    {
+      "module_id": "display_frames",
+      "split": "test",
+      "template_group": "rectangle_interior"
+    },
+    {
+      "module_id": "garden_borders",
+      "split": "test",
+      "template_group": "rectangle_interior"
+    },
+    {
+      "module_id": "sensor_limits",
+      "split": "test",
+      "template_group": "closed_interval_clamp"
+    },
+    {
+      "module_id": "control_limits",
+      "split": "test",
+      "template_group": "closed_interval_clamp"
+    }
+  ]
+}

@@ -1,0 +1,1127 @@
+{
+  "schema_version": 1,
+  "name": "challenge-v1",
+  "purpose": "diagnostic",
+  "tasks": [
+    {
+      "id": "tariff_3_2",
+      "family": "affine_charge",
+      "module_id": "parcel_tariffs",
+      "source": "def answer : (n : Nat) -> Nat := synth \"An order costs 2 credits before any items are counted, then 3 credits for every item. Compute its bill.\"\n",
+      "candidates": [
+        "fun (n : Nat) => let s : Nat := natMul 3 n in natAdd s 2",
+        "fun (n : Nat) => let s : Nat := natMul 3 n in natSub s 2",
+        "fun (n : Nat) => natMul 3 n",
+        "fun (n : Nat) => natAdd n 2"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            1
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 14
+        }
+      ]
+    },
+    {
+      "id": "tariff_5_1",
+      "family": "affine_charge",
+      "module_id": "parcel_tariffs",
+      "source": "def answer : (n : Nat) -> Nat := synth \"An order costs 1 credits before any items are counted, then 5 credits for every item. Compute its bill.\"\n",
+      "candidates": [
+        "fun (n : Nat) => let s : Nat := natMul 5 n in natSub s 1",
+        "fun (n : Nat) => let s : Nat := natMul 5 n in natAdd s 1",
+        "fun (n : Nat) => natMul 5 n",
+        "fun (n : Nat) => natAdd n 1"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 1
+        },
+        {
+          "arguments": [
+            1
+          ],
+          "expected": 6
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 21
+        }
+      ]
+    },
+    {
+      "id": "tariff_2_4",
+      "family": "affine_charge",
+      "module_id": "storage_tariffs",
+      "source": "def answer : (n : Nat) -> Nat := synth \"An order costs 4 credits before any items are counted, then 2 credits for every item. Compute its bill.\"\n",
+      "candidates": [
+        "fun (n : Nat) => let s : Nat := natMul 2 n in natSub s 4",
+        "fun (n : Nat) => natMul 2 n",
+        "fun (n : Nat) => let s : Nat := natMul 2 n in natAdd s 4",
+        "fun (n : Nat) => natAdd n 4"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            1
+          ],
+          "expected": 6
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 12
+        }
+      ]
+    },
+    {
+      "id": "tariff_4_3",
+      "family": "affine_charge",
+      "module_id": "storage_tariffs",
+      "source": "def answer : (n : Nat) -> Nat := synth \"An order costs 3 credits before any items are counted, then 4 credits for every item. Compute its bill.\"\n",
+      "candidates": [
+        "fun (n : Nat) => let s : Nat := natMul 4 n in natSub s 3",
+        "fun (n : Nat) => natMul 4 n",
+        "fun (n : Nat) => natAdd n 3",
+        "fun (n : Nat) => let s : Nat := natMul 4 n in natAdd s 3"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            1
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 19
+        }
+      ]
+    },
+    {
+      "id": "capacity_5",
+      "family": "capacity_cap",
+      "module_id": "flow_capacity",
+      "source": "def answer : (n : Nat) -> Nat := synth \"There is room for 5 units. Admit as much of the requested amount as fits and discard any overflow.\"\n",
+      "candidates": [
+        "fun (n : Nat) => let excess : Nat := natSub n 5 in natSub n excess",
+        "fun (n : Nat) => natSub n 5",
+        "fun (n : Nat) => natAdd n 5",
+        "fun (n : Nat) => let excess : Nat := natSub n 5 in natAdd (natSub n excess) excess"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            5
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            6
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            9
+          ],
+          "expected": 5
+        }
+      ]
+    },
+    {
+      "id": "capacity_9",
+      "family": "capacity_cap",
+      "module_id": "flow_capacity",
+      "source": "def answer : (n : Nat) -> Nat := synth \"There is room for 9 units. Admit as much of the requested amount as fits and discard any overflow.\"\n",
+      "candidates": [
+        "fun (n : Nat) => natSub n 9",
+        "fun (n : Nat) => let excess : Nat := natSub n 9 in natSub n excess",
+        "fun (n : Nat) => natAdd n 9",
+        "fun (n : Nat) => let excess : Nat := natSub n 9 in natAdd (natSub n excess) excess"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            8
+          ],
+          "expected": 8
+        },
+        {
+          "arguments": [
+            9
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            10
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            13
+          ],
+          "expected": 9
+        }
+      ]
+    },
+    {
+      "id": "capacity_3",
+      "family": "capacity_cap",
+      "module_id": "seat_capacity",
+      "source": "def answer : (n : Nat) -> Nat := synth \"There is room for 3 units. Admit as much of the requested amount as fits and discard any overflow.\"\n",
+      "candidates": [
+        "fun (n : Nat) => natSub n 3",
+        "fun (n : Nat) => natAdd n 3",
+        "fun (n : Nat) => let excess : Nat := natSub n 3 in natSub n excess",
+        "fun (n : Nat) => let excess : Nat := natSub n 3 in natAdd (natSub n excess) excess"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            2
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            3
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            7
+          ],
+          "expected": 3
+        }
+      ]
+    },
+    {
+      "id": "capacity_7",
+      "family": "capacity_cap",
+      "module_id": "seat_capacity",
+      "source": "def answer : (n : Nat) -> Nat := synth \"There is room for 7 units. Admit as much of the requested amount as fits and discard any overflow.\"\n",
+      "candidates": [
+        "fun (n : Nat) => natSub n 7",
+        "fun (n : Nat) => natAdd n 7",
+        "fun (n : Nat) => let excess : Nat := natSub n 7 in natAdd (natSub n excess) excess",
+        "fun (n : Nat) => let excess : Nat := natSub n 7 in natSub n excess"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            6
+          ],
+          "expected": 6
+        },
+        {
+          "arguments": [
+            7
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            8
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            11
+          ],
+          "expected": 7
+        }
+      ]
+    },
+    {
+      "id": "gap_1",
+      "family": "absolute_gap",
+      "module_id": "line_distance",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Two markers sit at the given coordinates on a line. Compute their separation regardless of which coordinate is larger.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => let f : Nat := natSub a b in let r : Nat := natSub b a in natAdd f r",
+        "fun (a : Nat) (b : Nat) => natSub a b",
+        "fun (a : Nat) (b : Nat) => natSub b a",
+        "fun (a : Nat) (b : Nat) => let f : Nat := natSub a b in let r : Nat := natSub b a in natAdd (natAdd f r) (natAdd a b)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            0,
+            7
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            7,
+            0
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            4,
+            9
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            6,
+            6
+          ],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "gap_2",
+      "family": "absolute_gap",
+      "module_id": "line_distance",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Measure how far apart these positions are. Swapping the two positions must leave the result unchanged.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => natAdd a b",
+        "fun (a : Nat) (b : Nat) => let far : Nat := natSub b a in natAdd (natSub a b) far",
+        "fun (a : Nat) (b : Nat) => let far : Nat := natSub b a in let near : Nat := natSub a b in natSub (natAdd a b) (natAdd far near)",
+        "fun (a : Nat) (b : Nat) => natMul a b"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            0,
+            8
+          ],
+          "expected": 8
+        },
+        {
+          "arguments": [
+            8,
+            0
+          ],
+          "expected": 8
+        },
+        {
+          "arguments": [
+            5,
+            10
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            7,
+            7
+          ],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "gap_3",
+      "family": "absolute_gap",
+      "module_id": "quantity_gap",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Report how many units separate the two stock counts, always as a nonnegative amount.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => natSub b a",
+        "fun (a : Nat) (b : Nat) => natMul a b",
+        "fun (a : Nat) (b : Nat) => let low : Nat := natSub a (natSub a b) in let high : Nat := natAdd a (natSub b a) in natSub high low",
+        "fun (a : Nat) (b : Nat) => let low : Nat := natSub a (natSub a b) in let high : Nat := natAdd a (natSub b a) in natSub (natAdd high high) low"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            0,
+            9
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            9,
+            0
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            6,
+            11
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            8,
+            8
+          ],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "gap_4",
+      "family": "absolute_gap",
+      "module_id": "quantity_gap",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Measure the discrepancy between the two quantities without giving either quantity a preferred direction.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => natAdd a b",
+        "fun (a : Nat) (b : Nat) => let s : Nat := natAdd a b in let high : Nat := natAdd a (natSub b a) in natSub (natAdd s high) (natMul 2 high)",
+        "fun (a : Nat) (b : Nat) => let low : Nat := natSub a (natSub a b) in natMul 2 low",
+        "fun (a : Nat) (b : Nat) => let s : Nat := natAdd a b in let low : Nat := natSub a (natSub a b) in natSub s (natMul 2 low)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            0,
+            10
+          ],
+          "expected": 10
+        },
+        {
+          "arguments": [
+            10,
+            0
+          ],
+          "expected": 10
+        },
+        {
+          "arguments": [
+            7,
+            12
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            9,
+            9
+          ],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "refill_3_2",
+      "family": "staged_consumption",
+      "module_id": "tank_refill",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Start with stock a and fulfill demand b as far as stock permits. Then receive 3 units and fulfill a further demand of 2, again stopping at zero. Report the remaining stock.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in natSub (natAdd left 3) 2",
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in let gained : Nat := natAdd left 3 in natAdd (natSub gained 2) 2",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub a b) 3",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub (natSub a b) 2) 3"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 1
+        },
+        {
+          "arguments": [
+            0,
+            10
+          ],
+          "expected": 1
+        },
+        {
+          "arguments": [
+            3,
+            3
+          ],
+          "expected": 1
+        },
+        {
+          "arguments": [
+            2,
+            8
+          ],
+          "expected": 1
+        },
+        {
+          "arguments": [
+            12,
+            2
+          ],
+          "expected": 11
+        },
+        {
+          "arguments": [
+            2,
+            0
+          ],
+          "expected": 3
+        }
+      ]
+    },
+    {
+      "id": "refill_2_5",
+      "family": "staged_consumption",
+      "module_id": "tank_refill",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Start with stock a and fulfill demand b as far as stock permits. Then receive 2 units and fulfill a further demand of 5, again stopping at zero. Report the remaining stock.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in let gained : Nat := natAdd left 2 in natAdd (natSub gained 5) 5",
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in natSub (natAdd left 2) 5",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub a b) 2",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub (natSub a b) 5) 2"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            0,
+            10
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            3,
+            3
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            2,
+            8
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            12,
+            2
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            5,
+            0
+          ],
+          "expected": 2
+        }
+      ]
+    },
+    {
+      "id": "refill_5_3",
+      "family": "staged_consumption",
+      "module_id": "warehouse_refill",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Start with stock a and fulfill demand b as far as stock permits. Then receive 5 units and fulfill a further demand of 3, again stopping at zero. Report the remaining stock.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in let gained : Nat := natAdd left 5 in natAdd (natSub gained 3) 3",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub a b) 5",
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in natSub (natAdd left 5) 3",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub (natSub a b) 3) 5"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            0,
+            10
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            3,
+            3
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            2,
+            8
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            12,
+            2
+          ],
+          "expected": 12
+        },
+        {
+          "arguments": [
+            3,
+            0
+          ],
+          "expected": 5
+        }
+      ]
+    },
+    {
+      "id": "refill_4_6",
+      "family": "staged_consumption",
+      "module_id": "warehouse_refill",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Start with stock a and fulfill demand b as far as stock permits. Then receive 4 units and fulfill a further demand of 6, again stopping at zero. Report the remaining stock.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in let gained : Nat := natAdd left 4 in natAdd (natSub gained 6) 6",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub a b) 4",
+        "fun (a : Nat) (b : Nat) => natAdd (natSub (natSub a b) 6) 4",
+        "fun (a : Nat) (b : Nat) => let left : Nat := natSub a b in natSub (natAdd left 4) 6"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            0,
+            10
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            3,
+            3
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            2,
+            8
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            12,
+            2
+          ],
+          "expected": 8
+        },
+        {
+          "arguments": [
+            6,
+            0
+          ],
+          "expected": 4
+        }
+      ]
+    },
+    {
+      "id": "interior_1",
+      "family": "rectangle_interior",
+      "module_id": "display_frames",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"A rectangle has width a and height b. Remove a border 1 units thick from every edge. Compute the remaining interior area, using zero for any exhausted dimension.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 2 in let h : Nat := natSub b 2 in natMul w h",
+        "fun (a : Nat) (b : Nat) => natMul a b",
+        "fun (a : Nat) (b : Nat) => natMul (natSub a 1) (natSub b 1)",
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 2 in let h : Nat := natSub b 2 in natSub (natMul a b) (natMul w h)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            2,
+            2
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            3,
+            4
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            1,
+            5
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            12,
+            9
+          ],
+          "expected": 70
+        }
+      ]
+    },
+    {
+      "id": "interior_2",
+      "family": "rectangle_interior",
+      "module_id": "display_frames",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"A rectangle has width a and height b. Remove a border 2 units thick from every edge. Compute the remaining interior area, using zero for any exhausted dimension.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => natMul a b",
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 4 in let h : Nat := natSub b 4 in natMul w h",
+        "fun (a : Nat) (b : Nat) => natMul (natSub a 2) (natSub b 2)",
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 4 in let h : Nat := natSub b 4 in natSub (natMul a b) (natMul w h)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            4,
+            4
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            5,
+            6
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            3,
+            7
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            12,
+            9
+          ],
+          "expected": 40
+        }
+      ]
+    },
+    {
+      "id": "interior_3",
+      "family": "rectangle_interior",
+      "module_id": "garden_borders",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"A rectangle has width a and height b. Remove a border 3 units thick from every edge. Compute the remaining interior area, using zero for any exhausted dimension.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => natMul a b",
+        "fun (a : Nat) (b : Nat) => natMul (natSub a 3) (natSub b 3)",
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 6 in let h : Nat := natSub b 6 in natMul w h",
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 6 in let h : Nat := natSub b 6 in natSub (natMul a b) (natMul w h)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            6,
+            6
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            7,
+            8
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            5,
+            9
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            12,
+            9
+          ],
+          "expected": 18
+        }
+      ]
+    },
+    {
+      "id": "interior_4",
+      "family": "rectangle_interior",
+      "module_id": "garden_borders",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"A rectangle has width a and height b. Remove a border 4 units thick from every edge. Compute the remaining interior area, using zero for any exhausted dimension.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => natMul a b",
+        "fun (a : Nat) (b : Nat) => natMul (natSub a 4) (natSub b 4)",
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 8 in let h : Nat := natSub b 8 in natSub (natMul a b) (natMul w h)",
+        "fun (a : Nat) (b : Nat) => let w : Nat := natSub a 8 in let h : Nat := natSub b 8 in natMul w h"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            8,
+            8
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            9,
+            10
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            7,
+            11
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            12,
+            9
+          ],
+          "expected": 4
+        }
+      ]
+    },
+    {
+      "id": "clamp_2_6",
+      "family": "closed_interval_clamp",
+      "module_id": "sensor_limits",
+      "source": "def answer : (n : Nat) -> Nat := synth \"Keep readings from 2 through 6 unchanged. Replace a lower reading by 2 and a higher reading by 6.\"\n",
+      "candidates": [
+        "fun (n : Nat) => let raised : Nat := natAdd 2 (natSub n 2) in natSub raised (natSub raised 6)",
+        "fun (n : Nat) => n",
+        "fun (n : Nat) => let raised : Nat := natAdd 2 (natSub n 2) in natSub raised (natSub raised (natAdd 6 2))",
+        "fun (n : Nat) => natSub n (natSub n 6)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            1
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            2
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            6
+          ],
+          "expected": 6
+        },
+        {
+          "arguments": [
+            7
+          ],
+          "expected": 6
+        }
+      ]
+    },
+    {
+      "id": "clamp_3_8",
+      "family": "closed_interval_clamp",
+      "module_id": "sensor_limits",
+      "source": "def answer : (n : Nat) -> Nat := synth \"Keep readings from 3 through 8 unchanged. Replace a lower reading by 3 and a higher reading by 8.\"\n",
+      "candidates": [
+        "fun (n : Nat) => n",
+        "fun (n : Nat) => let raised : Nat := natAdd 3 (natSub n 3) in natSub raised (natSub raised 8)",
+        "fun (n : Nat) => let raised : Nat := natAdd 3 (natSub n 3) in natSub raised (natSub raised (natAdd 8 3))",
+        "fun (n : Nat) => natSub n (natSub n 8)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            2
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            3
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            5
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            8
+          ],
+          "expected": 8
+        },
+        {
+          "arguments": [
+            9
+          ],
+          "expected": 8
+        }
+      ]
+    },
+    {
+      "id": "clamp_5_9",
+      "family": "closed_interval_clamp",
+      "module_id": "control_limits",
+      "source": "def answer : (n : Nat) -> Nat := synth \"Keep readings from 5 through 9 unchanged. Replace a lower reading by 5 and a higher reading by 9.\"\n",
+      "candidates": [
+        "fun (n : Nat) => n",
+        "fun (n : Nat) => let raised : Nat := natAdd 5 (natSub n 5) in natSub raised (natSub raised (natAdd 9 5))",
+        "fun (n : Nat) => let raised : Nat := natAdd 5 (natSub n 5) in natSub raised (natSub raised 9)",
+        "fun (n : Nat) => natSub n (natSub n 9)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            5
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            7
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            9
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            10
+          ],
+          "expected": 9
+        }
+      ]
+    },
+    {
+      "id": "clamp_4_10",
+      "family": "closed_interval_clamp",
+      "module_id": "control_limits",
+      "source": "def answer : (n : Nat) -> Nat := synth \"Keep readings from 4 through 10 unchanged. Replace a lower reading by 4 and a higher reading by 10.\"\n",
+      "candidates": [
+        "fun (n : Nat) => n",
+        "fun (n : Nat) => let raised : Nat := natAdd 4 (natSub n 4) in natSub raised (natSub raised (natAdd 10 4))",
+        "fun (n : Nat) => natSub n (natSub n 10)",
+        "fun (n : Nat) => let raised : Nat := natAdd 4 (natSub n 4) in natSub raised (natSub raised 10)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            3
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            7
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            10
+          ],
+          "expected": 10
+        },
+        {
+          "arguments": [
+            11
+          ],
+          "expected": 10
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-08",
+  "scope": "Frozen module split evaluation and a 24-task diagnostic challenge corpus",
+  "checks": [
+    {
+      "command": "make build",
+      "exit_code": 0
+    },
+    {
+      "command": "make test",
+      "exit_code": 0,
+      "python_tests": 74,
+      "synthesis_boundary_cases": 114,
+      "driver_tests": 47,
+      "skipped_tests": 0
+    },
+    {
+      "command": "make test-unit",
+      "exit_code": 0,
+      "python_tests": 74,
+      "skipped_tests": 0,
+      "includes_challenge_integrity_tests": 7,
+      "challenge_candidates_checked": 96,
+      "challenge_kernel_example_executions": 480
+    },
+    {
+      "command": "make benchmark-baseline OUTPUT=/private/tmp/kanon-inference-diagnostic-20260908.json",
+      "exit_code": 0,
+      "complete": true,
+      "hosts": [
+        "kernel"
+      ],
+      "candidate_order_correct": 8,
+      "deterministic_correct": 32,
+      "tasks_per_strategy": 32,
+      "local_evidence": "/private/tmp/kanon-inference-diagnostic-20260908.json",
+      "sha256": "86ee85b6abcf4da038c13f754571544de36c19cbc591b637af89cd34b6ac7ee1"
+    }
+  ],
+  "compiler_sha256": "ba750e67cad5714606de0eec9b7bacb9248a140784d4d0bb42c7c65e13b27b67",
+  "corpus_sha256": "9210f281dc8109c1bbbcc4e1b5fa5b4f9e19b418f6722cb7a736fbd3c9d5d7d8",
+  "split_manifest_sha256": "930779ceb4fd081238fdfbdc1e3c36670a9e62d9c6abad1f498d882b62528d6a",
+  "implementation_hashes": {
+    "benchmark_sha256": "fa953805eb2854d6f2eada43808424b392ce59fde2885a73c39b0354921a1651",
+    "splits_sha256": "fae5bb76fc1f7e34d767f6e9404ed70835edb441136421a01b91766cec66c23e",
+    "baseline_sha256": "1d75e5b5479dc73f28d2f5ff3ed8d5db534974f66dddca4e04c0a3a3d8e5bed6",
+    "driver_sha256": "21abd39fe42689fc3230317c6555fc50969ef348987f7f10b4f349018fca3d97"
+  },
+  "comparisons": [
+    {
+      "split": "train",
+      "command": "make benchmark-challenge-baseline SPLIT=train HOSTS=kernel,node,wasmtime CHALLENGE_OUTPUT=kanon-inference/results/challenge-train-baseline-2026-09-08.json",
+      "reproduce_command": "make benchmark-challenge-baseline SPLIT=train HOSTS=kernel,node,wasmtime CHALLENGE_OUTPUT=/tmp/challenge-train.json",
+      "exit_code": 0,
+      "complete": true,
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        }
+      },
+      "evidence": "kanon-inference/results/challenge-train-baseline-2026-09-08.json",
+      "sha256": "4e73a20a4988da10e3af5d5491f8aceef46196a31ea1d223d70a51b15941e564"
+    },
+    {
+      "split": "validation",
+      "command": "make benchmark-challenge-baseline SPLIT=validation HOSTS=kernel,node,wasmtime CHALLENGE_OUTPUT=kanon-inference/results/challenge-validation-baseline-2026-09-08.json",
+      "reproduce_command": "make benchmark-challenge-baseline SPLIT=validation HOSTS=kernel,node,wasmtime CHALLENGE_OUTPUT=/tmp/challenge-validation.json",
+      "exit_code": 0,
+      "complete": true,
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        }
+      },
+      "evidence": "kanon-inference/results/challenge-validation-baseline-2026-09-08.json",
+      "sha256": "848fa0512a5d0817c93729a2042b7ddfc808e915b930735ef6712cfddda48226"
+    },
+    {
+      "split": "test",
+      "command": "make benchmark-challenge-baseline SPLIT=test HOSTS=kernel,node,wasmtime CHALLENGE_OUTPUT=kanon-inference/results/challenge-test-baseline-2026-09-08.json",
+      "reproduce_command": "make benchmark-challenge-baseline SPLIT=test HOSTS=kernel,node,wasmtime CHALLENGE_OUTPUT=/tmp/challenge-test.json",
+      "exit_code": 0,
+      "complete": true,
+      "tasks_per_strategy": 8,
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ],
+      "strategies": {
+        "candidate_order": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        },
+        "deterministic": {
+          "type_accepted": 8,
+          "semantic_correct": 2,
+          "host_disagreement": 0
+        }
+      },
+      "evidence": "kanon-inference/results/challenge-test-baseline-2026-09-08.json",
+      "sha256": "cd596a95f325674817e2628b5c209d654fc658c4ea6abb09a9e4ca5b78b69820"
+    }
+  ],
+  "reproduce_note": "The command field records the run as executed. Use reproduce_command with a fresh output path, because reports are created exclusively. A rerun on the same bytes must reproduce corpus.sha256, split.manifest_sha256, split.selected_tasks, every implementation hash, compiler.sha256 and the type_accepted, semantic_correct and host_disagreement counts. Elapsed seconds differ on every run, so the report sha256 does not reproduce.",
+  "review": {
+    "split_validation_and_evaluation": "Independent bounded review found no correctness or security defects and no CI weakening",
+    "challenge_oracles": "Independent arithmetic audit verified all 120 expected values against hint-derived formulas, all 96 candidate outcomes, intended answers over argument tuples from 0 through 20, and all split/template assignments; no findings. That audit covered the first corpus bytes. The corrected bytes were rechecked with the real compiler and kernel over all 96 candidates."
+  },
+  "limitations": [
+    "Developer-authored diagnostic tasks and declared template assignments do not prove independent generalization or satisfy the proposed 500-task-per-family model-selection gate.",
+    "No model inference, adaptation, prompt tuning, or selection was performed on the new corpus.",
+    "Implementers inspected all splits and ran the unchanged deterministic baselines on the test split for infrastructure validation; this is not a sealed independent test.",
+    "Finite behavior examples do not prove all-input correctness. Exact-payload duplicate checks do not detect every semantic clone or paraphrase.",
+    "Timing uses fresh processes with concurrent local validation and is not a controlled performance measurement.",
+    "Saved reports record corpus, split manifest and compiler paths from the operator checkout. Those paths are provenance only; the sha256 field beside each path is the binding evidence.",
+    "The challenge corpus was corrected on 2026-09-08, after its first freeze and before its first commit. In the first bytes the intended term was the only candidate with a let binding and the longest candidate in all eight validation tasks and all eight test tasks, and the four absolute distance tasks shared one candidate pool. Every hash, recorded run and count in this record covers the corrected bytes."
+  ]
+}
