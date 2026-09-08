@@ -1,0 +1,14 @@
+-- mu-large-elim-selfrec: a Prop family with one constructor whose one
+-- field is the family itself at the mark 0, so part three of tot's
+-- criterion at kan-lang-tot-pin/lib/check.ml:232 refuses the large
+-- elimination (A1, M1 Stage H, brief 3.9).  Part two holds, because the
+-- field is erased, and the family is still refused.  A self recursive
+-- family with one constructor has no closed term, so the scrutinee is a
+-- postulate.  SH-M1 drops part three and this file checks.
+
+mu Acc : Prop with
+| step : (0 a : Acc) -> Acc
+
+axiom stuck : Acc
+
+def big : Type 0 := case stuck as x in Acc return Type 0 with | step 0 a => Nat

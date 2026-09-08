@@ -1,0 +1,18 @@
+erased Nat
+erased Triple
+rec [tuple<union nat,union nat,union nat>]
+fun t () : struct tuple<union nat,union nat,union nat> := KStruct tuple<union nat,union nat,union nat> [KLit 1; KLit 2; KLit 3]
+rec [nat; tuple<union nat,union nat,union nat>]
+fun legZero () : union nat := KProj tuple<union nat,union nat,union nat> 0 (KGlobal t)
+rec [nat; tuple<union nat,union nat,union nat>]
+fun legOne () : union nat := KProj tuple<union nat,union nat,union nat> 1 (KGlobal t)
+rec [nat; tuple<union nat,union nat,union nat>]
+fun legTwo () : union nat := KProj tuple<union nat,union nat,union nat> 2 (KGlobal t)
+rec [pair<union nat,union nat>]
+fun p () : struct pair<union nat,union nat> := KStruct pair<union nat,union nat> [KLit 4; KLit 5]
+rec [nat; pair<union nat,union nat>]
+fun firstOfP () : union nat := KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 1)))
+rec [nat; pair<union nat,union nat>]
+fun secondOfP () : union nat := KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 0)))
+rec [pair<union nat,union nat>]
+fun rebuilt () : struct pair<union nat,union nat> := KStruct pair<union nat,union nat> [KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 1))); KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 0)))]

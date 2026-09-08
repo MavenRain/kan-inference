@@ -1,0 +1,8 @@
+-- c02: a Zero binder beside a runtime binder.  The type parameter "A"
+-- is stamped Zero, so it is dropped from the parameter list and from
+-- the argument list, and the runtime parameter "x" stays.
+
+def id : (0 A : Type 0) -> (x : A) -> A :=
+  fun (0 A : Type 0) (x : A) => x
+
+def five : Nat := id Nat 5

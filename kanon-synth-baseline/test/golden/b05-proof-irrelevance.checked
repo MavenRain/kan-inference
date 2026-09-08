@@ -1,0 +1,6 @@
+axiom P : Type 0
+axiom p1 : P
+axiom p2 : P
+axiom G : (Ran SPi 0 z P Type 0)
+axiom w : (Out SPi 0 z P (APt 0 p1) G)
+def irrelevant : (Out SPi 0 z P (APt 0 p2) G) := w

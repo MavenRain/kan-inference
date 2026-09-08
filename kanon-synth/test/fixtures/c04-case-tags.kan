@@ -1,0 +1,11 @@
+-- c04: the tags of a sum with a payload free leg and a payload leg.
+-- The unit leg has no runtime field, so its tag carries no payload and
+-- its branch has arity zero.
+
+def Opt : Type 0 := sum ((prod () : Type 0), Nat)
+
+def none : Opt := inj 0 of 2 (tuple ())
+def some : Opt := inj 1 of 2 7
+
+def unwrap : (x : Opt) -> Nat :=
+  fun (x : Opt) => case x with | 0 (u : prod ()) => 0 | 1 (v : Nat) => v

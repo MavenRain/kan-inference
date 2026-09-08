@@ -1,0 +1,9 @@
+-- a07: Prop and the Type levels.  Prop is the universe at level zero
+-- and "Type n" is the universe at level n plus one (SB-D2), so Prop
+-- lives at Type 0 and Type 0 lives at Type 1.
+
+def propAtZero : Type 0 := Prop
+def typeZeroAtOne : Type 1 := Type 0
+def typeOneAtTwo : Type 2 := Type 1
+def propArrow : Type 0 := (0 P : Prop) -> Prop
+def bareType : Type 1 := Type

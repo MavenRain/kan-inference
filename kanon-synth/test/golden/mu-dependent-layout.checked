@@ -1,0 +1,5 @@
+def pn : (Lan SMu Pack [] (Sec SColl 0 [])) := (In SMu Pack [] (ACtor pack) [Nat; 7; 8])
+def pu : (Lan SMu Pack [] (Sec SColl 0 [])) := (In SMu Pack [] (ACtor pack) [(Ran SColl 0 (Sec SColl 0 [])); (Sec SColl 0 []); 9])
+def pf : (Lan SMu Pack [] (Sec SColl 0 [])) := (In SMu Pack [] (ACtor pack) [(Ran SPi w _ Nat Nat); (Sec SPi w n Nat [n => (Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w n) natAdd))]); 10])
+def last : (Ran SPi w _ (Lan SMu Pack [] (Sec SColl 0 [])) Nat) := (Sec SPi w p (Lan SMu Pack [] (Sec SColl 0 [])) [p => (Elim SMu Pack [] p as x return Nat with | (ACtor pack) A v n => n)])
+def main : Nat := (Out SPi w b Nat (APt w (Out SPi w b Nat (APt w (Out SPi w _ (Lan SMu Pack [] (Sec SColl 0 [])) (APt w pf) last)) (Out SPi w a Nat (APt w (Out SPi w _ (Lan SMu Pack [] (Sec SColl 0 [])) (APt w pu) last)) natAdd))) (Out SPi w a Nat (APt w (Out SPi w _ (Lan SMu Pack [] (Sec SColl 0 [])) (APt w pn) last)) natAdd))

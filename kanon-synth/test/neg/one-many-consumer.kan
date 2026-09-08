@@ -1,0 +1,2 @@
+def consume : (y : Nat) -> Nat := fun (y : Nat) => y
+def passed : (1 x : Nat) -> Nat := fun (1 x : Nat) => consume x

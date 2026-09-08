@@ -1,0 +1,8 @@
+rec [pair<union nat,union nat>]
+fun p () : struct pair<union nat,union nat> := KStruct pair<union nat,union nat> [KLit 11; KLit 6]
+rec [nat; pair<union nat,union nat>]
+fun mk (union nat) : struct pair<union nat,union nat> := KStruct pair<union nat,union nat> [KVar 0; KApp (KGlobal natAdd) [KVar 0; KLit 1]]
+rec [pair<union nat,union nat>]
+fun q () : struct pair<union nat,union nat> := KTail (KGlobal mk) [KLit 4]
+rec [nat; pair<union nat,union nat>]
+fun main () : union nat := KTail (KGlobal natAdd) [KApp (KGlobal natAdd) [KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 1))); KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 0)))]; KApp (KGlobal natAdd) [KLet scrut (KGlobal q) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 1))); KLet scrut (KGlobal q) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 0)))]]

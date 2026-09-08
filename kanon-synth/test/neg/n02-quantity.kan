@@ -1,0 +1,6 @@
+-- n02: an erased binder read at runtime.  The mark "0" says the
+-- argument is gone before run time, so the body cannot return it.
+
+axiom Nat : Type 0
+
+def bad : (0 x : Nat) -> Nat := fun (0 x : Nat) => x

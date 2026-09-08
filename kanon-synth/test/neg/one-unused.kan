@@ -1,0 +1,1 @@
+def unused : (1 x : Nat) -> Nat := fun (1 x : Nat) => 0

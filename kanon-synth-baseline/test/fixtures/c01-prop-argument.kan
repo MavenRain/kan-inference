@@ -1,0 +1,10 @@
+-- c01: a proof at a runtime binder and at a pair field.  "P" is a
+-- proposition, so "a" is a proof:  the binder "p" is dropped and the
+-- second field of the pair is dropped, and the pair of one runtime
+-- field stays a struct of that one field.
+
+axiom P : Prop
+axiom a : P
+
+def n : Nat := ((fun (p : P) => 5) : (p : P) -> Nat) a
+def q : Nat * P := (3, a)

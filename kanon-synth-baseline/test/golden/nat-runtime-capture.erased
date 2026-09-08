@@ -1,0 +1,6 @@
+rec [any; pair<union any,union any>]
+fun box (union any) : struct pair<union any,union any> := KStruct pair<union any,union any> [KVar 0; KVar 0]
+rec [nat]
+fun mk (union nat, union nat) : union nat := KTail (KGlobal natSub) [KApp (KGlobal natAdd) [KVar 1; KVar 0]; KVar 1]
+rec [nat; pair<union nat,union nat>]
+fun main () : union nat := KTail (KGlobal mk) [KLet scrut (KApp (KGlobal box) [KLit 12345678901234567890123456789]) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 1))); KLit 19]

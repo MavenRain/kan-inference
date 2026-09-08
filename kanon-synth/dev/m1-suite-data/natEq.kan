@@ -1,0 +1,17 @@
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+def yes : Bool := inj 1 of 2 ()
+def no : Bool := inj 0 of 2 ()
+def rec uEq : N -> N -> Bool := fun (n : N) (m : N) => case n as x in N return Bool with | zero => (case m as y in N return Bool with | zero => yes | succ q => no) | succ p => (case m as y in N return Bool with | zero => no | succ q => uEq p q)
+def Unit : Type 0 := prod ()
+mu Agreement : (0 a : Bool) -> (0 b : Bool) -> Type 0 with
+| same : (0 a : Bool) -> Agreement a a
+def n0 : N := zero
+def n1 : N := succ n0
+def n2 : N := succ n1
+def score : Bool -> Nat := fun (b : Bool) => case b as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def witness : Agreement (uEq n2 n2) (natEq 2 2) := same (uEq n2 n2)
+def main : Nat := natAdd (score (uEq n2 n2)) (score (natEq 2 2))

@@ -1,0 +1,22 @@
+-- SL-D4: typed branch fields check against dependent constructor types.
+mu N : Type 0 :=
+| zero : N
+| succ (n : N) : N
+
+mu V : (0 i : N) -> Type 0 :=
+| nil : V zero
+| cons (0 i : N) (x : Nat) (xs : V i) : V (succ i)
+
+def rec total : (0 i : N) -> V i -> Nat :=
+  fun (0 i : N) (v : V i) =>
+    match v as self in V j return Nat with
+    | nil => 0
+    | cons (0 j : N) (x : Nat) (xs : V j) => natAdd x (total j xs)
+
+mu Box (0 A : Type 0) : Type 0 :=
+| box (x : A) : Box A
+
+def unbox : Box Nat -> Nat := fun (b : Box Nat) =>
+  match b as self in Box return Nat with | box (x : Nat) => x
+
+def main : Nat := total (succ (succ zero)) (cons (succ zero) 17 (cons zero 25 nil))

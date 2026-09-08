@@ -1,0 +1,6 @@
+axiom Nat : Type 1
+def Two : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))
+def left : Two := (In SColl 2 (ALeg 0) [1])
+def right : Two := (In SColl 2 (ALeg 1) [2])
+def plain : (Ran SPi w x Two Nat) := (Sec SPi w x Two [x => (Elim SColl 2 x with | (ALeg 0) a => a | (ALeg 1) b => b)])
+def withMotive : (Ran SPi w x Two Nat) := (Sec SPi w x Two [x => (Elim SColl 2 x as y return Nat with | (ALeg 0) a => a | (ALeg 1) b => b)])

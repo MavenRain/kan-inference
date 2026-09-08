@@ -1,0 +1,11 @@
+-- a06: the empty collection at both formers.  "()" is the section and
+-- "absurd" is the elimination with no branch.
+-- SB-D1 writes both types out, which Stage A postulated.
+
+def Unit : Type 0 := prod ()
+def Empty : Prop := sum ()
+
+def u : Unit := ()
+def uTuple : Unit := tuple ()
+def fromEmpty : (0 A : Type 0) -> (x : Empty) -> A :=
+  fun (0 A : Type 0) (x : Empty) => absurd x

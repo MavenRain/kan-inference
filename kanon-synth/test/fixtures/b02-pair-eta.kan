@@ -1,0 +1,14 @@
+-- b02: eta at the left former of the point shape.  A pair and the
+-- pair of its own two projections are one section, so a predicate
+-- over the pair type takes either spelling of the same witness and
+-- neither definition below needs a cast.
+
+axiom A : Type 0
+axiom p : (a : A) * A
+axiom F : (0 q : (a : A) * A) -> Prop
+axiom v : F p
+axiom G : (0 q : (a : A) * A) -> Prop
+axiom w : G (p.1, p.2)
+
+def pairExpanded : F (p.1, p.2) := v
+def pairContracted : G p := w

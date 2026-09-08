@@ -1,0 +1,5 @@
+axiom Nat : Type 1
+axiom zero : Nat
+axiom Eq : (Ran SPi 0 A Type 1 (Ran SPi w x A (Ran SPi w y A Type 0)))
+def start : Nat := zero
+def eqOfStart : Type 0 := (Out SPi w y Nat (APt w start) (Out SPi w x Nat (APt w start) (Out SPi 0 A Type 1 (APt 0 Nat) Eq)))

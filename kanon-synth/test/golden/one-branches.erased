@@ -1,0 +1,10 @@
+erased Unit
+erased Both
+rec [nat; sum<unit|unit>]
+fun choose (union nat, union sum<unit|unit>) : union nat := KCase sum<unit|unit> (KVar 0) [{0 0 (KVar 1)}; {1 0 (KVar 1)}]
+rec [nat; sum<unit|unit>]
+fun nested (union nat, union sum<unit|unit>) : union nat := KCase sum<unit|unit> (KVar 0) [{0 0 (KCase sum<unit|unit> (KVar 0) [{0 0 (KVar 1)}; {1 0 (KVar 1)}])}; {1 0 (KVar 1)}]
+rec [sum<union nat|union nat>; nat]
+fun payload (union sum<union nat|union nat>) : union nat := KCase sum<union nat|union nat> (KVar 0) [{0 1 (KVar 0)}; {1 1 (KVar 0)}]
+rec [nat; sum<unit|unit>]
+fun main () : union nat := KTail (KGlobal choose) [KLit 7; KTag sum<unit|unit> 0 []]

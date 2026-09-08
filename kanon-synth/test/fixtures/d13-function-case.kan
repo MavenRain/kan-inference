@@ -1,0 +1,8 @@
+-- A generic closure call preserves enough information for a case.
+-- main is 1.
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+def read : (f : Nat -> Bool) -> Nat :=
+  fun (f : Nat -> Bool) =>
+    case (f 1) with | 0 (x : prod ()) => 0 | 1 (y : prod ()) => 1
+def eqOne : Nat -> Bool := fun (x : Nat) => natEq x 1
+def main : Nat := read eqOne

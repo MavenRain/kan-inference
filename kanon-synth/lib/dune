@@ -1,0 +1,3 @@
+(library
+ (name kanon_kernel)
+ (libraries zarith))

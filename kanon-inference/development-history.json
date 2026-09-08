@@ -1,0 +1,19 @@
+{
+  "status": "development observations, not held-out evaluation",
+  "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "quantization": "publisher ONNX int8",
+  "observations": [
+    {"prompt": "kanon-choice-v1", "task": "Return the number two.", "pool": ["0", "1", "2", "3"], "returned_first": "0", "logits": [29.815053939819336, 27.909496307373047, 27.513113021850586, 28.5281925201416], "correct": false},
+    {"prompt": "kanon-choice-v1", "task": "Return the second argument.", "returned_projection": "first", "correct": false},
+    {"prompt": "kanon-continuation-v2", "task": "Return the number two.", "returned_first": "1", "correct": false},
+    {"prompt": "kanon-continuation-v2", "task": "Return zero.", "returned_first": "1", "correct": false},
+    {"prompt": "kanon-continuation-v2", "task": "Return the second argument.", "returned_projection": "first", "correct": false},
+    {"prompt": "kanon-continuation-v2", "task": "Return the first argument.", "returned_projection": "first", "correct": true},
+    {"prompt": "kanon-source-completion-v3", "task": "Return the number two.", "returned_first": "1", "correct": false},
+    {"prompt": "kanon-source-completion-v3", "task": "Return zero.", "returned_first": "1", "correct": false},
+    {"prompt": "kanon-source-completion-v3", "task": "Return the second argument.", "returned_projection": "first", "correct": false},
+    {"prompt": "kanon-source-completion-v3", "task": "Return the first argument.", "returned_projection": "first", "correct": true},
+    {"prompt": "kanon-continuation-v2", "mode": "greedy-generation", "task": "Return the number two.", "max_new_tokens": 48, "error": "generation_budget"}
+  ],
+  "decision": "Freeze source-completion-v3 and compare the official 360M model on a separately written smoke corpus. No further prompt tuning on that corpus."
+}

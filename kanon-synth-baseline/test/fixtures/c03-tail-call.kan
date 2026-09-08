@@ -1,0 +1,7 @@
+-- c03: the tail position of SC-D14.  The body of "h" is a call in
+-- tail position, so it prints as KTail, and its argument is a call in
+-- a non tail position, so that one prints as KApp.
+
+def g : Nat -> Nat := fun (n : Nat) => natAdd n 1
+
+def h : Nat -> Nat := fun (n : Nat) => g (g n)

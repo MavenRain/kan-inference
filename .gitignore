@@ -1,0 +1,30 @@
+# Local model installations and build products.
+**/.venv/
+**/.cache/
+**/models/
+**/_build/
+**/.lake/
+**/.gatework/
+**/__pycache__/
+*.py[cod]
+*.install
+.DS_Store
+
+# Session scratch files and incomplete local benchmark runs.
+:memory:.ses
+.env
+.env.*
+!.env.example
+kanon-inference/results/local/
+
+# Generated host-suite outputs; retain nested fixtures and golden files.
+/kanon-synth/test/*.wasm
+/kanon-synth/test/*.wat
+/kanon-synth/test/*.err
+/kanon-synth/test/*.out
+/kanon-synth/test/*.nodeerr
+/kanon-synth-baseline/test/*.wasm
+/kanon-synth-baseline/test/*.wat
+/kanon-synth-baseline/test/*.err
+/kanon-synth-baseline/test/*.out
+/kanon-synth-baseline/test/*.nodeerr

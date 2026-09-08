@@ -1,0 +1,3 @@
+(tests
+ (names main wasm sl_surface synthesis)
+ (libraries kanon_kernel kanon_surface kanon_wasm))

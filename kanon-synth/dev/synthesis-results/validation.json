@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "checked_synthesis_prototype_passed_model_usefulness_unmet",
+  "scope": "whole_explicitly_typed_nonrecursive_definition_body",
+  "source_baseline_head": "c4180626123687858ff83408bab801c6f87e3e71",
+  "kernel_source_changed": false,
+  "wasm_source_changed": false,
+  "validation": {
+    "synthesis_boundary": {
+      "passed": 106,
+      "total": 106
+    },
+    "driver": {
+      "full_suite_passed": 35,
+      "added_wire_regression_passed": 1,
+      "adjusted_pool_test_passed": true,
+      "final_test_count": 36
+    },
+    "model_protocol": {
+      "passed": 7,
+      "total": 7
+    },
+    "existing_kernel_regressions": "pass_after_source_changes",
+    "existing_surface": {
+      "passed": 20,
+      "total": 20
+    },
+    "wasm_baseline": {
+      "passed": 32,
+      "total": 32,
+      "timing": "before_source_changes"
+    },
+    "house": "pass_final",
+    "independent_reviews": "no_confirmed_in_scope_findings"
+  },
+  "demonstration": {
+    "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "mode": "candidate_ranking",
+    "kernel_result": 42,
+    "node_result": 42,
+    "wasmtime_result": 42,
+    "standalone_wasm_node_result": 42,
+    "replay_byte_identical": true,
+    "synthesis_timing": {
+      "checking_seconds": 0.23236645897850394,
+      "provider_seconds": 20.54175058286637,
+      "total_seconds": 20.801753332838416
+    },
+    "replay_timing": {
+      "checking_seconds": 0.9284217092208564,
+      "provider_seconds": 0.0,
+      "total_seconds": 0.9596867500804365
+    },
+    "controlled_performance_benchmark": false
+  },
+  "model_quality": {
+    "tasks_per_model": 6,
+    "correct_135m": 4,
+    "correct_360m": 4,
+    "weak_candidate_order_baseline_correct": 3,
+    "selection_gate_passed": false,
+    "direct_identity_generation": "rejected_invalid_declaration_with_hole"
+  },
+  "open_requirements": [
+    "larger_independent_task_corpus_and_stronger_baseline",
+    "smallest_useful_model_selection",
+    "full_Lean_4_parity",
+    "Kan_only_foundational_derivations",
+    "matched_OCaml_compilation_benchmark",
+    "browser_or_all_Wasm_inference"
+  ],
+  "original_source_writes_by_this_task": false,
+  "concurrent_original_changes": [
+    "dev/agreement.py",
+    "dev/gen-m1-corpus.py",
+    "dev/house-catchalls.py",
+    "dev/house.sh",
+    "dev/nat-runtime.sh",
+    "dev/one-paths.sh",
+    "lib/erase.ml",
+    "meta/Axioms.lean",
+    "surface/parser.ml",
+    "test/sl_surface.ml"
+  ],
+  "live_tree_integration": "pending_against_newer_tree"
+}

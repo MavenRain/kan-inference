@@ -1,0 +1,20 @@
+rec [nat; tuple<union nat,func fn<0>>]
+fun duplicate$0 () : union nat := KLit 0
+fun duplicate (union nat) : struct tuple<union nat,func fn<0>> := KStruct tuple<union nat,func fn<0>> [KVar 0; KClos duplicate$0 0 []]
+rec [nat; tuple<union nat,func fn<1>>]
+fun split$0 (union nat, union nat) : union nat := KTail (KGlobal natAdd) [KVar 1; KVar 0]
+fun split (union nat, union nat) : struct tuple<union nat,func fn<1>> := KStruct tuple<union nat,func fn<1>> [KVar 1; KClos split$0 1 [KVar 0]]
+rec [nat; mu<At>; tuple<union nat,func fn<1>>; leg<mu<At>,0>]
+fun constructorCapture$0 (union nat) : union mu<At> := KTag mu<At> 0 []
+fun constructorCapture (union nat) : struct tuple<union nat,func fn<1>> := KStruct tuple<union nat,func fn<1>> [KVar 0; KClos constructorCapture$0 1 []]
+rec [nat]
+fun ignore () : union nat := KLit 0
+rec [nat; tuple<union nat,func fn<1>>]
+fun callCapture$0 (union nat) : union nat := KTail (KGlobal ignore) []
+fun callCapture (union nat) : struct tuple<union nat,func fn<1>> := KStruct tuple<union nat,func fn<1>> [KVar 0; KClos callCapture$0 1 []]
+erased getProof
+rec [nat; tuple<union nat,func fn<1>>]
+fun proofCapture$0 (union nat) : union nat := KLit 0
+fun proofCapture (union nat) : struct tuple<union nat,func fn<1>> := KStruct tuple<union nat,func fn<1>> [KVar 0; KClos proofCapture$0 1 []]
+rec [nat; tuple<union nat,func fn<0>>; tuple<union nat,func fn<1>>]
+fun main () : union nat := KTail (KGlobal natAdd) [KApp (KGlobal natAdd) [KProj tuple<union nat,func fn<0>> 0 (KApp (KGlobal duplicate) [KLit 7]); KApp (KProj tuple<union nat,func fn<1>> 1 (KApp (KGlobal split) [KLit 11; KLit 13])) [KLit 17]]; KApp (KGlobal natAdd) [KProj tuple<union nat,func fn<1>> 0 (KApp (KGlobal constructorCapture) [KLit 7]); KApp (KGlobal natAdd) [KProj tuple<union nat,func fn<1>> 0 (KApp (KGlobal callCapture) [KLit 7]); KProj tuple<union nat,func fn<1>> 0 (KApp (KGlobal proofCapture) [KLit 7])]]]

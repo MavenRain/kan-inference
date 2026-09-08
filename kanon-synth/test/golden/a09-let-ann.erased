@@ -1,0 +1,9 @@
+erased Nat
+rec [nat]
+fun five () : union nat := KLet x (KLit 2) (KTail (KGlobal natAdd) [KVar 0; KLit 3])
+rec [nat]
+fun annotated () : union nat := KLit 5
+rec [nat]
+fun nested () : union nat := KLet x (KLit 1) (KLet y (KLit 2) (KTail (KGlobal natAdd) [KVar 1; KVar 0]))
+rec [nat]
+fun letOfAnn () : union nat := KLet x (KLit 7) (KVar 0)

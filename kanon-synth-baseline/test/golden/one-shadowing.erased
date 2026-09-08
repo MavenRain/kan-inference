@@ -1,0 +1,9 @@
+rec [nat]
+fun identity (union nat) : union nat := KVar 0
+rec [nat]
+fun shadow (union nat) : union nat := KLet y (KVar 0) (KLet x (KLit 0) (KVar 1))
+rec [nat]
+fun closure$0 (union nat, union nat) : union nat := KVar 1
+fun closure (union nat) : union nat := KLet f (KClos closure$0 1 [KVar 0]) (KTail (KVar 0) [KLit 0])
+rec [nat]
+fun main () : union nat := KTail (KGlobal shadow) [KLit 7]

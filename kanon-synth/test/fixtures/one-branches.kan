@@ -1,0 +1,11 @@
+def Unit : Type 0 := (prod () : Type 0)
+def Both : Type 0 := sum (Unit, Unit)
+def choose : (1 x : Nat) -> (tag : Both) -> Nat :=
+  fun (1 x : Nat) (tag : Both) => case tag with | 0 (z : Unit) => x | 1 (z : Unit) => x
+def nested : (1 x : Nat) -> (tag : Both) -> Nat :=
+  fun (1 x : Nat) (tag : Both) => case tag with
+  | 0 (z : Unit) => (case tag with | 0 (w : Unit) => x | 1 (w : Unit) => x)
+  | 1 (z : Unit) => x
+def payload : (value : sum (Nat, Nat)) -> Nat :=
+  fun (value : sum (Nat, Nat)) => case value with | 0 (1 x : Nat) => x | 1 (1 x : Nat) => x
+def main : Nat := choose 7 (inj 0 of 2 (tuple ()))

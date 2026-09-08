@@ -1,0 +1,4 @@
+def Bool : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)]))
+def read : (Ran SPi w f (Ran SPi w _ Nat Bool) Nat) := (Sec SPi w f (Ran SPi w _ Nat Bool) [f => (Elim SColl 2 (Out SPi w _ Nat (APt w 1) f) with | (ALeg 0) x => 0 | (ALeg 1) y => 1)])
+def eqOne : (Ran SPi w _ Nat Bool) := (Sec SPi w x Nat [x => (Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w x) natEq))])
+def main : Nat := (Out SPi w f (Ran SPi w _ Nat (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)]))) (APt w eqOne) read)

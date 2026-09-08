@@ -1,0 +1,7 @@
+erased Nat
+rec [any]
+fun id (union any) : union any := KVar 0
+rec [fn<1>; any]
+fun twice (func fn<1>, union any) : union any := KTail (KVar 1) [KApp (KVar 1) [KVar 0]]
+rec [nat]
+fun idNat (union nat) : union nat := KTail (KGlobal id) [KVar 0]

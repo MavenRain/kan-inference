@@ -1,0 +1,6 @@
+{
+  "candidate": "def identity : (A : Type 0) -> A := ?",
+  "compiler_exit": 1,
+  "stderr": "line 1, column 37: unexpected character '?'\n",
+  "artifact_created": false
+}

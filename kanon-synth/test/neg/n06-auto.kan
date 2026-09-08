@@ -1,0 +1,7 @@
+-- n06: the auto atom of SA-D3.  M0 has no instance search, so auto
+-- has no checked form and the checker says which milestone brings
+-- one.
+
+axiom Nat : Type 0
+
+def bad : Nat := auto

@@ -1,0 +1,10 @@
+-- mu-index-runtime: an index binder at a runtime mark (A2).  The
+-- binder i of W carries no mark, so it stands at w, and an index that
+-- survives to run time makes the Stage J index erasure unsound.
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu W : (i : N) -> Type 0 with
+| wz : W zero

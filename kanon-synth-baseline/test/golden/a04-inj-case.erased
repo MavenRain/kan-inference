@@ -1,0 +1,10 @@
+erased Nat
+erased Two
+rec [sum<union nat|union nat>]
+fun left () : union sum<union nat|union nat> := KTag sum<union nat|union nat> 0 [KLit 1]
+rec [sum<union nat|union nat>]
+fun right () : union sum<union nat|union nat> := KTag sum<union nat|union nat> 1 [KLit 2]
+rec [sum<union nat|union nat>; nat]
+fun plain (union sum<union nat|union nat>) : union nat := KCase sum<union nat|union nat> (KVar 0) [{0 1 (KVar 0)}; {1 1 (KVar 0)}]
+rec [sum<union nat|union nat>; nat]
+fun withMotive (union sum<union nat|union nat>) : union nat := KCase sum<union nat|union nat> (KVar 0) [{0 1 (KVar 0)}; {1 1 (KVar 0)}]

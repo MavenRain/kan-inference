@@ -1,0 +1,11 @@
+-- mu-no-motive: an elimination at a family with no motive (A7, M1
+-- Stage H, brief 3.9, SH-D5).  The branch types of a family are not
+-- recoverable from the type of the scrutinee alone, so the motive is
+-- required and the mu pack refuses the elimination that has none.
+-- SH-M4 accepts the missing motive and this file checks.
+
+mu Two : Type 0 with
+| ca : Two
+| cb : Two
+
+def big : Type 0 := case (ca : Two) with | ca => Nat | cb => Nat

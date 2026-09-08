@@ -1,0 +1,2 @@
+def select : (earlier : Nat) -> (later : Nat) -> Nat := synth "Return the later argument."
+def main : Nat := select 17 42

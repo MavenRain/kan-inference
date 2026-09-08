@@ -1,0 +1,3 @@
+mu N : Type 0 with
+| z : N
+and N : Type 0 with

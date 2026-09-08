@@ -1,0 +1,7 @@
+-- n05: a case that answers one leg of a two leg sum.
+
+axiom Nat : Type 0
+
+def Two : Type 0 := sum (Nat, Nat)
+
+def bad : (x : Two) -> Nat := fun (x : Two) => case x with | 0 (a : Nat) => a

@@ -1,0 +1,71 @@
+-- Focused exact runtime arithmetic, expected main result 32.
+
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+
+def boolNat : Bool -> Nat := fun (b : Bool) => case b with | 0 (u : prod ()) => 0 | 1 (u : prod ()) => 1
+
+def checkNat : Nat -> Nat -> Nat := fun (a : Nat) (b : Nat) => boolNat (natEq a b)
+
+def smallAdd : Nat := checkNat (natAdd 1073741823 1) 1073741824
+
+def smallMul : Nat := checkNat (natMul 32768 32768) 1073741824
+
+def bigAdd : Nat := checkNat (natAdd 12345678901234567890123456789 9876543210123456789) 12345678911111111100246913578
+
+def mixedAdd : Nat := checkNat (natAdd 12345678901234567890123456789 17) 12345678901234567890123456806
+
+def reverseAdd : Nat := checkNat (natAdd 17 12345678901234567890123456789) 12345678901234567890123456806
+
+def bigSub : Nat := checkNat (natSub 12345678901234567890123456789 9876543210123456789) 12345678891358024680000000000
+
+def mixedSub : Nat := checkNat (natSub 12345678901234567890123456789 17) 12345678901234567890123456772
+
+def truncated : Nat := checkNat (natSub 17 12345678901234567890123456789) 0
+
+def zeroSub : Nat := checkNat (natSub 12345678901234567890123456789 12345678901234567890123456789) 0
+
+def borrow : Nat := checkNat (natSub 1237940039285380274899124224 1237940039285380274899124223) 1
+
+def carry : Nat := checkNat (natAdd 1237940039285380274899124223 1) 1237940039285380274899124224
+
+def bigMul : Nat := checkNat (natMul 12345678901234567890123456789 9876543210123456789) 121932631126352689987654321098643499478750190521
+
+def mixedMul : Nat := checkNat (natMul 12345678901234567890123456789 32767) 404530860556753086055675308605163
+
+def reverseMul : Nat := checkNat (natMul 32767 12345678901234567890123456789) 404530860556753086055675308605163
+
+def zeroMul : Nat := checkNat (natMul 12345678901234567890123456789 0) 0
+
+def reverseZero : Nat := checkNat (natMul 0 12345678901234567890123456789) 0
+
+def oneMul : Nat := checkNat (natMul 12345678901234567890123456789 1) 12345678901234567890123456789
+
+def reverseOne : Nat := checkNat (natMul 1 12345678901234567890123456789) 12345678901234567890123456789
+
+def demote : Nat := checkNat (natSub 12345678901234567890123456789 12345678901234567889049714966) 1073741823
+
+def heterogeneous : Nat := checkNat (natSub 1073807363 1073807358) 5
+
+def eqSame : Nat := checkNat (boolNat (natEq 12345678901234567890123456789 12345678901234567890123456789)) 1
+
+def eqDifferent : Nat := checkNat (boolNat (natEq 12345678901234567890123456789 12345678901234567890123456790)) 0
+
+def eqMixed : Nat := checkNat (boolNat (natEq 12345678901234567890123456789 3)) 0
+
+def eqReverse : Nat := checkNat (boolNat (natEq 3 12345678901234567890123456789)) 0
+
+def ltSame : Nat := checkNat (boolNat (natLt 12345678901234567890123456789 12345678901234567890123456789)) 0
+
+def ltNext : Nat := checkNat (boolNat (natLt 12345678901234567890123456789 12345678901234567890123456790)) 1
+
+def ltPrevious : Nat := checkNat (boolNat (natLt 12345678901234567890123456790 12345678901234567890123456789)) 0
+
+def ltMixed : Nat := checkNat (boolNat (natLt 3 12345678901234567890123456789)) 1
+
+def ltReverse : Nat := checkNat (boolNat (natLt 12345678901234567890123456789 3)) 0
+
+def alias : Nat := let a : Nat := 12345678901234567890123456789 in let twice : Nat := natAdd a a in natAdd (checkNat a 12345678901234567890123456789) (checkNat twice 24691357802469135780246913578)
+
+def partial : Nat := let mul : Nat -> Nat := natMul 12345678901234567890123456789 in checkNat (natSub (mul 3) 37037036703703703670370370365) 2
+
+def main : Nat := natAdd smallAdd (natAdd smallMul (natAdd bigAdd (natAdd mixedAdd (natAdd reverseAdd (natAdd bigSub (natAdd mixedSub (natAdd truncated (natAdd zeroSub (natAdd borrow (natAdd carry (natAdd bigMul (natAdd mixedMul (natAdd reverseMul (natAdd zeroMul (natAdd reverseZero (natAdd oneMul (natAdd reverseOne (natAdd demote (natAdd heterogeneous (natAdd eqSame (natAdd eqDifferent (natAdd eqMixed (natAdd eqReverse (natAdd ltSame (natAdd ltNext (natAdd ltPrevious (natAdd ltMixed (natAdd ltReverse (natAdd alias (natAdd partial (0)))))))))))))))))))))))))))))))

@@ -1,0 +1,7 @@
+axiom F : (Ran SPi 0 n Nat Type 0)
+axiom v : (Out SPi 0 n Nat (APt 0 6) F)
+def w : (Out SPi 0 n Nat (APt 0 (Out SPi w b Nat (APt w 3) (Out SPi w a Nat (APt w 2) natMul))) F) := v
+def Bool : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)]))
+def same : Bool := (Out SPi w b Nat (APt w 4) (Out SPi w a Nat (APt w 4) natEq))
+def below : Bool := (Out SPi w b Nat (APt w 2) (Out SPi w a Nat (APt w 1) natLt))
+def sum6 : Nat := (Out SPi w b Nat (APt w 2) (Out SPi w a Nat (APt w 4) natAdd))

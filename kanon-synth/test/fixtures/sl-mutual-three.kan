@@ -1,0 +1,23 @@
+-- SL-D2: three declarations share one mutual family and recursive group.
+mutual
+mu A : Type 0 :=
+| leaf : A
+| node (b : B) : A
+mu B : Type 0 :=
+| bridge (c : C) : B
+mu C : Type 0 :=
+| again (a : A) : C
+end
+
+def rec sizeA : A -> Nat := fun (a : A) =>
+  match a as self in A return Nat with
+  | leaf => 0
+  | node b => natAdd 1 (sizeB b)
+and sizeB : B -> Nat := fun (b : B) =>
+  match b as self in B return Nat with
+  | bridge (c : C) => natAdd 1 (sizeC c)
+and sizeC : C -> Nat := fun (c : C) =>
+  match c as self in C return Nat with
+  | again a => natAdd 1 (sizeA a)
+
+def main : Nat := sizeA (node (bridge (again leaf)))

@@ -1,0 +1,7 @@
+def Four : Type 1 := (Lan SColl 4 (Sec SColl 4 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => Nat;  => Nat]))
+def z0 : Four := (In SColl 4 (ALeg 0) [(Sec SColl 0 [])])
+def z1 : Four := (In SColl 4 (ALeg 1) [(Sec SColl 0 [])])
+def p2 : Four := (In SColl 4 (ALeg 2) [5])
+def p3 : Four := (In SColl 4 (ALeg 3) [6])
+def read : (Ran SPi w x Four Nat) := (Sec SPi w x Four [x => (Elim SColl 4 x with | (ALeg 0) u => 1 | (ALeg 1) v => 2 | (ALeg 2) a => (Out SPi w b Nat (APt w 10) (Out SPi w a Nat (APt w a) natAdd)) | (ALeg 3) b => (Out SPi w b Nat (APt w 10) (Out SPi w a Nat (APt w b) natMul)))])
+def main : Nat := (Out SPi w b Nat (APt w (Out SPi w b Nat (APt w (Out SPi w x (Lan SColl 4 (Sec SColl 4 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => Nat;  => Nat])) (APt w p3) read)) (Out SPi w a Nat (APt w (Out SPi w x (Lan SColl 4 (Sec SColl 4 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => Nat;  => Nat])) (APt w p2) read)) natAdd))) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w (Out SPi w x (Lan SColl 4 (Sec SColl 4 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => Nat;  => Nat])) (APt w z1) read)) (Out SPi w a Nat (APt w (Out SPi w x (Lan SColl 4 (Sec SColl 4 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => Nat;  => Nat])) (APt w z0) read)) natAdd))) natAdd))

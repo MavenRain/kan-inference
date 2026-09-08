@@ -1,0 +1,9 @@
+-- a03: a pair and its two projections.
+
+axiom Nat : Type 0
+
+def p : (a : Nat) * Nat := (1, 2)
+def firstOfP : Nat := p.1
+def secondOfP : Nat := p.2
+def swapped : (a : Nat) * Nat := (p.2, p.1)
+def nestedPair : (a : Nat) * ((b : Nat) * Nat) := (1, (2, 3))

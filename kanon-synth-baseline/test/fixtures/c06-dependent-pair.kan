@@ -1,0 +1,2 @@
+-- A dependent fibre needs its instantiated type to erase a lambda.
+def packed : (0 A : Type 0) * A := ((x : Nat) -> Nat, fun (x : Nat) => x)

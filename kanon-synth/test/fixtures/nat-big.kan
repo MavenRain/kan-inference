@@ -1,0 +1,5 @@
+-- Exact multiplication runs in the emitted module and the observation is 7.
+-- Removing the slow multiplication arm must turn this successful run into a trap.
+def mul : Nat -> Nat -> Nat := fun (a : Nat) (b : Nat) => natMul a b
+def main : Nat :=
+  natSub (mul 35184372088833 35184372088837) 1237940039285591381131657214

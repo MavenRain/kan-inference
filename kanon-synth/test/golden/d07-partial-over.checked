@@ -1,0 +1,5 @@
+def add3 : (Ran SPi w a Nat (Ran SPi w b Nat Nat)) := (Sec SPi w a Nat [a => (Sec SPi w b Nat [b => (Out SPi w b Nat (APt w 3) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w b) (Out SPi w a Nat (APt w a) natAdd))) natAdd))])])
+def later : (Ran SPi w f (Ran SPi w _ Nat (Ran SPi w _ Nat Nat)) (Ran SPi w x Nat (Ran SPi w _ Nat Nat))) := (Sec SPi w f (Ran SPi w _ Nat (Ran SPi w _ Nat Nat)) [f => (Sec SPi w x Nat [x => (Out SPi w _ Nat (APt w x) f)])])
+def half : (Ran SPi w _ Nat Nat) := (Out SPi w a Nat (APt w 4) add3)
+def alias : (Ran SPi w _ Nat Nat) := (Out SPi w a Nat (APt w 1) natAdd)
+def main : Nat := (Out SPi w b Nat (APt w (Out SPi w _ Nat (APt w 6) (Out SPi w x Nat (APt w 4) (Out SPi w f (Ran SPi w _ Nat (Ran SPi w _ Nat Nat)) (APt w natAdd) later)))) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w (Out SPi w _ Nat (APt w 2) alias)) (Out SPi w a Nat (APt w (Out SPi w _ Nat (APt w 5) half)) natAdd))) natAdd))

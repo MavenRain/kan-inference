@@ -1,0 +1,2 @@
+mu Pair (0 A : Type 0) (0 B : Type 0) : Type 0 with
+| pair : A -> B -> Pair B A

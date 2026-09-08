@@ -1,0 +1,11 @@
+-- n08: two postulates of one type at "Type 0" do not convert.  Proof
+-- irrelevance is the rule of "Prop" alone (named rule 1), so a
+-- witness of the predicate at "a" is no witness of it at "b".
+
+axiom A : Type 0
+axiom a : A
+axiom b : A
+axiom F : (0 x : A) -> Prop
+axiom v : F a
+
+def w : F b := v

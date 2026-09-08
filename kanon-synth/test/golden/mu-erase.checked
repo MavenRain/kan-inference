@@ -1,0 +1,1 @@
+def one : (Lan SMu N [] (Sec SColl 0 [])) := (In SMu N [] (ACtor succ) [(In SMu N [] (ACtor zero) [])])

@@ -1,0 +1,3 @@
+(library
+ (name kanon_surface)
+ (libraries kanon_kernel))

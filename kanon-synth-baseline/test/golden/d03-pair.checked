@@ -1,0 +1,4 @@
+def p : (Lan SPi w a Nat Nat) := (In SPi w a Nat (APt w 11) [6])
+def mk : (Ran SPi w x Nat (Lan SPi w a Nat Nat)) := (Sec SPi w x Nat [x => (In SPi w a Nat (APt w x) [(Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w x) natAdd))])])
+def q : (Lan SPi w a Nat Nat) := (Out SPi w x Nat (APt w 4) mk)
+def main : Nat := (Out SPi w b Nat (APt w (Out SPi w b Nat (APt w (Elim SPi w a Nat q as self return Nat with | (ALeg 0) x y => y)) (Out SPi w a Nat (APt w (Elim SPi w a Nat q as self return Nat with | (ALeg 0) x y => x)) natAdd))) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w (Elim SPi w a Nat p as self return Nat with | (ALeg 0) x y => y)) (Out SPi w a Nat (APt w (Elim SPi w a Nat p as self return Nat with | (ALeg 0) x y => x)) natAdd))) natAdd))

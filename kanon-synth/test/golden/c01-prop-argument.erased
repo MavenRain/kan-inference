@@ -1,0 +1,7 @@
+erased P
+erased a
+rec [nat]
+fun n$0 () : union nat := KLit 5
+fun n () : union nat := KTail (KClos n$0 0 []) []
+rec [pair<union nat>]
+fun q () : struct pair<union nat> := KStruct pair<union nat> [KLit 3]

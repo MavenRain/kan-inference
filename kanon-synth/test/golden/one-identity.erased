@@ -1,0 +1,14 @@
+rec [nat]
+fun identity (union nat) : union nat := KVar 0
+rec [nat]
+fun through (union nat) : union nat := KTail (KGlobal identity) [KVar 0]
+rec [nat]
+fun alias (union nat) : union nat := KLet y (KVar 0) (KVar 0)
+rec [nat]
+fun discardAlias (union nat) : union nat := KLet y (KVar 0) (KLit 0)
+rec [nat]
+fun ghost () : union nat := KLit 0
+rec [nat]
+fun erasedThenOnce (union nat) : union nat := KLet y (KApp (KGlobal ghost) []) (KVar 1)
+rec [nat]
+fun main () : union nat := KTail (KGlobal through) [KLit 7]

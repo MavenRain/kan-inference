@@ -1,0 +1,5 @@
+axiom Nat : Type 1
+def five : Nat := let x : Nat := 2 in (Out SPi w b Nat (APt w 3) (Out SPi w a Nat (APt w x) natAdd))
+def annotated : Nat := (5 : Nat)
+def nested : Nat := let x : Nat := 1 in let y : Nat := 2 in (Out SPi w b Nat (APt w y) (Out SPi w a Nat (APt w x) natAdd))
+def letOfAnn : Nat := let x : Nat := (7 : Nat) in x

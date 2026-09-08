@@ -1,0 +1,34 @@
+EMIT d01-lit-prims OK
+EMIT d02-tail-call OK
+EMIT d03-pair OK
+EMIT d04-tuple OK
+EMIT d05-sum-legs OK
+EMIT d06-closure-capture OK
+EMIT d07-partial-over OK
+EMIT d08-erased-poly OK
+EMIT d09-let-chain OK
+EMIT d10-i31-boundary OK
+EMIT d11-poly-pair OK
+EMIT d12-poly-case OK
+EMIT d13-function-case OK
+EMIT d14-generic-capture OK
+EMIT d15-generic-aggregates OK
+EMIT mu-cata-depth OK
+EMIT mu-dependent-copy OK
+EMIT mu-dependent-layout OK
+EMIT mu-mutual-emit OK
+EMIT mu-parameter-layout OK
+EMIT nat-big OK
+EMIT nat-runtime-capture OK
+EMIT nat-runtime-edges OK
+EMIT nat-runtime-export OK
+EMIT nat-runtime-mu OK
+EMIT one-branches OK
+EMIT one-fields OK
+EMIT one-identity OK
+EMIT one-runtime-capture OK
+EMIT one-shadowing OK
+EMIT sl-match-indexed OK
+EMIT sl-mutual-three OK
+WASM-OK 32/32
+SUITE-WASM OK

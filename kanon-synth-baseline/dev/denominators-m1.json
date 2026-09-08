@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-06",
+  "measurement_date": "2026-09-05",
+  "ruling": "D-M1-6, M1-PLAN section 9, A13",
+  "tot_pin": "8cf0b8b",
+  "frozen_file": "dev/denominators.json",
+  "frozen_field": "tot_suite_kernel_warm_ms.median",
+  "tot_suite_kernel_warm_ms": 103.662,
+  "tot_test_files": 99,
+  "tot_test_lines": 7908,
+  "tot_prelude_lines": 230,
+  "tot_checked_lines": 8138,
+  "kanon_corpus": "test/corpus/m1-corpus.kan",
+  "kanon_corpus_lines": 1000,
+  "ratio_bound": 2.000,
+  "formula": "(median of five kanon check milliseconds / 1000) / (103.662 / 8138)",
+  "method": "Line counts were measured read only at the tot pin on 2026-09-05: 99 test .tot files contain 7908 lines and stdlib/prelude.tot contains 230 lines. The frozen benchmark invokes the pin test/main.exe and checks these 8138 lines. This dated artifact records their normalization and does not remeasure or overwrite the frozen timing."
+}

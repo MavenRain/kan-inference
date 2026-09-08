@@ -1,0 +1,8 @@
+rec [nat; pair<func fn<1>,union nat>]
+fun mk$0 (union nat, union nat) : union nat := KTail (KGlobal natAdd) [KVar 1; KVar 0]
+fun mk (union nat) : struct pair<func fn<1>,union nat> := KStruct pair<func fn<1>,union nat> [KClos mk$0 1 [KVar 0]; KApp (KGlobal natMul) [KVar 0; KLit 2]]
+rec [nat; pair<func fn<1>,union nat>]
+fun mkLet$0 (union nat, union nat) : union nat := KTail (KGlobal natAdd) [KVar 1; KVar 0]
+fun mkLet (union nat) : struct pair<func fn<1>,union nat> := KLet z (KApp (KGlobal natAdd) [KVar 0; KLit 1]) (KStruct pair<func fn<1>,union nat> [KClos mkLet$0 1 [KVar 0]; KVar 0])
+rec [nat; pair<func fn<1>,union nat>]
+fun main () : union nat := KTail (KGlobal natAdd) [KApp (KGlobal natAdd) [KApp (KLet scrut (KApp (KGlobal mk) [KLit 5]) (KLet f (KProj pair<func fn<1>,union nat> 0 (KVar 0)) (KLet y (KProj pair<func fn<1>,union nat> 1 (KVar 1)) (KVar 1)))) [KLit 6]; KLet scrut (KApp (KGlobal mk) [KLit 5]) (KLet f (KProj pair<func fn<1>,union nat> 0 (KVar 0)) (KLet y (KProj pair<func fn<1>,union nat> 1 (KVar 1)) (KVar 0)))]; KApp (KGlobal natAdd) [KApp (KLet scrut (KApp (KGlobal mkLet) [KLit 2]) (KLet f (KProj pair<func fn<1>,union nat> 0 (KVar 0)) (KLet y (KProj pair<func fn<1>,union nat> 1 (KVar 1)) (KVar 1)))) [KLit 4]; KLet scrut (KApp (KGlobal mkLet) [KLit 2]) (KLet f (KProj pair<func fn<1>,union nat> 0 (KVar 0)) (KLet y (KProj pair<func fn<1>,union nat> 1 (KVar 1)) (KVar 0)))]]

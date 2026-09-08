@@ -1,0 +1,16 @@
+-- b10: case over a sum, with the motive and without it.  The branch
+-- binder takes its type from the leg of the diagram, never from the
+-- annotation the branch writes (SB-D32).
+
+axiom Nat : Type 0
+
+def Two : Type 0 := sum (Nat, Nat)
+
+def plain : (x : Two) -> Nat :=
+  fun (x : Two) => case x with | 0 (a : Nat) => a | 1 (b : Nat) => natAdd b 1
+
+def withMotive : (x : Two) -> Nat :=
+  fun (x : Two) => case x as y return Nat with | 0 (a : Nat) => a | 1 (b : Nat) => b
+
+def fromVoid : (0 A : Type 0) -> (x : sum ()) -> A :=
+  fun (0 A : Type 0) (x : sum ()) => absurd x

@@ -1,0 +1,6 @@
+erased Unit
+erased Empty
+erased u
+erased uTuple
+rec [any]
+fun fromEmpty () : union any := KCase any (KErased) []

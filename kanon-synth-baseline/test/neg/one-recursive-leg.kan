@@ -1,0 +1,4 @@
+mu Chain : Type 0 with
+| stop : Chain
+| step : (1 tail : Chain) -> Chain
+def rec copy : (1 n : Chain) -> Chain := fun (1 n : Chain) => case n as self in Chain return Chain with | stop => stop | step 1 x => stop

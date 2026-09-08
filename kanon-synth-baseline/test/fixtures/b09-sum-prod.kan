@@ -1,0 +1,18 @@
+-- b09: the two collection type words of SB-D1.  "sum" is the left
+-- former and "prod" is the right former at the collection shape over
+-- the diagram of the items, and neither is a former of the kernel:
+-- both are sugar rows of SPEC.md section 7.
+
+axiom Nat : Type 0
+
+def Two : Type 0 := sum (Nat, Nat)
+def Pair : Type 0 := prod (Nat, Nat)
+def Triple : Type 0 := prod (Nat, Nat, Nat)
+def Void : Prop := sum ()
+def Unit : Type 0 := prod ()
+
+def leftOfTwo : Two := inj 0 of 2 1
+def rightOfTwo : Two := inj 1 of 2 2
+def onePair : Pair := tuple (1, 2)
+def oneTriple : Triple := tuple (1, 2, 3)
+def star : Unit := tuple ()

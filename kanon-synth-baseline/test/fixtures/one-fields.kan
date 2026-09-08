@@ -1,0 +1,6 @@
+mu Box : Type 0 with
+| box : (1 field : Nat) -> Box
+def pack : (1 x : Nat) -> Box := fun (1 x : Nat) => box x
+def unpack : (1 b : Box) -> Nat := fun (1 b : Box) => case b as self in Box return Nat with | box 1 x => x
+def pair : (1 x : Nat) -> (1 field : Nat) * Nat := fun (1 x : Nat) => (x, 0)
+def main : Nat := unpack (pack 7)

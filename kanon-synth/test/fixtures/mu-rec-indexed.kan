@@ -1,0 +1,26 @@
+-- mu-rec-indexed: a structural recursion over the indexed family (M1
+-- Stage I, brief 3.8, M1-PLAN.md:171).  "length" eliminates its second
+-- argument, and the one call of length stands at the vector field of
+-- "vs", which is a leg binder of a branch whose scrutinee is that
+-- argument, so the certificate of lib/order.ml guards the call at
+-- position 1 and the index argument at position 0 is not the guarded
+-- one (M1-PLAN.md:110 and :113).  The index binder carries the mark 0,
+-- so the fibered motive reads the index of each constructor result (M1
+-- Stage H).
+--
+-- The erased form is the KCase of M1 Stage J.  The index argument
+-- erases, because every index binder carries the mark 0, so "vz" and
+-- "vs" stand at the one tid mu<V> and "length" takes the vector alone
+-- (A2, SJ-D4, M1-PLAN.md:105).  The checked form of the file is the
+-- SI-G7 reading, and the file stood under erase-neg until Stage J
+-- landed the rows (brief 3.3).
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu V : (0 i : N) -> Type 0 with
+| vz : V zero
+| vs : (0 i : N) -> V i -> V (succ i)
+
+def rec length : (0 i : N) -> V i -> N := fun (0 i : N) (v : V i) => case v as x in V j return N with | vz => zero | vs 0 j w => succ (length j w)

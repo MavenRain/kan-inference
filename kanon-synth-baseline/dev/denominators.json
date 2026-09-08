@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-05",
+  "tot_pin": "8cf0b8b",
+  "tot_corpus": {
+    "files": [
+      "lib/budget.ml",
+      "lib/budget.mli",
+      "lib/check.ml",
+      "lib/erase.ml",
+      "lib/error.ml",
+      "lib/eterm.ml",
+      "lib/eval.ml",
+      "lib/global.ml",
+      "lib/interp.ml",
+      "lib/json_escape.ml",
+      "lib/level.ml",
+      "lib/level.mli",
+      "lib/literal.ml",
+      "lib/pp.ml",
+      "lib/prim.ml",
+      "lib/quantity.ml",
+      "lib/term.ml",
+      "lib/totality.ml",
+      "lib/value.ml"
+    ],
+    "lines": 4969,
+    "sha256": "34a46d4c5d338a8cdbfc31c21d98e4e90e128d099a20fac258408ba6a9d1ef86"
+  },
+  "tot_suite_kernel_warm_ms": {
+    "median": 103.662,
+    "min": 97.081,
+    "max": 112.818,
+    "runs": 5,
+    "command": "zsh /Users/oobi/Documents/kanon/dev/bench.sh tot_suite_kernel_warm 'cd /Users/oobi/Documents/kan-lang-tot-pin/_build/default/test && ./main.exe'"
+  },
+  "ocamlopt_ms_per_kloc": {
+    "value": 1641.599,
+    "median_ms": 8157.104,
+    "min_ms": 5949.238,
+    "max_ms": 14355.273,
+    "runs": 5,
+    "lines": 4969,
+    "command": "zsh /Users/oobi/Documents/kanon/dev/bench.sh ocamlopt_serial 'zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh clean && zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh build -j 1 ./lib'"
+  },
+  "ocamlopt_ms_per_kloc_parallel": {
+    "value": 712.803,
+    "median_ms": 3541.920,
+    "min_ms": 2136.219,
+    "max_ms": 6056.087,
+    "runs": 5,
+    "lines": 4969,
+    "command": "zsh /Users/oobi/Documents/kanon/dev/bench.sh ocamlopt_parallel 'zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh clean && zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh build ./lib'"
+  },
+  "runner_overhead_ms": {
+    "median": 40.038,
+    "min": 37.939,
+    "max": 48.199,
+    "runs": 5,
+    "command": "zsh /Users/oobi/Documents/kanon/dev/bench.sh runner_overhead 'zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh --version'"
+  },
+  "host": {
+    "arch": "arm64",
+    "ncpu": 12,
+    "macos": "26.4",
+    "note": "sysctl denied in sandbox"
+  },
+  "ocaml_version": "5.2.1",
+  "dune_version": "3.24.2",
+  "method": "All numbers were measured on 2026-09-05 against the tot pin worktree /Users/oobi/Documents/kan-lang-tot-pin at 8cf0b8b with porcelain 0.  The timer is zsh /Users/oobi/Documents/kanon/dev/bench.sh NAME CMD: it runs CMD once untimed as a warm-up, then five timed runs of /bin/zsh -f -c CMD under /opt/homebrew/bin/python3 -P with time.perf_counter_ns around subprocess.run, stdin, stdout and stderr on /dev/null, and it prints median, min and max in milliseconds.  The corpus is lib/*.ml plus lib/*.mli from the pin, listed by ls -1 lib/*.ml lib/*.mli piped to sort, counted by wc -l (4969 lines over 19 files) and hashed by cat of that sorted list piped to shasum -a 256.  tot_suite_kernel_warm_ms times the prebuilt suite binary: cd /Users/oobi/Documents/kan-lang-tot-pin/_build/default/test and ./main.exe, checked once for exit 0 from that directory before timing.  ocamlopt_ms_per_kloc times zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh clean followed by zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh build -j 1 ./lib as one timed run, so the clean is inside the measurement; value is median_ms divided by 4.969.  ocamlopt_ms_per_kloc_parallel is the same pair with the default -j and is informational.  runner_overhead_ms is bench.sh over zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh --version and is informational.  The runner dev/pin-dune.sh puts /Users/oobi/.opam/zxcaml-p1/bin first on PATH, clears the user chpwd hooks, cds into the pin and execs dune 3.24.2 with ocamlopt 5.2.1.  After the measurements a full zsh /Users/oobi/Documents/kanon/dev/pin-dune.sh build restored _build/default/test/main.exe.  Host facts come from uname -m, getconf _NPROCESSORS_ONLN and sw_vers -productVersion because sysctl is denied in the sandbox."
+}

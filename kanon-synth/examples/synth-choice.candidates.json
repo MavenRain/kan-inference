@@ -1,0 +1,4 @@
+[
+  "fun (earlier : Nat) (later : Nat) => earlier",
+  "fun (earlier : Nat) (later : Nat) => later"
+]

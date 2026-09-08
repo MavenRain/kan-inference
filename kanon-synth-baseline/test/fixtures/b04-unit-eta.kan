@@ -1,0 +1,13 @@
+-- b04: eta at the empty collection.  A section of the unit type has
+-- no leg, so any two sections agree at every leg and they convert
+-- without a comparison.  The unit here sits at "Type 0" through the
+-- annotation of D-M0-6, so proof irrelevance does not do the work.
+
+axiom u : (prod () : Type 0)
+axiom F : (0 s : (prod () : Type 0)) -> Prop
+axiom v : F u
+axiom G : (0 s : (prod () : Type 0)) -> Prop
+axiom w : G ()
+
+def unitExpanded : F () := v
+def unitContracted : G u := w

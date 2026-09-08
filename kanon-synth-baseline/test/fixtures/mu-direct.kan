@@ -1,0 +1,8 @@
+-- mu-direct: the direct recursive family of brief 3.9.  The field of
+-- succ is the family itself, which is the strictly positive occurrence
+-- lib/positivity.ml admits, and the file declares no entry, so its
+-- checked form and its erased form are both empty.
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N

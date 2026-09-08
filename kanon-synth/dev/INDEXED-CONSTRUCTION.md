@@ -1,0 +1,21 @@
+The third foundation increment constructs initial algebras for indexed signatures whose constructors have zero or one recursive child. Constructor payloads and child indices may vary freely. This covers the length-indexed vector signature exercised by `test/fixtures/mu-dependent-copy.kan`.
+
+`meta/KanonMeta/LinearConstruction.lean` separates nullary and unary constructor payloads at each result index. A unary payload selects its child's index. Its associated polynomial has an empty position type for nullary constructors and a singleton position type for unary constructors. Preservation of sequential colimits is proved from the supplied base colimit's universal property. Combining that theorem with `ChainColimit` constructs the initial algebra without an initiality or colimit-existence premise.
+
+The indexed case must support a child at a different index from the constructor result. Restricting a cocone to a unary constructor therefore changes the target family used for descent. This is the additional obligation beyond the previous Unit-indexed natural-number construction.
+
+`meta/KanonMeta/VectorConstruction.lean` specializes the signature to length indices in Lean's `Nat`, with any payload type `A : Type`. The zero index has a nullary constructor. A successor index has a unary constructor carrying a payload and a child at the predecessor index. The regression instantiates payloads with `Nat`. The resulting carrier is the quotient of the polynomial's initial sequence. Lean's existing list or vector initiality is not an input.
+
+The vector API provides constructors, initiality, and copying with a proof that copying preserves every vector. The regression target `meta/test/VectorConstruction.lean` checks constructor computation, dependent elimination, and the payload observation `17 + 25 = 42`. Separation at the same length detects loss of payload information, which length preservation alone would miss.
+
+This is an external semantic model of the fixture's signature. It does not parse a Kanon declaration, interpret a checked `SMu` syntax tree, or prove the OCaml checker, eraser, and Wasm encoder preserve this model. In particular, it uses Lean's `Nat` to interpret the fixture's declared index family `N`; a verified interpretation of that declaration remains open. `meta/KanonMeta/Syntax.lean` continues to model the older raw syntax without `SMu`.
+
+All constructor and dependent beta equations are propositional equalities in Lean. The construction uses Lean's natural-number iteration, equality, and quotient machinery. It does not establish an internal derivation from Kanon's admitted shape grammar. Indices, payloads, carriers, and displayed fibres use the universe discipline inherited from `InitialChain`.
+
+General preservation for constructors with multiple finite recursive children remains a separate theorem. It requires placing those children in a common sequence stage. Infinite branching is also outside this increment. Full Lean parity, source-to-Wasm preservation, and OCaml compilation-speed parity remain open.
+
+Validation records, the public-import client, source hashes, and the integration patch are retained in `/Users/oobi/Documents/gpt15/evidence/indexed-construction`.
+
+Validation on 2026-09-06 passed. The full default `leancho --json` build, including all four regression roots, reported zero errors, incomplete proofs, and warnings. An external source importing `KanonMeta` checked the public construction and copy law. The public preservation, initiality, and copy declarations depend on exactly `Quot.sound`. The vector regression observations and dependent beta checks also use exactly `Quot.sound`; the negative erasure control additionally uses `propext`. No new axioms or tactic proofs were introduced. Independent static review found no correctness or policy defect.
+
+No compiler or Wasm fixture source changed in this increment, so their full build and runtime suites were not repeated. The cached compiler's silent check, kernel execution returning 42, and wrong-index diagnostic were exercised separately for exact output-token measurements. These are current observations, not a new compiler-preservation or compilation-speed claim.

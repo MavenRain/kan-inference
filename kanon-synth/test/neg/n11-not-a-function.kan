@@ -1,0 +1,7 @@
+-- n11: an application whose head is not a section of the point
+-- shape.
+
+axiom Nat : Type 0
+axiom n : Nat
+
+def bad : Nat := n n

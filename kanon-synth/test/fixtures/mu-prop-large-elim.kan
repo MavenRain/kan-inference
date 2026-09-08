@@ -1,0 +1,14 @@
+-- mu-prop-large-elim: a large elimination out of a Prop family with
+-- one constructor and no field (M1 Stage H, brief 3.9).  The family
+-- passes the three parts of tot's criterion at
+-- kan-lang-tot-pin/lib/check.ml:227-232:  it has exactly one
+-- constructor, every field of that constructor is at the mark 0, which
+-- holds of a constructor with no field, and the constructor is not self
+-- recursive.  The motive lands in Type 0, which is above the universe
+-- of the scrutinee, so the elimination is the large one the criterion
+-- admits.
+
+mu Truth : Prop with
+| triv : Truth
+
+def choose : Type 0 := case (triv : Truth) as x in Truth return Type 0 with | triv => Nat

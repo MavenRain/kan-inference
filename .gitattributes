@@ -1,0 +1,2 @@
+# Empty context lines in this preserved patch contain a required space marker.
+kanon-synthesis.patch whitespace=-blank-at-eol

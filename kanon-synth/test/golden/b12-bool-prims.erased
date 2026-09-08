@@ -1,0 +1,13 @@
+erased Bool
+rec [sum<unit|unit>]
+fun yes () : union sum<unit|unit> := KTail (KGlobal natEq) [KLit 4; KLit 4]
+rec [sum<unit|unit>]
+fun no () : union sum<unit|unit> := KTail (KGlobal natEq) [KLit 4; KLit 5]
+rec [sum<unit|unit>]
+fun below () : union sum<unit|unit> := KTail (KGlobal natLt) [KLit 1; KLit 2]
+rec [sum<unit|unit>]
+fun true () : union sum<unit|unit> := KTag sum<unit|unit> 0 []
+rec [sum<unit|unit>]
+fun false () : union sum<unit|unit> := KTag sum<unit|unit> 1 []
+rec [sum<unit|unit>; nat]
+fun toNat (union sum<unit|unit>, union nat) : union nat := KCase sum<unit|unit> (KVar 1) [{0 0 (KVar 0)}; {1 0 (KTail (KGlobal natAdd) [KVar 0; KLit 1])}]

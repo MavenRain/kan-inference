@@ -1,0 +1,3 @@
+(executable
+ (name kanon)
+ (libraries kanon_kernel kanon_surface kanon_wasm))

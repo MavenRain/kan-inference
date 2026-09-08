@@ -1,0 +1,10 @@
+-- d08: the identity at an erased Type argument, used at Nat.  The
+-- answer repr is any, so the caller casts an eq reference back to i31.
+-- main is 7.
+
+def id : (0 A : Type 0) -> (x : A) -> A :=
+  fun (0 A : Type 0) (x : A) => x
+
+def idNat : (x : Nat) -> Nat := id Nat
+
+def main : Nat := natAdd (id Nat 3) (idNat 4)

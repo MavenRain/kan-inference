@@ -1,0 +1,14 @@
+-- a05: tuple and the leg projection.  ".0" and ".2" are the same
+-- projection form as ".1", so a leg number above two reads the same
+-- way (SA-D16).
+-- SB-D1 writes the three-leg type out, which Stage A postulated.
+
+axiom Nat : Type 0
+
+def Triple : Type 0 := prod (Nat, Nat, Nat)
+
+def t : Triple := tuple (1, 2, 3)
+def leg0 : Nat := t.0
+def leg1 : Nat := t.1
+def leg2 : Nat := t.2
+def rebuilt : Triple := tuple (t.0, t.1, t.2)

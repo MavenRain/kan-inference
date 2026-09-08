@@ -1,0 +1,5 @@
+mu Box : Type 0 :=
+| box (n : Nat) : Box
+def bad : Box -> Nat := fun (b : Box) =>
+  match b as self in Box return Nat with
+  | box (n : Type 0) => 0

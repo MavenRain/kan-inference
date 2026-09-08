@@ -1,0 +1,8 @@
+axiom A : Type 1
+axiom f : (Ran SPi w _ A A)
+axiom F : (Ran SPi 0 g (Ran SPi w _ A A) Type 0)
+axiom w : (Out SPi 0 g (Ran SPi w _ A A) (APt 0 f) F)
+axiom H : (Ran SPi 0 g (Ran SPi w _ A A) Type 0)
+axiom v : (Out SPi 0 g (Ran SPi w _ A A) (APt 0 (Sec SPi w x A [x => (Out SPi w _ A (APt w x) f)])) H)
+def etaExpanded : (Out SPi 0 g (Ran SPi w _ A A) (APt 0 (Sec SPi w x A [x => (Out SPi w _ A (APt w x) f)])) F) := w
+def etaContracted : (Out SPi 0 g (Ran SPi w _ A A) (APt 0 f) H) := v

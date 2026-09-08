@@ -1,0 +1,3 @@
+mu Box : Type 0 with
+| box : (1 field : Nat) -> Box
+def unused : Box -> Nat := fun (b : Box) => case b as self in Box return Nat with | box 1 x => 0

@@ -1,0 +1,4 @@
+def pack : (Ran SPi 1 x Nat (Lan SMu Box [] (Sec SColl 0 []))) := (Sec SPi 1 x Nat [x => (In SMu Box [] (ACtor box) [x])])
+def unpack : (Ran SPi 1 b (Lan SMu Box [] (Sec SColl 0 [])) Nat) := (Sec SPi 1 b (Lan SMu Box [] (Sec SColl 0 [])) [b => (Elim SMu Box [] b as self return Nat with | (ACtor box) x => x)])
+def pair : (Ran SPi 1 x Nat (Lan SPi 1 field Nat Nat)) := (Sec SPi 1 x Nat [x => (In SPi 1 field Nat (APt 1 x) [0])])
+def main : Nat := (Out SPi 1 b (Lan SMu Box [] (Sec SColl 0 [])) (APt 1 (Out SPi 1 x Nat (APt 1 7) pack)) unpack)

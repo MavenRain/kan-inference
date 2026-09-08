@@ -1,0 +1,12 @@
+-- d03: a pair built and projected twice, once from a definition and
+-- once from the answer of a function.
+-- main is 26.
+
+def p : (a : Nat) * Nat := (11, 6)
+
+def mk : (x : Nat) -> (a : Nat) * Nat :=
+  fun (x : Nat) => (x, natAdd x 1)
+
+def q : (a : Nat) * Nat := mk 4
+
+def main : Nat := natAdd (natAdd p.1 p.2) (natAdd q.1 q.2)

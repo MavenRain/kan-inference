@@ -1,0 +1,11 @@
+-- mu-missing-branch: a fibered elimination that leaves one constructor
+-- of the family unanswered (A15, M1 Stage H, brief 3.9).  The branch
+-- list is read in the declaration order of the family, so the first
+-- constructor without a branch names the failure.  SH-M2 drops the
+-- coverage test and this file checks.
+
+mu Two : Type 0 with
+| ca : Two
+| cb : Two
+
+def big : Type 0 := case (ca : Two) as x in Two return Type 0 with | ca => Nat

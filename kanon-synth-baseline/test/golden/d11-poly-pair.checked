@@ -1,0 +1,2 @@
+def box : (Ran SPi 0 A Type 1 (Ran SPi w x A (Lan SPi w a A A))) := (Sec SPi 0 A Type 1 [A => (Sec SPi w x A [x => (In SPi w a A (APt w x) [x])])])
+def main : Nat := (Elim SPi w a Nat (Out SPi w x Nat (APt w 5) (Out SPi 0 A Type 1 (APt 0 Nat) box)) as self return Nat with | (ALeg 0) x y => x)

@@ -1,0 +1,8 @@
+axiom A : Type 1
+axiom p : (Lan SPi w a A A)
+axiom F : (Ran SPi 0 q (Lan SPi w a A A) Type 0)
+axiom v : (Out SPi 0 q (Lan SPi w a A A) (APt 0 p) F)
+axiom G : (Ran SPi 0 q (Lan SPi w a A A) Type 0)
+axiom w : (Out SPi 0 q (Lan SPi w a A A) (APt 0 (In SPi w a A (APt w (Elim SPi w a A p as self return A with | (ALeg 0) x y => x)) [(Elim SPi w a A p as self return A with | (ALeg 0) x y => y)])) G)
+def pairExpanded : (Out SPi 0 q (Lan SPi w a A A) (APt 0 (In SPi w a A (APt w (Elim SPi w a A p as self return A with | (ALeg 0) x y => x)) [(Elim SPi w a A p as self return A with | (ALeg 0) x y => y)])) F) := v
+def pairContracted : (Out SPi 0 q (Lan SPi w a A A) (APt 0 p) G) := w

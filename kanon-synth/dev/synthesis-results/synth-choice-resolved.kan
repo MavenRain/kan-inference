@@ -1,0 +1,2 @@
+def select : (earlier : Nat) -> (later : Nat) -> Nat := fun (earlier : Nat) (later : Nat) => later
+def main : Nat := select 17 42

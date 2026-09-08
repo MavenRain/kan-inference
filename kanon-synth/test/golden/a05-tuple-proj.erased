@@ -1,0 +1,12 @@
+erased Nat
+erased Triple
+rec [tuple<union nat,union nat,union nat>]
+fun t () : struct tuple<union nat,union nat,union nat> := KStruct tuple<union nat,union nat,union nat> [KLit 1; KLit 2; KLit 3]
+rec [nat; tuple<union nat,union nat,union nat>]
+fun leg0 () : union nat := KProj tuple<union nat,union nat,union nat> 0 (KGlobal t)
+rec [nat; tuple<union nat,union nat,union nat>]
+fun leg1 () : union nat := KProj tuple<union nat,union nat,union nat> 1 (KGlobal t)
+rec [nat; tuple<union nat,union nat,union nat>]
+fun leg2 () : union nat := KProj tuple<union nat,union nat,union nat> 2 (KGlobal t)
+rec [tuple<union nat,union nat,union nat>]
+fun rebuilt () : struct tuple<union nat,union nat,union nat> := KStruct tuple<union nat,union nat,union nat> [KProj tuple<union nat,union nat,union nat> 0 (KGlobal t); KProj tuple<union nat,union nat,union nat> 1 (KGlobal t); KProj tuple<union nat,union nat,union nat> 2 (KGlobal t)]

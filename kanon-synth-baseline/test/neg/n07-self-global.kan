@@ -1,0 +1,5 @@
+-- n07: a definition that reads its own name.  A global resolves only
+-- after its declaration is checked (plan section 6), so the body of
+-- the definition sees no name and the checker reports it.
+
+def bad : Nat := bad

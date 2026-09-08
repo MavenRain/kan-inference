@@ -1,0 +1,5 @@
+axiom A : Type 1
+axiom B : Type 2
+def impFromType : Type 0 := (Ran SPi 0 x A (Lan SColl 0 (Sec SColl 0 [])))
+def impFromHigher : Type 0 := (Ran SPi 0 x B (Lan SColl 0 (Sec SColl 0 [])))
+def impFromProp : Type 0 := (Ran SPi 0 x (Lan SColl 0 (Sec SColl 0 [])) (Lan SColl 0 (Sec SColl 0 [])))

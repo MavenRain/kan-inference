@@ -1,0 +1,8 @@
+rec [nat; mu<Box>; leg<mu<Box>,0,union nat>]
+fun pack (union nat) : union mu<Box> := KTag mu<Box> 0 [KVar 0]
+rec [mu<Box>; nat; leg<mu<Box>,0,union nat>]
+fun unpack (union mu<Box>) : union nat := KCase mu<Box> (KVar 0) [{0 1 (KVar 0)}]
+rec [nat; pair<union nat,union nat>]
+fun pair (union nat) : struct pair<union nat,union nat> := KStruct pair<union nat,union nat> [KVar 0; KLit 0]
+rec [nat]
+fun main () : union nat := KTail (KGlobal unpack) [KApp (KGlobal pack) [KLit 7]]

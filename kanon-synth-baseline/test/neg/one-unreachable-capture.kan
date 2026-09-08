@@ -1,0 +1,3 @@
+mu Empty : Type 0 with
+def duplicate : (1 x : Nat) -> prod (Nat, (Empty -> Nat)) := fun (1 x : Nat) =>
+  tuple (x, (fun (e : Empty) => let y : Nat := x in case e as self in Empty return Nat with))

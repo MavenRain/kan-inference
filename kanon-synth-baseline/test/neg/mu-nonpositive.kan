@@ -1,0 +1,7 @@
+-- mu-nonpositive: an occurrence to the left of an arrow.  The field of
+-- mk holds P in the domain of a function type, which is not a strictly
+-- positive occurrence, so the family is refused with the M2 word of
+-- D-M1-2 (SG-M1 kills the mutation that admits it).
+
+mu P : Type 0 with
+| mk : (P -> P) -> P

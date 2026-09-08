@@ -1,0 +1,2 @@
+def identity : (A : Type 0) -> (x : A) -> A := synth "Return the argument unchanged."
+def main : Nat := identity Nat 42

@@ -1,0 +1,10 @@
+axiom F : func fn<0>
+erased v
+erased w
+erased Bool
+rec [sum<unit|unit>]
+fun same () : union sum<unit|unit> := KTail (KGlobal natEq) [KLit 4; KLit 4]
+rec [sum<unit|unit>]
+fun below () : union sum<unit|unit> := KTail (KGlobal natLt) [KLit 1; KLit 2]
+rec [nat]
+fun sum6 () : union nat := KTail (KGlobal natAdd) [KLit 4; KLit 2]

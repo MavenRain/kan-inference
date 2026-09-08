@@ -1,0 +1,5 @@
+def Unit : Type 1 := (Ran SColl 0 (Sec SColl 0 []))
+def Empty : Type 0 := (Lan SColl 0 (Sec SColl 0 []))
+def u : Unit := (Sec SColl 0 [])
+def uTuple : Unit := (Sec SColl 0 [])
+def fromEmpty : (Ran SPi 0 A Type 1 (Ran SPi w x Empty A)) := (Sec SPi 0 A Type 1 [A => (Sec SPi w x Empty [x => (Elim SColl 0 x with)])])

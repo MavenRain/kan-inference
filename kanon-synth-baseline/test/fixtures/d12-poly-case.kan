@@ -1,0 +1,9 @@
+-- A case retains its sum tid after polymorphic identity returns any.
+-- main is 1.
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+def id : (0 A : Type 0) -> (x : A) -> A :=
+  fun (0 A : Type 0) (x : A) => x
+def main : Nat :=
+  case (id Bool (natEq 1 1)) with
+  | 0 (x : prod ()) => 0
+  | 1 (y : prod ()) => 1

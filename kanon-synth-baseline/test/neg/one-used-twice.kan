@@ -1,0 +1,1 @@
+def twice : (1 x : Nat) -> Nat := fun (1 x : Nat) => natAdd x x

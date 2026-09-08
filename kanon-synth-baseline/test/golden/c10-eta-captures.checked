@@ -1,0 +1,5 @@
+def later : (Ran SPi w f (Ran SPi w _ Nat (Ran SPi w _ Nat Nat)) (Ran SPi w x Nat (Ran SPi w _ Nat Nat))) := (Sec SPi w f (Ran SPi w _ Nat (Ran SPi w _ Nat Nat)) [f => (Sec SPi w x Nat [x => (Out SPi w _ Nat (APt w x) f)])])
+def letHead : (Ran SPi w x Nat (Ran SPi w _ Nat Nat)) := (Sec SPi w x Nat [x => let z : Nat := x in (Out SPi w a Nat (APt w z) natAdd)])
+def lifted : (Ran SPi w x Nat (Ran SColl 1 (Sec SColl 1 [ => (Ran SPi w _ Nat (Ran SPi w _ Nat Nat))]))) := (Sec SPi w x Nat [x => (Sec SColl 1 [ => (Sec SPi w y Nat [y => (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w y) (Out SPi w a Nat (APt w x) natAdd))) natAdd)])])])
+def Two : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))
+def caseHead : (Ran SPi w bias Nat (Ran SPi w s Two (Ran SPi w _ Nat Nat))) := (Sec SPi w bias Nat [bias => (Sec SPi w s Two [s => (Elim SColl 2 s with | (ALeg 0) a => (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w a) (Out SPi w a Nat (APt w bias) natAdd))) natAdd) | (ALeg 1) b => (Sec SPi w n Nat [n => (Out SPi w b Nat (APt w n) (Out SPi w a Nat (APt w b) natAdd))]))])])

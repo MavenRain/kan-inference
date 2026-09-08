@@ -1,0 +1,32 @@
+[
+  {
+    "id": "literal_seven",
+    "request": {"declaration": "seven", "hint": "Return seven.", "expected_type": "Nat", "candidates": ["3", "7"]},
+    "expected_candidate": "7"
+  },
+  {
+    "id": "literal_three",
+    "request": {"declaration": "three", "hint": "Return three.", "expected_type": "Nat", "candidates": ["3", "7"]},
+    "expected_candidate": "3"
+  },
+  {
+    "id": "later_argument",
+    "request": {"declaration": "select", "hint": "Return the later argument.", "expected_type": "(earlier : Nat) -> (later : Nat) -> Nat", "candidates": ["fun (earlier : Nat) (later : Nat) => earlier", "fun (earlier : Nat) (later : Nat) => later"]},
+    "expected_candidate": "fun (earlier : Nat) (later : Nat) => later"
+  },
+  {
+    "id": "earlier_argument",
+    "request": {"declaration": "select", "hint": "Return the earlier argument.", "expected_type": "(earlier : Nat) -> (later : Nat) -> Nat", "candidates": ["fun (earlier : Nat) (later : Nat) => earlier", "fun (earlier : Nat) (later : Nat) => later"]},
+    "expected_candidate": "fun (earlier : Nat) (later : Nat) => earlier"
+  },
+  {
+    "id": "increment",
+    "request": {"declaration": "transform", "hint": "Add one to the input.", "expected_type": "(n : Nat) -> Nat", "candidates": ["fun (n : Nat) => natAdd n 1", "fun (n : Nat) => n"]},
+    "expected_candidate": "fun (n : Nat) => natAdd n 1"
+  },
+  {
+    "id": "unchanged",
+    "request": {"declaration": "transform", "hint": "Return the input unchanged.", "expected_type": "(n : Nat) -> Nat", "candidates": ["fun (n : Nat) => natAdd n 1", "fun (n : Nat) => n"]},
+    "expected_candidate": "fun (n : Nat) => n"
+  }
+]

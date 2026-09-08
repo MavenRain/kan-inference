@@ -1,0 +1,2 @@
+def mul : (Ran SPi w _ Nat (Ran SPi w _ Nat Nat)) := (Sec SPi w a Nat [a => (Sec SPi w b Nat [b => (Out SPi w b Nat (APt w b) (Out SPi w a Nat (APt w a) natMul))])])
+def main : Nat := (Out SPi w b Nat (APt w 1237940039285591381131657214) (Out SPi w a Nat (APt w (Out SPi w _ Nat (APt w 35184372088837) (Out SPi w _ Nat (APt w 35184372088833) mul))) natSub))

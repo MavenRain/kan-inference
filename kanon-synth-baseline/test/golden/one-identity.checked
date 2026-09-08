@@ -1,0 +1,7 @@
+def identity : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => x])
+def through : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => (Out SPi 1 x Nat (APt 1 x) identity)])
+def alias : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => let y : Nat := x in y])
+def discardAlias : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => let y : Nat := x in 0])
+def ghost : (Ran SPi 0 x Nat Nat) := (Sec SPi 0 x Nat [x => 0])
+def erasedThenOnce : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => let y : Nat := (Out SPi 0 x Nat (APt 0 x) ghost) in x])
+def main : Nat := (Out SPi 1 x Nat (APt 1 7) through)

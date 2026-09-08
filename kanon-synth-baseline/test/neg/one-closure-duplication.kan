@@ -1,0 +1,2 @@
+def twice : (1 x : Nat) -> prod (Nat, Nat) := fun (1 x : Nat) =>
+  let f : (y : Nat) -> Nat := (fun (y : Nat) => x) in tuple (f 0, f 1)

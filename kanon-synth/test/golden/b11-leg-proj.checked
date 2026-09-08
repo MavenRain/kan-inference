@@ -1,0 +1,10 @@
+axiom Nat : Type 1
+def Triple : Type 1 := (Ran SColl 3 (Sec SColl 3 [ => Nat;  => Nat;  => Nat]))
+def t : Triple := (Sec SColl 3 [ => 1;  => 2;  => 3])
+def legZero : Nat := (Out SColl 3 (ALeg 0) t)
+def legOne : Nat := (Out SColl 3 (ALeg 1) t)
+def legTwo : Nat := (Out SColl 3 (ALeg 2) t)
+def p : (Lan SPi w a Nat Nat) := (In SPi w a Nat (APt w 4) [5])
+def firstOfP : Nat := (Elim SPi w a Nat p as self return Nat with | (ALeg 0) x y => x)
+def secondOfP : Nat := (Elim SPi w a Nat p as self return Nat with | (ALeg 0) x y => y)
+def rebuilt : (Lan SPi w a Nat Nat) := (In SPi w a Nat (APt w (Elim SPi w a Nat p as self return Nat with | (ALeg 0) x y => x)) [(Elim SPi w a Nat p as self return Nat with | (ALeg 0) x y => y)])

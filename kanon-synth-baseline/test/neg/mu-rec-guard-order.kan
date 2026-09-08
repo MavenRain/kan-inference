@@ -1,0 +1,22 @@
+-- mu-rec-guard-order: the order proof of gate SI-G6 and brief 3.11.
+-- The body of "grow" is one elimination of its argument at the fibered
+-- form of M1 Stage H, with a motive and a constructor address at every
+-- branch, so the translation of lib/order.ml builds an elimination that
+-- the checker accepts:  the twin of this body with the self call
+-- replaced by a postulate of the same type checks and gives no error.
+-- The certificate is refused all the same, because the argument of the
+-- call is "succ m", which is an application and never guards a call
+-- (ruling R1, SI-D5, kan-lang-tot-pin/lib/totality.ml:102-109).
+--
+-- The guard therefore runs first and the file is refused with the
+-- termination line of SI-D6, which the sidecar pins.  A build that
+-- translated first would build the well typed elimination, accept the
+-- file and print no line at all, so this sidecar reads the order of the
+-- two steps and not the refusal alone.  This is the file mutation SI-M1
+-- kills.
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def rec grow : N -> N := fun (n : N) => case n as x in N return N with | zero => zero | succ m => grow (succ m)

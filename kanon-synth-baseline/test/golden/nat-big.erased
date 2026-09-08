@@ -1,0 +1,4 @@
+rec [nat]
+fun mul (union nat, union nat) : union nat := KTail (KGlobal natMul) [KVar 1; KVar 0]
+rec [nat]
+fun main () : union nat := KTail (KGlobal natSub) [KApp (KGlobal mul) [KLit 35184372088833; KLit 35184372088837]; KLit 1237940039285591381131657214]

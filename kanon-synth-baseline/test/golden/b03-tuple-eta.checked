@@ -1,0 +1,8 @@
+axiom A : Type 1
+axiom t : (Ran SColl 2 (Sec SColl 2 [ => A;  => A]))
+axiom F : (Ran SPi 0 s (Ran SColl 2 (Sec SColl 2 [ => A;  => A])) Type 0)
+axiom v : (Out SPi 0 s (Ran SColl 2 (Sec SColl 2 [ => A;  => A])) (APt 0 t) F)
+axiom G : (Ran SPi 0 s (Ran SColl 2 (Sec SColl 2 [ => A;  => A])) Type 0)
+axiom w : (Out SPi 0 s (Ran SColl 2 (Sec SColl 2 [ => A;  => A])) (APt 0 (Sec SColl 2 [ => (Out SColl 2 (ALeg 0) t);  => (Out SColl 2 (ALeg 1) t)])) G)
+def tupleExpanded : (Out SPi 0 s (Ran SColl 2 (Sec SColl 2 [ => A;  => A])) (APt 0 (Sec SColl 2 [ => (Out SColl 2 (ALeg 0) t);  => (Out SColl 2 (ALeg 1) t)])) F) := v
+def tupleContracted : (Out SPi 0 s (Ran SColl 2 (Sec SColl 2 [ => A;  => A])) (APt 0 t) G) := w

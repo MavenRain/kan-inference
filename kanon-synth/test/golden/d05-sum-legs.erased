@@ -1,0 +1,13 @@
+erased Four
+rec [sum<unit|unit|union nat|union nat>]
+fun z0 () : union sum<unit|unit|union nat|union nat> := KTag sum<unit|unit|union nat|union nat> 0 []
+rec [sum<unit|unit|union nat|union nat>]
+fun z1 () : union sum<unit|unit|union nat|union nat> := KTag sum<unit|unit|union nat|union nat> 1 []
+rec [sum<unit|unit|union nat|union nat>]
+fun p2 () : union sum<unit|unit|union nat|union nat> := KTag sum<unit|unit|union nat|union nat> 2 [KLit 5]
+rec [sum<unit|unit|union nat|union nat>]
+fun p3 () : union sum<unit|unit|union nat|union nat> := KTag sum<unit|unit|union nat|union nat> 3 [KLit 6]
+rec [sum<unit|unit|union nat|union nat>; nat]
+fun read (union sum<unit|unit|union nat|union nat>) : union nat := KCase sum<unit|unit|union nat|union nat> (KVar 0) [{0 0 (KLit 1)}; {1 0 (KLit 2)}; {2 1 (KTail (KGlobal natAdd) [KVar 0; KLit 10])}; {3 1 (KTail (KGlobal natMul) [KVar 0; KLit 10])}]
+rec [nat]
+fun main () : union nat := KTail (KGlobal natAdd) [KApp (KGlobal natAdd) [KApp (KGlobal read) [KGlobal z0]; KApp (KGlobal read) [KGlobal z1]]; KApp (KGlobal natAdd) [KApp (KGlobal read) [KGlobal p2]; KApp (KGlobal read) [KGlobal p3]]]

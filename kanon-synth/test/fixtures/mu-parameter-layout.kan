@@ -1,0 +1,10 @@
+-- Every instantiation must use the same nominal constructor layout.
+-- Emission checks these bodies even though main needs no Box value.
+mu Box (0 A : Type 0) : Type 0 with
+| box : A -> Box A
+
+def unboxN : Box Nat -> Nat := fun (b : Box Nat) => case b as x in Box return Nat with | box n => n
+def unboxF : Box (Nat -> Nat) -> Nat := fun (b : Box (Nat -> Nat)) => case b as x in Box return Nat with | box f => f 8
+def unboxP : Box (prod (Nat, Nat)) -> Nat := fun (b : Box (prod (Nat, Nat))) => case b as x in Box return Nat with | box p => p.1
+def unboxU : Box (prod ()) -> Nat := fun (b : Box (prod ())) => case b as x in Box return Nat with | box u => 9
+def main : Nat := 9

@@ -1,0 +1,2 @@
+axiom stuck : (Lan SMu Void [] (Sec SColl 0 []))
+def anything : Type 1 := (Elim SMu Void [] stuck as x return Type 1 with)

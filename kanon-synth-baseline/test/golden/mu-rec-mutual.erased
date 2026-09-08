@@ -1,0 +1,4 @@
+rec [mu<A>; mu<N>; leg<mu<N>,0>; leg<mu<N>,1,union mu<N>>; leg<mu<A>,0>; leg<mu<A>,1,union mu<B>>]
+fun sizeA (union mu<A>) : union mu<N> := KCase mu<A> (KVar 0) [{0 0 (KTag mu<N> 0 [])}; {1 1 (KTag mu<N> 1 [KApp (KGlobal sizeB) [KVar 0]])}]
+rec [mu<B>; mu<N>; leg<mu<N>,0>; leg<mu<N>,1,union mu<N>>; leg<mu<B>,0,union mu<A>>]
+fun sizeB (union mu<B>) : union mu<N> := KCase mu<B> (KVar 0) [{0 1 (KTag mu<N> 1 [KApp (KGlobal sizeA) [KVar 0]])}]

@@ -1,0 +1,13 @@
+-- mu-motive-wrong-family: a motive built for a sibling family (A7, M1
+-- Stage H, brief 3.9, SH-D6).  The two families have the same shape and
+-- the same index count, so only the family name of the motive tells
+-- them apart.  SH-M5 skips the equality of that name against the family
+-- of the scrutinee and this file checks.
+
+mu Alpha : Type 0 with
+| ca : Alpha
+
+mu Beta : Type 0 with
+| cb : Beta
+
+def big : Type 0 := case (ca : Alpha) as x in Beta return Type 0 with | ca => Nat

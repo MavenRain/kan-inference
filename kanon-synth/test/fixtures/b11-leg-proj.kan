@@ -1,0 +1,17 @@
+-- b11: the leg projection ".k" on a right former, zero based, and the
+-- two pair projections ".1" and ".2" on a point shape.  The two rows
+-- of the sugar table differ by the type of the scrutinee (SA-D16).
+
+axiom Nat : Type 0
+
+def Triple : Type 0 := prod (Nat, Nat, Nat)
+
+def t : Triple := tuple (1, 2, 3)
+def legZero : Nat := t.0
+def legOne : Nat := t.1
+def legTwo : Nat := t.2
+
+def p : (a : Nat) * Nat := (4, 5)
+def firstOfP : Nat := p.1
+def secondOfP : Nat := p.2
+def rebuilt : (a : Nat) * Nat := (p.1, p.2)

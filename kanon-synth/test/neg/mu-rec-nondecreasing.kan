@@ -1,0 +1,15 @@
+-- mu-rec-nondecreasing: a self call at an argument that is the
+-- scrutinee itself, which is equal and not smaller (brief 3.8).  The
+-- binder "n" keeps the status Principal under the elimination, and only
+-- the status Smaller guards a call
+-- (kan-lang-tot-pin/lib/totality.ml:82-88), so the certificate refuses
+-- the definition with the termination line of SI-D6.
+--
+-- Mutation SI-M2 reads Principal as Smaller, and then this file is
+-- accepted.
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def rec same : N -> N := fun (n : N) => case n as x in N return N with | zero => zero | succ m => same n

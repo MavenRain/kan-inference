@@ -1,0 +1,21 @@
+-- d05: a sum with two payload free legs and two payload legs of the
+-- same field shape, cased on every leg.  The two payload legs share one
+-- struct type, so the tag tells them apart (SD-D5).
+-- main is 78.
+
+def Four : Type 0 := sum ((prod () : Type 0), (prod () : Type 0), Nat, Nat)
+
+def z0 : Four := inj 0 of 4 (tuple ())
+def z1 : Four := inj 1 of 4 (tuple ())
+def p2 : Four := inj 2 of 4 5
+def p3 : Four := inj 3 of 4 6
+
+def read : (x : Four) -> Nat :=
+  fun (x : Four) =>
+    case x with
+    | 0 (u : prod ()) => 1
+    | 1 (v : prod ()) => 2
+    | 2 (a : Nat) => natAdd a 10
+    | 3 (b : Nat) => natMul b 10
+
+def main : Nat := natAdd (natAdd (read z0) (read z1)) (natAdd (read p2) (read p3))

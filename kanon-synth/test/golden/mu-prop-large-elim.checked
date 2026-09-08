@@ -1,0 +1,1 @@
+def choose : Type 1 := (Elim SMu Truth [] ((In SMu Truth [] (ACtor triv) []) : (Lan SMu Truth [] (Sec SColl 0 []))) as x return Type 1 with | (ACtor triv)  => Nat)

@@ -1,0 +1,30 @@
+-- Type syntax must not introduce a second runtime use of a One binder.
+-- The lifted constant has no capture, and the lifted adder captures y alone.
+mu At : (0 n : Nat) -> Type 0 with
+| at : (0 n : Nat) -> At n
+
+def duplicate : (1 x : Nat) -> prod (Nat, ((0 proof : At x) -> Nat)) :=
+  fun (1 x : Nat) => tuple (x, (fun (0 proof : At x) => 0))
+
+def split : (1 x : Nat) -> (y : Nat) ->
+  prod (Nat, ((0 proof : At x) -> Nat -> Nat)) :=
+  fun (1 x : Nat) (y : Nat) =>
+    tuple (x, (fun (0 proof : At x) (z : Nat) => natAdd y z))
+
+def constructorCapture : (1 x : Nat) -> prod (Nat, (Nat -> At x)) :=
+  fun (1 x : Nat) => tuple (x, (fun (dummy : Nat) => at x))
+
+def ignore : (0 n : Nat) -> Nat := fun (0 n : Nat) => 0
+def callCapture : (1 x : Nat) -> prod (Nat, (Nat -> Nat)) :=
+  fun (1 x : Nat) => tuple (x, (fun (dummy : Nat) => ignore x))
+
+mu P : Prop with
+| prove : P
+def getProof : (0 n : Nat) -> P := fun (0 n : Nat) => prove
+def proofCapture : (1 x : Nat) -> prod (Nat, (Nat -> Nat)) :=
+  fun (1 x : Nat) => tuple (x,
+    (fun (dummy : Nat) => let proof : P := getProof x in 0))
+
+def main : Nat :=
+  natAdd (natAdd (duplicate 7).0 (((split 11 13).1) (at 11) 17))
+    (natAdd (constructorCapture 7).0 (natAdd (callCapture 7).0 (proofCapture 7).0))

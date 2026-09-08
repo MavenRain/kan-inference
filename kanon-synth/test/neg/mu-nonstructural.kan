@@ -1,0 +1,15 @@
+-- mu-nonstructural: the plan's own negative (M1-PLAN.md:208).  The
+-- body holds a self call at the argument itself, and no chain of
+-- elimination legs makes that argument smaller, because the body
+-- eliminates nothing.  The certificate of lib/order.ml therefore finds
+-- no position that guards the call and the guard answers the
+-- termination line of SI-D6, which the sidecar pins.
+--
+-- Mutation SI-M1 calls the translation without the guard, and then
+-- this file is not refused with the line below.
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def rec spin : N -> N := fun (n : N) => spin n

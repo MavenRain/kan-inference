@@ -1,0 +1,7 @@
+-- A big Nat survives a closure environment and a polymorphic aggregate.
+def box : (0 A : Type 0) -> (x : A) -> (a : A) * A :=
+  fun (0 A : Type 0) (x : A) => (x, x)
+def mk : (x : Nat) -> Nat -> Nat :=
+  fun (x : Nat) => fun (y : Nat) => natSub (natAdd x y) x
+def main : Nat :=
+  (mk ((box Nat 12345678901234567890123456789).1)) 19

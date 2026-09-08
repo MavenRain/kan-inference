@@ -1,0 +1,7 @@
+-- A nominal Stage J constructor retains a big Nat field and its layout.
+mu Box : Type 0 with
+| wrap : Nat -> Box
+def read : Box -> Nat := fun (box : Box) =>
+  case box as x in Box return Nat with | wrap n => n
+def main : Nat :=
+  natSub (read (wrap 12345678901234567890123456789)) 12345678901234567890123456766

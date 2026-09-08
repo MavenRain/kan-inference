@@ -1,0 +1,4 @@
+-- n01: a universe does not hold itself.  "Type 0" is the universe at
+-- level one (SB-D2), so it lives at "Type 1" and nowhere lower.
+
+def bad : Type 0 := Type 0

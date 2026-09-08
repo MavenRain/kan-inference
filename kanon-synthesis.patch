@@ -1,0 +1,2224 @@
+--- /dev/null
++++ b/SYNTHESIS.md
+@@ -0,0 +1,73 @@
++Checked synthesis prototype
++
++This isolated Kanon snapshot adds a development-time `synth` operation. A local model proposes ordinary source expressions. The compiler accepts a proposal only after checking its complete definition against the original type and preceding declarations. Finished source compiles and runs through the existing WasmGC backend.
++
++The first supported form is an explicitly typed, nonrecursive definition whose entire body is a synthesis request:
++
++```text
++def select : (earlier : Nat) -> (later : Nat) -> Nat :=
++  synth "Return the later argument."
++def main : Nat := select 17 42
++```
++
++Synthesis inside types, recursive bodies or nested expressions produces an explicit error. A candidate may be a complete lambda expression with ordinary binders. `auto` retains its existing meaning and is rejected in synthesis inputs and proposals.
++
++Build from this directory using the existing OCaml toolchain:
++
++```sh
++DUNE_CACHE=disabled dune build --root . bin/kanon.exe test/synthesis.exe
++```
++
++The local inference installation is documented in the sibling [kanon-inference directory](../kanon-inference/README.md). Once its `provider` executable and model are installed, synthesis uses that provider by default. These commands create new files and refuse to replace existing outputs:
++
++```sh
++./kanon synth examples/synth-choice.kan \
++  --candidate-pool examples/synth-choice.candidates.json \
++  -o /tmp/kanon-choice-resolved.kan
++./kanon check /tmp/kanon-choice-resolved.kan
++./kanon run /tmp/kanon-choice-resolved.kan --export main --host both
++```
++
++The pool contains two candidate expressions. The model orders them according to the hint, and the compiler checks proposals in that order. Type checking guarantees the declared type; the hint's intended behavior needs a separate test or a stronger formal specification. The example's intended result is `42`, while selecting the first argument produces `17` and still satisfies the type. This demonstration uses a successful smoke-test case and is not a separate accuracy measurement.
++
++Without `--candidate-pool`, the provider attempts direct expression generation. The tested 135M identity attempt produced an invalid declaration with a hole, which the compiler rejected. Direct generation is experimental and has not passed this demonstration. `--provider /absolute/path/to/executable` selects another explicitly trusted local proposer implementing the JSON protocol.
++
++Every successful request writes an ordinary `.kan` file and a neighboring `.kan.synth.json` receipt. The receipt records source, compiler, request and accepted-candidate hashes, model provenance, rejected proposals, and timing. Replay invokes no model and rechecks every accepted term:
++
++```sh
++./kanon synth examples/synth-choice.kan \
++  --replay /tmp/kanon-choice-resolved.kan.synth.json \
++  -o /tmp/kanon-choice-replayed.kan
++```
++
++Replay requires the same original source and compiler binary. A rebuilt compiler requires fresh synthesis or checking the saved ordinary source directly. Replaying a receipt is not an authorization to trust its contents: the original goal is reconstructed, request hashes must match, and the candidate is checked again. Receipts provide reproducibility and audit information, not cryptographic authentication of their author.
++
++The initial assumption policy permits the built-in `Nat` postulate with its original type and rejects all source axioms, including unused axioms. Checking the complete prefix environment makes this policy stricter than a per-term dependency allowlist. Existing ordinary compiler commands retain their prior axiom behavior. The synthesis extension adds no kernel constructor, axiom or conversion rule.
++
++The policy also refuses a source that redefines a name. The environment installs by overwrite, so a repeated name would be checked against the earlier entry and then replace it. Synthesis therefore rejects any declaration whose name is already bound in the preceding declarations or in the built-in environment. The rule applies to the synthesis hole itself, to every other declaration, and to every name a family or recursive group binds.
++
++`--timeout` bounds each model process, including loading, and `--check-timeout` bounds each compiler subprocess. The driver kills the process group on a deadline or output overflow. Request, candidate, output and receipt sizes are capped, with at most eight holes and eight candidates per hole. These are explicit failures, never unchecked successful terms. The model provider is trusted executable tooling chosen by the user; model-generated expressions are data and are never shell commands.
++
++The machine interfaces used by the driver are:
++
++```text
++kanon synth-request FILE
++kanon synth-apply FILE --candidate CANDIDATE_FILE -o OUTPUT_FILE
++```
++
++The first emits the earliest typed request or `null` once the whole source checks. The second checks one expression and replaces that hole in reprinted source, preserving family declarations and later holes. These internal commands rely on the calling driver for process and byte limits. The driver performs a final full check before publishing either user artifact.
++
++Run the targeted regression suites after building:
++
++```sh
++./_build/default/test/synthesis.exe
++KANON_TEST_COMPILER="$PWD/_build/default/bin/kanon.exe" python3 dev/test_synth.py
++```
++
++The source snapshot includes the original project's existing staged work. `../kanon-snapshot.json` records its source hashes, and `../kanon-synth-baseline` retains the copied baseline for comparison. The source-only vendor submodule was excluded; the compiler build treats vendor files as data. The live repository changed concurrently after this snapshot, so the source patch must be integrated against that newer tree before adoption there. After you apply the patch, run `chmod +x kanon`. The patch carries no file mode headers, so the wrapper arrives without the execute bit and `./kanon ...` fails with permission denied.
++
++This prototype does not establish a globally smallest useful model, full Lean 4 parity, a derivation of every trusted primitive from Kan extensions, or OCaml-speed compilation. Its validation record must distinguish real model execution, semantic task success, compiler checks, and remaining language-foundation work.
++
++The recorded ranking demonstration produced `42` in kernel evaluation, Node and Wasmtime. Model-assisted materialization took 20.802 seconds including cold model startup; replay took 0.960 seconds with zero provider time and identical output source. System load was approximately 98, so these are observed demonstration timings, not controlled performance benchmarks. Saved source, Wasm and receipts are in [dev/synthesis-results](dev/synthesis-results). These receipts were recorded under the earlier compiler binary, before the redefinition rule and the provider failure reporting above. Replay of a saved receipt therefore reports a stale compiler until the record is regenerated. The saved ordinary source still checks directly.
++
++The frozen six-case pilot scored 4/6 for both the 135M and 360M models, against 3/6 for taking the first candidate. This weak baseline and small sample do not satisfy the usefulness contract. The default stays 135M because the larger tested model showed no accuracy gain here. The next model milestone requires a larger independent corpus, a stronger deterministic baseline, and reliable task performance before selecting a production model.
+--- a/bin/kanon.ml
++++ b/bin/kanon.ml
+@@ -24,7 +24,8 @@
+   prerr_endline
+     "usage: kanon check [--print|--erased] FILE | axioms FILE | emit FILE -o \
+      OUT.wasm --export NAME | run FILE --export NAME [--host \
+-     node|wasmtime|kernel|both] | spec-count"
++     node|wasmtime|kernel|both] | synth FILE -o OUTPUT.kan \
++     [--provider EXECUTABLE | --replay RECEIPT] | spec-count"
+ 
+ let read_file (path : string) : string =
+   if Sys.file_exists path then In_channel.with_open_bin path In_channel.input_all
+@@ -291,6 +292,9 @@
+   | "axioms" -> dispatch_axioms args
+   | "emit" -> dispatch_emit args
+   | "run" -> dispatch_run args
++  | "synth" -> Synth_command.run args
++  | "synth-request" -> Synth_command.request args
++  | "synth-apply" -> Synth_command.apply args
+   | _unknown ->
+       usage ();
+       exit 64
+--- /dev/null
++++ b/bin/synth_command.ml
+@@ -0,0 +1,80 @@
++(** Proposals remain text until the surface resolver and kernel accept them.
++    The user-facing command enforces process deadlines. *)
++
++let json_string (value : string) : string =
++  let escaped =
++    String.to_seq value
++    |> Seq.map (fun (c : char) ->
++           match () with
++           | () when Char.equal c '"' -> "\\\""
++           | () when Char.equal c '\\' -> "\\\\"
++           | () when Char.code c < 32 -> Printf.sprintf "\\u%04x" (Char.code c)
++           | () -> String.make 1 c)
++    |> List.of_seq |> String.concat ""
++  in
++  "\"" ^ escaped ^ "\""
++
++let usage () : unit =
++  prerr_endline
++    "usage: kanon synth FILE -o OUTPUT.kan [--provider EXECUTABLE | --replay RECEIPT]";
++  exit 64
++
++let read (path : string) : (string, Kanon_kernel.Error.t) result =
++  if Sys.file_exists path && not (Sys.is_directory path) then
++    Ok (In_channel.with_open_bin path In_channel.input_all)
++  else Error (Kanon_kernel.Error.Carry ("cannot read " ^ path))
++
++let fail (error : Kanon_kernel.Error.t) : unit =
++  prerr_endline (Kanon_kernel.Error.to_string error);
++  exit 1
++
++let request_json (request : Kanon_surface.Synthesis.request) :
++    (string, Kanon_kernel.Error.t) result =
++  let fields =
++    [ request.declaration; request.hint; request.expected_type; request.context ]
++  in
++  if List.for_all String.is_valid_utf_8 fields then
++    Ok (Printf.sprintf
++    "{\"protocol_version\":1,\"declaration\":%s,\"hint\":%s,\"expected_type\":%s,\"context\":%s,\"allowed_axioms\":[\"Nat\"]}"
++    (json_string request.declaration) (json_string request.hint)
++    (json_string request.expected_type) (json_string request.context))
++  else Error (Kanon_kernel.Error.Cannot_infer
++    "synthesis requests must contain valid UTF-8 text")
++
++let request (args : string list) : unit =
++  match args with
++  | [ path ] ->
++      Result.bind (read path) Kanon_surface.Synthesis.next
++      |> Result.fold ~error:fail ~ok:(fun (next : Kanon_surface.Synthesis.request option) ->
++             Option.fold ~none:(Ok "null") ~some:request_json next
++             |> Result.fold ~error:fail ~ok:print_endline)
++  | [] | _ :: _ -> usage ()
++
++let apply (args : string list) : unit =
++  match args with
++  | [ path; "--candidate"; candidate; "-o"; output ] ->
++      let resolved =
++        Result.bind (read path) (fun (source : string) ->
++            Result.bind (read candidate) (Kanon_surface.Synthesis.apply source))
++      in
++      resolved
++      |> Result.fold ~error:fail ~ok:(fun (source : string) ->
++             match () with
++             | () when Sys.file_exists output ->
++                 fail (Kanon_kernel.Error.Carry ("output already exists: " ^ output))
++             | () when not (Sys.file_exists (Filename.dirname output)) ->
++                 fail (Kanon_kernel.Error.Carry ("output directory is missing: " ^ output))
++             | () ->
++                 Out_channel.with_open_bin output (fun (channel : Out_channel.t) ->
++                     Out_channel.output_string channel source))
++  | [] | _ :: _ -> usage ()
++
++let run (args : string list) : unit =
++  let script = Filename.concat (Host.root ()) "dev/synth.py" in
++  if Sys.file_exists script then
++    let command =
++      [ "python3"; script; "--compiler"; Sys.executable_name ] @ args
++      |> List.map Filename.quote |> String.concat " "
++    in
++    exit (Sys.command command)
++  else fail (Kanon_kernel.Error.Carry ("cannot locate " ^ script))
+--- /dev/null
++++ b/dev/synth.py
+@@ -0,0 +1,544 @@
++#!/usr/bin/env python3
++"""Materialize bounded, independently checked synthesis and replay its receipt.
++
++The provider is an untrusted local proposer. Only the compiler's synth-apply
++operation can replace a hole, and a fresh complete check precedes publication.
++"""
++
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import selectors
++import signal
++import subprocess
++import sys
++import tempfile
++import time
++from dataclasses import dataclass
++from typing import Any
++
++
++PROTOCOL_VERSION = 1
++ALLOWED_AXIOMS = ["Nat"]
++SOURCE_LIMIT = 256 * 1024
++CANDIDATE_LIMIT = 16 * 1024
++CHILD_OUTPUT_LIMIT = 1024 * 1024
++RECEIPT_LIMIT = 4 * 1024 * 1024
++MAX_CANDIDATES = 8
++MAX_HOLES = 8
++DEFAULT_PROVIDER = Path(__file__).resolve().parents[2] / "kanon-inference" / "provider"
++
++
++class SynthesisError(Exception):
++    def __init__(self, code: str, message: str):
++        super().__init__(message)
++        self.code = code
++        self.message = message
++
++    def as_json(self) -> dict[str, str]:
++        return {"code": self.code, "message": self.message}
++
++
++@dataclass(frozen=True)
++class ProcessResult:
++    returncode: int
++    stdout: bytes
++    stderr: bytes
++    seconds: float
++
++
++def bounded_process(
++    argv: list[str], *, stdin: bytes = b"", timeout: float,
++    output_limit: int = CHILD_OUTPUT_LIMIT,
++) -> ProcessResult:
++    """Drain both pipes and enforce one deadline over the entire process group.
++
++    Nonblocking stdin prevents a child that never reads its request from
++    bypassing the deadline. Descendant-held pipes remain covered after the
++    direct child exits. The process group is killed on every exit path so an
++    otherwise successful child cannot leave a background worker running.
++    """
++    started = time.monotonic()
++    try:
++        child = subprocess.Popen(
++            argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
++            stderr=subprocess.PIPE, start_new_session=True,
++        )
++    except OSError as exc:
++        raise SynthesisError("process_start", f"Cannot start {argv[0]}: {exc}") from exc
++    selector = selectors.DefaultSelector()
++    output = {"stdout": bytearray(), "stderr": bytearray()}
++    sent = 0
++    collected = 0
++    try:
++        for stream, name in ((child.stdout, "stdout"), (child.stderr, "stderr")):
++            assert stream is not None
++            os.set_blocking(stream.fileno(), False)
++            selector.register(stream, selectors.EVENT_READ, name)
++        assert child.stdin is not None
++        if stdin:
++            os.set_blocking(child.stdin.fileno(), False)
++            selector.register(child.stdin, selectors.EVENT_WRITE, "stdin")
++        else:
++            child.stdin.close()
++        while selector.get_map() or child.poll() is None:
++            remaining = timeout - (time.monotonic() - started)
++            if remaining <= 0:
++                raise SynthesisError("process_timeout", f"Worker exceeded {timeout:g} seconds")
++            for key, _ in selector.select(min(remaining, 0.05)):
++                stream = key.fileobj
++                if key.data == "stdin":
++                    try:
++                        sent += os.write(stream.fileno(), stdin[sent:sent + 65536])
++                    except BrokenPipeError:
++                        sent = len(stdin)
++                    except BlockingIOError:
++                        continue
++                    if sent == len(stdin):
++                        selector.unregister(stream)
++                        stream.close()
++                else:
++                    try:
++                        chunk = os.read(stream.fileno(), 65536)
++                    except BlockingIOError:
++                        continue
++                    if not chunk:
++                        selector.unregister(stream)
++                        stream.close()
++                        continue
++                    collected += len(chunk)
++                    if collected > output_limit:
++                        raise SynthesisError(
++                            "process_output_limit", f"Worker exceeded {output_limit} output bytes"
++                        )
++                    output[key.data].extend(chunk)
++        return ProcessResult(
++            child.wait(), bytes(output["stdout"]), bytes(output["stderr"]),
++            time.monotonic() - started,
++        )
++    finally:
++        try:
++            os.killpg(child.pid, signal.SIGKILL)
++        except ProcessLookupError:
++            pass
++        selector.close()
++        for stream in (child.stdin, child.stdout, child.stderr):
++            if stream is not None:
++                stream.close()
++        child.wait()
++
++
++def sha256(data: bytes) -> str:
++    return hashlib.sha256(data).hexdigest()
++
++
++def file_sha256(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def canonical_json(value: Any) -> bytes:
++    return json.dumps(
++        value, ensure_ascii=False, allow_nan=False, sort_keys=True, separators=(",", ":")
++    ).encode("utf-8")
++
++
++def strict_json(data: bytes, label: str) -> Any:
++    def pairs(items: list[tuple[str, Any]]) -> dict[str, Any]:
++        result: dict[str, Any] = {}
++        for key, value in items:
++            if key in result:
++                raise ValueError(f"Duplicate key: {key}")
++            result[key] = value
++        return result
++
++    def constant(value: str) -> Any:
++        raise ValueError(f"Nonfinite JSON value: {value}")
++
++    try:
++        value = json.loads(data.decode("utf-8"), object_pairs_hook=pairs, parse_constant=constant)
++        pending = [(value, 0)]
++        while pending:
++            node, depth = pending.pop()
++            if depth > 64:
++                raise ValueError("JSON nesting exceeds 64 levels")
++            if isinstance(node, dict):
++                pending.extend((key, depth + 1) for key in node)
++                pending.extend((item, depth + 1) for item in node.values())
++            elif isinstance(node, list):
++                pending.extend((item, depth + 1) for item in node)
++            elif isinstance(node, str):
++                node.encode("utf-8")
++            elif isinstance(node, float) and not math.isfinite(node):
++                raise ValueError("Nonfinite JSON number")
++        return value
++    except (ValueError, UnicodeError, RecursionError) as exc:
++        raise SynthesisError("invalid_json", f"Invalid {label}: {exc}") from exc
++
++
++def read_bounded(path: Path, limit: int, label: str) -> bytes:
++    with path.open("rb") as stream:
++        data = stream.read(limit + 1)
++    if len(data) > limit:
++        raise SynthesisError("file_limit", f"{label} exceeds {limit} bytes")
++    return data
++
++
++def require_keys(value: Any, required: set[str], optional: set[str], label: str) -> None:
++    if not isinstance(value, dict) or not required <= value.keys() or value.keys() - required - optional:
++        raise SynthesisError("invalid_protocol", f"Malformed {label} fields")
++
++
++def require_version(value: dict[str, Any], label: str) -> None:
++    if type(value.get("protocol_version")) is not int or value["protocol_version"] != PROTOCOL_VERSION:
++        raise SynthesisError("invalid_protocol", f"Unsupported {label} protocol version")
++
++
++def validate_request(value: Any) -> dict[str, Any] | None:
++    if value is None:
++        return None
++    require_keys(value, {"protocol_version", "declaration", "hint", "expected_type", "context", "allowed_axioms"}, set(), "compiler request")
++    require_version(value, "compiler request")
++    for key in ("declaration", "hint", "expected_type", "context"):
++        if not isinstance(value[key], str):
++            raise SynthesisError("invalid_protocol", f"Compiler request {key} must be a string")
++    if not value["declaration"] or not value["expected_type"]:
++        raise SynthesisError("invalid_protocol", "Compiler request has an empty declaration or expected type")
++    if value["allowed_axioms"] != ALLOWED_AXIOMS:
++        raise SynthesisError("axiom_policy", "Compiler request has an unsupported axiom policy")
++    return value
++
++
++def validate_candidates(value: Any, limit: int, label: str) -> list[str]:
++    if not isinstance(value, list) or not 1 <= len(value) <= limit:
++        raise SynthesisError("invalid_protocol", f"{label} requires between 1 and {limit} candidates")
++    seen: set[str] = set()
++    for candidate in value:
++        if not isinstance(candidate, str) or not candidate.strip():
++            raise SynthesisError("invalid_protocol", f"{label} candidates must be nonempty strings")
++        if len(candidate.encode("utf-8")) > CANDIDATE_LIMIT:
++            raise SynthesisError("candidate_limit", f"Candidate exceeds {CANDIDATE_LIMIT} bytes")
++        if candidate in seen:
++            raise SynthesisError("invalid_protocol", f"{label} contains duplicate candidates")
++        seen.add(candidate)
++    return value
++
++
++def validate_provider(value: Any, limit: int, pool: list[str] | None) -> dict[str, Any]:
++    if isinstance(value, dict) and "error" in value:
++        require_keys(value, {"error"}, {"protocol_version"}, "provider failure")
++        if "protocol_version" in value:
++            require_version(value, "provider failure")
++        require_keys(value["error"], {"code", "message"}, set(), "provider error")
++        if not all(isinstance(value["error"][key], str) and value["error"][key] for key in ("code", "message")):
++            raise SynthesisError("invalid_protocol", "Provider error code and message must be nonempty strings")
++        raise SynthesisError("provider_error", f"{value['error']['code']}: {value['error']['message']}")
++    require_keys(value, {"protocol_version", "candidates", "provenance", "metrics"}, set(), "provider response")
++    require_version(value, "provider response")
++    candidates = validate_candidates(value["candidates"], limit, "provider response")
++    if pool is not None and any(candidate not in pool for candidate in candidates):
++        raise SynthesisError("candidate_pool", "Provider returned a candidate outside the frozen pool")
++    if not isinstance(value["provenance"], dict) or not isinstance(value["metrics"], dict):
++        raise SynthesisError("invalid_protocol", "Provider provenance and metrics must be objects")
++    return value
++
++
++def diagnostic(result: ProcessResult) -> str:
++    message = (result.stderr or result.stdout).decode("utf-8", errors="replace").strip()
++    return message[:4096] or f"Worker exited with status {result.returncode}"
++
++
++def validate_receipt(value: Any, source_digest: str, compiler_digest: str) -> dict[str, Any]:
++    require_keys(value, {"protocol_version", "source_sha256", "compiler_sha256", "output_sha256", "allowed_axioms", "expansions", "timing"}, set(), "receipt")
++    require_version(value, "receipt")
++    for key in ("source_sha256", "compiler_sha256", "output_sha256"):
++        digest = value[key]
++        if not isinstance(digest, str) or len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
++            raise SynthesisError("invalid_receipt", f"Invalid {key}")
++    if value["source_sha256"] != source_digest:
++        raise SynthesisError("stale_source", "Receipt source digest does not match the source")
++    if value["compiler_sha256"] != compiler_digest:
++        raise SynthesisError("stale_compiler", "Receipt compiler digest does not match the compiler")
++    if value["allowed_axioms"] != ALLOWED_AXIOMS:
++        raise SynthesisError("axiom_policy", "Receipt has an unsupported axiom policy")
++    if not isinstance(value["expansions"], list) or len(value["expansions"]) > MAX_HOLES:
++        raise SynthesisError("invalid_receipt", "Receipt expansions must be a bounded list")
++    validate_timing(value["timing"])
++    for entry in value["expansions"]:
++        require_keys(entry, {"request", "request_sha256", "candidate", "candidate_sha256", "provenance", "metrics", "rejected"}, set(), "receipt expansion")
++        request = validate_request(entry["request"])
++        if request is None or sha256(canonical_json(request)) != entry["request_sha256"]:
++            raise SynthesisError("invalid_receipt", "Receipt request digest does not match its request")
++        validate_candidates([entry["candidate"]], 1, "receipt expansion")
++        if sha256(entry["candidate"].encode("utf-8")) != entry["candidate_sha256"]:
++            raise SynthesisError("invalid_receipt", "Receipt candidate digest does not match its candidate")
++        if not isinstance(entry["provenance"], dict) or not isinstance(entry["metrics"], dict):
++            raise SynthesisError("invalid_receipt", "Receipt provenance and metrics must be objects")
++        if not isinstance(entry["rejected"], list) or len(entry["rejected"]) >= MAX_CANDIDATES:
++            raise SynthesisError("invalid_receipt", "Receipt rejected candidates must be a bounded list")
++        for rejected in entry["rejected"]:
++            require_keys(rejected, {"candidate_sha256", "error"}, set(), "rejected candidate")
++            require_keys(rejected["error"], {"code", "message"}, set(), "rejected candidate error")
++            if not all(isinstance(rejected["error"][key], str) for key in ("code", "message")):
++                raise SynthesisError("invalid_receipt", "Rejected candidate error fields must be strings")
++            digest = rejected["candidate_sha256"]
++            if not isinstance(digest, str) or len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
++                raise SynthesisError("invalid_receipt", "Invalid rejected candidate digest")
++    return value
++
++
++def validate_timing(value: Any) -> None:
++    require_keys(value, {"total_seconds", "provider_seconds", "checking_seconds"}, set(), "timing")
++    if any(type(item) not in (int, float) or (type(item) is float and not math.isfinite(item)) or item < 0 for item in value.values()):
++        raise SynthesisError("invalid_receipt", "Timing values must be finite nonnegative numbers")
++
++
++def publish(output: Path, data: bytes, receipt: bytes) -> None:
++    """Use same-directory hard links to atomically create each file without clobbering.
++
++    The receipt is published first and rolled back if output publication fails.
++    A process crash between the links can leave a receipt alone, never unchecked
++    source. The two names are not a filesystem-wide transaction.
++    """
++    receipt_path = Path(str(output) + ".synth.json")
++    stages: list[Path] = []
++    receipt_published = False
++    complete = False
++    try:
++        for payload in (receipt, data):
++            with tempfile.NamedTemporaryFile(prefix=".kanon-synth-", dir=output.parent, delete=False) as stream:
++                stages.append(Path(stream.name))
++                stream.write(payload)
++                stream.flush()
++                os.fsync(stream.fileno())
++        os.link(stages[0], receipt_path)
++        receipt_published = True
++        os.link(stages[1], output)
++        complete = True
++    except FileExistsError as exc:
++        raise SynthesisError("output_exists", "Output or receipt already exists; choose a new output path") from exc
++    finally:
++        if receipt_published and not complete:
++            try:
++                if receipt_path.lstat().st_ino == stages[0].stat().st_ino:
++                    receipt_path.unlink()
++            except FileNotFoundError:
++                pass
++        for stage in stages:
++            stage.unlink(missing_ok=True)
++
++
++def positive_seconds(value: str) -> float:
++    try:
++        seconds = float(value)
++    except ValueError as exc:
++        raise argparse.ArgumentTypeError("Expected positive finite seconds") from exc
++    if not math.isfinite(seconds) or seconds <= 0:
++        raise argparse.ArgumentTypeError("Expected positive finite seconds")
++    return seconds
++
++
++def bounded_count(value: str) -> int:
++    try:
++        count = int(value)
++    except ValueError as exc:
++        raise argparse.ArgumentTypeError("Expected an integer from 1 through 8") from exc
++    if not 1 <= count <= 8:
++        raise argparse.ArgumentTypeError("Expected an integer from 1 through 8")
++    return count
++
++
++class StructuredParser(argparse.ArgumentParser):
++    def error(self, message: str) -> None:
++        raise SynthesisError("arguments", message)
++
++
++def parser() -> argparse.ArgumentParser:
++    result = StructuredParser(description=__doc__)
++    result.add_argument("--compiler", required=True, type=Path)
++    result.add_argument("source", type=Path)
++    result.add_argument("-o", "--output", required=True, type=Path)
++    provider = result.add_mutually_exclusive_group()
++    provider.add_argument("--provider", type=Path, default=DEFAULT_PROVIDER)
++    provider.add_argument("--replay", type=Path)
++    result.add_argument("--timeout", type=positive_seconds, default=30.0)
++    result.add_argument("--check-timeout", type=positive_seconds, default=5.0)
++    result.add_argument("--max-candidates", type=bounded_count, default=MAX_CANDIDATES)
++    result.add_argument("--max-holes", type=bounded_count, default=MAX_HOLES)
++    result.add_argument("--candidate-pool", type=Path)
++    return result
++
++
++def run(args: argparse.Namespace) -> dict[str, Any]:
++    started = time.monotonic()
++    compiler = args.compiler.resolve(strict=True)
++    source = args.source.resolve(strict=True)
++    output = args.output.absolute()
++    receipt_path = Path(str(output) + ".synth.json")
++    if os.path.lexists(output) or os.path.lexists(receipt_path):
++        raise SynthesisError("output_exists", "Output or receipt already exists; choose a new output path")
++    source_bytes = read_bounded(source, SOURCE_LIMIT, "Source")
++    try:
++        source_bytes.decode("utf-8")
++    except UnicodeError as exc:
++        raise SynthesisError("invalid_source", "Source must be UTF-8") from exc
++    source_digest = sha256(source_bytes)
++    compiler_digest = file_sha256(compiler)
++    replay = None
++    if args.replay is not None:
++        if args.candidate_pool is not None:
++            raise SynthesisError("arguments", "Replay cannot use a candidate pool")
++        replay = validate_receipt(
++            strict_json(read_bounded(args.replay, RECEIPT_LIMIT, "Receipt"), "receipt"),
++            source_digest, compiler_digest,
++        )
++    pool = None
++    if args.candidate_pool is not None:
++        pool = validate_candidates(
++            strict_json(read_bounded(args.candidate_pool, CHILD_OUTPUT_LIMIT, "Candidate pool"), "candidate pool"),
++            MAX_CANDIDATES, "candidate pool",
++        )
++    expansions: list[dict[str, Any]] = []
++    timing = {"total_seconds": 0.0, "provider_seconds": 0.0, "checking_seconds": 0.0}
++
++    def compiler_call(arguments: list[str]) -> ProcessResult:
++        call_started = time.monotonic()
++        try:
++            return bounded_process([str(compiler), *arguments], timeout=args.check_timeout)
++        finally:
++            timing["checking_seconds"] += time.monotonic() - call_started
++
++    with tempfile.TemporaryDirectory(prefix="kanon-synth-") as directory:
++        work = Path(directory)
++        current = work / "source-0.kan"
++        current.write_bytes(source_bytes)
++        while True:
++            requested = compiler_call(["synth-request", str(current)])
++            if requested.returncode != 0:
++                raise SynthesisError("request_rejected", diagnostic(requested))
++            request = validate_request(strict_json(requested.stdout, "compiler request"))
++            if request is None:
++                break
++            hole = len(expansions)
++            if hole >= args.max_holes:
++                raise SynthesisError("hole_limit", f"Source exceeds {args.max_holes} synthesis holes")
++            request_digest = sha256(canonical_json(request))
++            if replay is not None:
++                if hole >= len(replay["expansions"]):
++                    raise SynthesisError("invalid_receipt", "Receipt is missing an expansion")
++                entry = replay["expansions"][hole]
++                if entry["request_sha256"] != request_digest or canonical_json(entry["request"]) != canonical_json(request):
++                    raise SynthesisError("stale_request", "Receipt request does not match the current frozen context and goal")
++                candidates = [entry["candidate"]]
++                provenance, metrics = entry["provenance"], entry["metrics"]
++                rejected = entry["rejected"]
++            else:
++                provider_request = dict(request, max_candidates=args.max_candidates, max_new_tokens=96)
++                if pool is not None:
++                    provider_request["candidates"] = pool
++                call_started = time.monotonic()
++                try:
++                    proposed = bounded_process(
++                        [str(args.provider.absolute())], stdin=canonical_json(provider_request) + b"\n", timeout=args.timeout
++                    )
++                finally:
++                    timing["provider_seconds"] += time.monotonic() - call_started
++                # A provider that failed without a document to parse is reported
++                # with its own diagnostic, never as a parser message.
++                if proposed.returncode != 0 and not proposed.stdout.strip():
++                    raise SynthesisError("provider_failed", diagnostic(proposed))
++                # Parse structured provider errors even when the process exits nonzero.
++                try:
++                    document = strict_json(proposed.stdout, "provider response")
++                except SynthesisError as exc:
++                    if proposed.returncode == 0:
++                        raise
++                    raise SynthesisError(
++                        "provider_failed", f"{diagnostic(proposed)}: {exc.message}"
++                    ) from exc
++                response = validate_provider(document, args.max_candidates, pool)
++                if proposed.returncode != 0:
++                    raise SynthesisError("provider_failed", diagnostic(proposed))
++                candidates = response["candidates"]
++                provenance, metrics = response["provenance"], response["metrics"]
++                rejected = []
++            accepted = None
++            for index, candidate in enumerate(candidates):
++                candidate_file = work / f"candidate-{hole}-{index}.txt"
++                candidate_file.write_text(candidate, encoding="utf-8")
++                expanded = work / f"source-{hole + 1}-try-{index}.kan"
++                try:
++                    checked = compiler_call([
++                        "synth-apply", str(current), "--candidate", str(candidate_file), "-o", str(expanded)
++                    ])
++                    if checked.returncode != 0:
++                        raise SynthesisError("candidate_rejected", diagnostic(checked))
++                    expanded_bytes = read_bounded(expanded, SOURCE_LIMIT, "Expanded source")
++                    expanded_bytes.decode("utf-8")
++                    accepted = candidate
++                    current = expanded
++                    break
++                except SynthesisError as exc:
++                    if replay is not None:
++                        raise SynthesisError("replay_rejected", exc.message) from exc
++                    rejected.append({"candidate_sha256": sha256(candidate.encode("utf-8")), "error": exc.as_json()})
++            if accepted is None:
++                raise SynthesisError("candidates_exhausted", f"All {len(candidates)} candidates failed for {request['declaration']}")
++            expansions.append({
++                "request": request, "request_sha256": request_digest,
++                "candidate": accepted, "candidate_sha256": sha256(accepted.encode("utf-8")),
++                "provenance": provenance, "metrics": metrics, "rejected": rejected,
++            })
++        if replay is not None and len(expansions) != len(replay["expansions"]):
++            raise SynthesisError("invalid_receipt", "Receipt has extra expansions")
++        final_check = compiler_call(["check", str(current)])
++        if final_check.returncode != 0:
++            raise SynthesisError("final_check_rejected", diagnostic(final_check))
++        final_bytes = read_bounded(current, SOURCE_LIMIT, "Expanded source")
++        output_digest = sha256(final_bytes)
++        if replay is not None and output_digest != replay["output_sha256"]:
++            raise SynthesisError("replay_output", "Replayed source digest does not match the receipt")
++        if file_sha256(compiler) != compiler_digest:
++            raise SynthesisError("compiler_changed", "Compiler changed while synthesis was running")
++        timing["total_seconds"] = time.monotonic() - started
++        receipt = {
++            "protocol_version": PROTOCOL_VERSION, "source_sha256": source_digest,
++            "compiler_sha256": compiler_digest, "output_sha256": output_digest,
++            "allowed_axioms": ALLOWED_AXIOMS, "expansions": expansions, "timing": timing,
++        }
++        receipt_bytes = canonical_json(receipt) + b"\n"
++        if len(receipt_bytes) > RECEIPT_LIMIT:
++            raise SynthesisError("receipt_limit", f"Receipt exceeds {RECEIPT_LIMIT} bytes")
++        publish(output, final_bytes, receipt_bytes)
++    return {
++        "protocol_version": PROTOCOL_VERSION, "output": str(output), "receipt": str(receipt_path),
++        "expansions": len(expansions), "replay": replay is not None, "timing": timing,
++    }
++
++
++def main(argv: list[str] | None = None) -> int:
++    try:
++        result = run(parser().parse_args(argv))
++        print(canonical_json(result).decode("utf-8"))
++        return 0
++    except SynthesisError as exc:
++        print(json.dumps({"error": exc.as_json()}, ensure_ascii=True), file=sys.stderr)
++        return 1
++    except KeyboardInterrupt:
++        print(json.dumps({"error": {"code": "interrupted", "message": "Synthesis interrupted"}}), file=sys.stderr)
++        return 130
++    except (OSError, UnicodeError, ValueError, RecursionError) as exc:
++        print(json.dumps({"error": {"code": "io_or_encoding", "message": str(exc)}}, ensure_ascii=True), file=sys.stderr)
++        return 1
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+--- /dev/null
++++ b/dev/test_synth.py
+@@ -0,0 +1,631 @@
++#!/usr/bin/env python3
++"""Boundary tests. Fixture proposers provide no evidence of model capability.
++
++Set KANON_TEST_COMPILER to an already built compiler for real kernel rejection
++tests. This suite never builds the compiler and never downloads a model.
++"""
++
++from __future__ import annotations
++
++import contextlib
++import io
++import json
++import os
++from pathlib import Path
++import signal
++import sys
++import tempfile
++import time
++import unittest
++from unittest import mock
++
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++import synth
++
++
++# This deliberately small fake compiler isolates orchestration invariants.
++# Logical soundness is tested against the real compiler below, not this fixture.
++FIXTURE_COMPILER = r'''
++import json
++import pathlib
++import re
++import sys
++import time
++
++command, source = sys.argv[1:3]
++text = pathlib.Path(source).read_text()
++pattern = re.compile(r'def (\w+) : ([^\n]+?) := synth "([^"\n]*)"')
++hole = pattern.search(text)
++if command == "synth-request":
++    if "BAD_SOURCE" in text:
++        print("invalid source", file=sys.stderr)
++        sys.exit(1)
++    request = None if hole is None else {
++        "protocol_version": 1, "declaration": hole[1], "expected_type": hole[2],
++        "hint": hole[3], "context": text[:hole.start()], "allowed_axioms": ["Nat"]}
++    print(json.dumps(request))
++elif command == "synth-apply":
++    candidate = pathlib.Path(sys.argv[4]).read_text()
++    if candidate == "HANG":
++        time.sleep(60)
++    if candidate not in ("0", "1", "2", "42"):
++        print("fixture candidate rejected", file=sys.stderr)
++        sys.exit(1)
++    replacement = "def " + hole[1] + " : " + hole[2] + " := " + candidate
++    pathlib.Path(sys.argv[6]).write_text(text[:hole.start()] + replacement + text[hole.end():])
++elif command == "check":
++    if hole is not None or "FAIL_FINAL" in text:
++        print("fixture final check rejected", file=sys.stderr)
++        sys.exit(1)
++else:
++    sys.exit(2)
++'''
++
++
++def executable(path: Path, body: str) -> Path:
++    path.write_text(f"#!{sys.executable}\n" + body, encoding="utf-8")
++    path.chmod(0o700)
++    return path
++
++
++def fixture_provider(path: Path, candidates: list[str]) -> Path:
++    """A fixed untrusted response, not an embedded model or capability test."""
++    response = {
++        "protocol_version": 1, "candidates": candidates,
++        "provenance": {"kind": "fixture", "model_capability_evidence": False},
++        "metrics": {"fixture": True},
++    }
++    return executable(path, "import json, sys\njson.load(sys.stdin)\nprint(" + repr(json.dumps(response)) + ")\n")
++
++
++class ProcessBoundaryTests(unittest.TestCase):
++    def run_python(self, script: str, **kwargs: object) -> synth.ProcessResult:
++        return synth.bounded_process([sys.executable, "-c", script], **kwargs)
++
++    def test_drains_both_streams(self) -> None:
++        result = self.run_python(
++            "import os\nfor _ in range(16):\n os.write(1,b'a'*8192)\n os.write(2,b'b'*8192)",
++            timeout=5,
++        )
++        self.assertEqual(result.returncode, 0)
++        self.assertEqual(result.stdout, b"a" * 131072)
++        self.assertEqual(result.stderr, b"b" * 131072)
++
++    def test_combined_output_limit(self) -> None:
++        with self.assertRaises(synth.SynthesisError) as raised:
++            self.run_python(
++                "import os\nwhile True:\n os.write(1,b'a'*32768)\n os.write(2,b'b'*32768)",
++                timeout=3, output_limit=100000,
++            )
++        self.assertEqual(raised.exception.code, "process_output_limit")
++
++    def test_hard_deadline_covers_nonreading_stdin(self) -> None:
++        started = time.monotonic()
++        with self.assertRaises(synth.SynthesisError) as raised:
++            self.run_python("import time; time.sleep(60)", stdin=b"x" * 1000000, timeout=0.2)
++        self.assertEqual(raised.exception.code, "process_timeout")
++        self.assertLess(time.monotonic() - started, 2)
++
++    @unittest.skipUnless(hasattr(os, "fork"), "Requires POSIX process groups")
++    def test_deadline_covers_descendant_held_pipes(self) -> None:
++        with tempfile.TemporaryDirectory() as directory:
++            pidfile = Path(directory) / "pid"
++            heartbeat = Path(directory) / "heartbeat"
++            script = (
++                "import os, time\n"
++                "pid = os.fork()\n"
++                "if pid:\n"
++                f" open({str(pidfile)!r}, 'w').write(str(pid))\n"
++                " os._exit(0)\n"
++                "while True:\n"
++                f" open({str(heartbeat)!r}, 'w').write(str(time.monotonic_ns()))\n"
++                " time.sleep(0.02)\n"
++            )
++            started = time.monotonic()
++            try:
++                with self.assertRaises(synth.SynthesisError) as raised:
++                    self.run_python(script, timeout=2)
++                self.assertEqual(raised.exception.code, "process_timeout")
++                self.assertLess(time.monotonic() - started, 4)
++                self.assertTrue(pidfile.exists())
++                # Observable child activity avoids relying on platform ps access
++                # or whether the operating system has reaped the killed orphan.
++                time.sleep(0.05)
++                last_heartbeat = heartbeat.read_bytes()
++                time.sleep(0.15)
++                self.assertEqual(heartbeat.read_bytes(), last_heartbeat)
++            finally:
++                if pidfile.exists():
++                    try:
++                        os.kill(int(pidfile.read_text()), signal.SIGKILL)
++                    except ProcessLookupError:
++                        pass
++
++    def test_invalid_json_rejected(self) -> None:
++        for raw in (b'{"x":1,"x":2}', b'{"x":{"y":1,"y":2}}', b'NaN', b'Infinity', b'1e9999', b'{', b'"\\ud800"'):
++            with self.subTest(raw=raw), self.assertRaises(synth.SynthesisError):
++                synth.strict_json(raw, "fixture response")
++
++    def test_malformed_provider_schema_rejected(self) -> None:
++        valid = {"protocol_version": 1, "candidates": ["1"], "provenance": {}, "metrics": {}}
++        invalid = [
++            dict(valid, protocol_version=True), dict(valid, candidates=[]),
++            dict(valid, candidates=["1", "1"]), dict(valid, candidates=[1]),
++            dict(valid, candidates=[" " ]), dict(valid, candidates=["x" * (synth.CANDIDATE_LIMIT + 1)]),
++            dict(valid, provenance=[]), dict(valid, metrics="fast"),
++            dict(valid, candidates=[str(index) for index in range(9)]), dict(valid, unrecognized=True),
++        ]
++        for response in invalid:
++            with self.subTest(response=str(response)[:100]), self.assertRaises(synth.SynthesisError):
++                synth.validate_provider(response, 8, None)
++
++
++class OrchestrationTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.directory = tempfile.TemporaryDirectory()
++        self.addCleanup(self.directory.cleanup)
++        self.root = Path(self.directory.name)
++        self.compiler = executable(self.root / "fixture-compiler", FIXTURE_COMPILER)
++        self.provider = fixture_provider(self.root / "fixture-provider", ["1"])
++        self.source = self.root / "source.kan"
++        self.source.write_text('def one : Nat := synth "return one"\n')
++        self.output = self.root / "resolved.kan"
++
++    def args(self, *extra: str, output: Path | None = None) -> list[str]:
++        args = ["--compiler", str(self.compiler), str(self.source), "-o", str(output or self.output),
++                "--check-timeout", "10", "--timeout", "10"]
++        if "--replay" not in extra:
++            args += ["--provider", str(self.provider)]
++        return args + list(extra)
++
++    def invoke(self, *extra: str, output: Path | None = None) -> tuple[int, dict]:
++        out, err = io.StringIO(), io.StringIO()
++        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
++            code = synth.main(self.args(*extra, output=output))
++        payload = json.loads(out.getvalue() if code == 0 else err.getvalue())
++        return code, payload
++
++    def receipt(self, output: Path | None = None) -> Path:
++        return Path(str(output or self.output) + ".synth.json")
++
++    def assert_no_outputs(self, output: Path | None = None) -> None:
++        self.assertFalse((output or self.output).exists())
++        self.assertFalse(self.receipt(output).exists())
++
++    def successful_receipt(self) -> dict:
++        code, result = self.invoke()
++        self.assertEqual(code, 0, result)
++        return json.loads(self.receipt().read_text())
++
++    def rewrite_receipt(self, value: dict) -> Path:
++        modified = self.root / "modified.json"
++        modified.write_text(json.dumps(value))
++        return modified
++
++    def test_wrong_candidate_then_valid(self) -> None:
++        fixture_provider(self.provider, ["wrong", "1"])
++        receipt = self.successful_receipt()
++        self.assertEqual(self.output.read_text(), "def one : Nat := 1\n")
++        self.assertEqual(receipt["expansions"][0]["candidate"], "1")
++        self.assertEqual(len(receipt["expansions"][0]["rejected"]), 1)
++        self.assertEqual(receipt["allowed_axioms"], ["Nat"])
++        self.assertEqual(receipt["output_sha256"], synth.sha256(self.output.read_bytes()))
++        self.assertIn("synth", self.source.read_text())
++
++    def test_all_candidates_invalid_has_no_artifacts(self) -> None:
++        fixture_provider(self.provider, ["wrong", "also wrong"])
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "candidates_exhausted")
++        self.assert_no_outputs()
++
++    def test_checker_timeout_rejects_candidate_then_continues(self) -> None:
++        fixture_provider(self.provider, ["HANG", "1"])
++        code, result = self.invoke("--check-timeout", "3")
++        self.assertEqual(code, 0, result)
++        receipt = json.loads(self.receipt().read_text())
++        self.assertEqual(receipt["expansions"][0]["rejected"][0]["error"]["code"], "process_timeout")
++
++    def test_multiple_holes_freeze_updated_context(self) -> None:
++        self.source.write_text('def one : Nat := synth "return one"\ndef two : Nat := synth "return two"\n')
++        receipt = self.successful_receipt()
++        self.assertEqual(len(receipt["expansions"]), 2)
++        self.assertEqual(receipt["expansions"][0]["request"]["context"], "")
++        self.assertIn("def one : Nat := 1", receipt["expansions"][1]["request"]["context"])
++        self.assertNotIn("synth", self.output.read_text())
++
++    def test_replay_does_not_need_executable_provider(self) -> None:
++        self.successful_receipt()
++        self.provider.unlink()
++        replay_output = self.root / "replay.kan"
++        with mock.patch.object(synth, "DEFAULT_PROVIDER", self.root / "missing-provider"):
++            code, result = self.invoke("--replay", str(self.receipt()), output=replay_output)
++        self.assertEqual(code, 0, result)
++        self.assertTrue(result["replay"])
++        self.assertEqual(self.output.read_bytes(), replay_output.read_bytes())
++
++    def test_replay_changed_source_goal_rejected(self) -> None:
++        self.successful_receipt()
++        self.source.write_text('def one : Type 0 := synth "return one"\n')
++        replay_output = self.root / "replay.kan"
++        code, result = self.invoke("--replay", str(self.receipt()), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "stale_source")
++        self.assert_no_outputs(replay_output)
++
++    def test_replay_request_goal_tamper_with_updated_digest_rejected(self) -> None:
++        receipt = self.successful_receipt()
++        entry = receipt["expansions"][0]
++        entry["request"]["expected_type"] = "Type 0"
++        entry["request_sha256"] = synth.sha256(synth.canonical_json(entry["request"]))
++        replay_output = self.root / "replay.kan"
++        code, result = self.invoke("--replay", str(self.rewrite_receipt(receipt)), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "stale_request")
++        self.assert_no_outputs(replay_output)
++
++    def test_tampered_candidate_digest_rejected(self) -> None:
++        receipt = self.successful_receipt()
++        receipt["expansions"][0]["candidate"] = "2"
++        replay_output = self.root / "replay.kan"
++        code, result = self.invoke("--replay", str(self.rewrite_receipt(receipt)), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "invalid_receipt")
++        self.assert_no_outputs(replay_output)
++
++    def test_tampered_candidate_with_updated_digest_is_rechecked(self) -> None:
++        receipt = self.successful_receipt()
++        entry = receipt["expansions"][0]
++        entry["candidate"] = "wrong"
++        entry["candidate_sha256"] = synth.sha256(b"wrong")
++        replay_output = self.root / "replay.kan"
++        code, result = self.invoke("--replay", str(self.rewrite_receipt(receipt)), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "replay_rejected")
++        self.assert_no_outputs(replay_output)
++
++    def test_stale_compiler_hash_rejected(self) -> None:
++        self.successful_receipt()
++        self.compiler.write_text(self.compiler.read_text() + "\n# changed compiler\n")
++        replay_output = self.root / "replay.kan"
++        code, result = self.invoke("--replay", str(self.receipt()), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "stale_compiler")
++        self.assert_no_outputs(replay_output)
++
++    def test_extra_and_missing_replay_expansions_rejected(self) -> None:
++        receipt = self.successful_receipt()
++        for name, entries in (("missing", []), ("extra", receipt["expansions"] * 2)):
++            modified = dict(receipt, expansions=entries)
++            replay_output = self.root / f"{name}.kan"
++            code, result = self.invoke("--replay", str(self.rewrite_receipt(modified)), output=replay_output)
++            self.assertEqual(code, 1, result)
++            self.assertEqual(result["error"]["code"], "invalid_receipt")
++            self.assert_no_outputs(replay_output)
++
++    def test_replay_policy_tamper_rejected(self) -> None:
++        receipt = self.successful_receipt()
++        receipt["allowed_axioms"] = ["Nat", "False"]
++        replay_output = self.root / "replay.kan"
++        code, result = self.invoke("--replay", str(self.rewrite_receipt(receipt)), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "axiom_policy")
++        self.assert_no_outputs(replay_output)
++
++    def test_final_output_digest_tamper_rejected(self) -> None:
++        receipt = self.successful_receipt()
++        receipt["output_sha256"] = "0" * 64
++        replay_output = self.root / "replay.kan"
++        code, result = self.invoke("--replay", str(self.rewrite_receipt(receipt)), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "replay_output")
++        self.assert_no_outputs(replay_output)
++
++    def test_no_holes_has_no_provider_call(self) -> None:
++        self.source.write_text("def one : Nat := 1\n")
++        self.provider.unlink()
++        receipt = self.successful_receipt()
++        self.assertEqual(receipt["expansions"], [])
++        self.assertEqual(self.output.read_bytes(), self.source.read_bytes())
++
++    def test_existing_output_preserved(self) -> None:
++        self.output.write_text("preserve this")
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "output_exists")
++        self.assertEqual(self.output.read_text(), "preserve this")
++        self.assertFalse(self.receipt().exists())
++
++    def test_existing_receipt_preserved(self) -> None:
++        self.receipt().write_text("preserve receipt")
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "output_exists")
++        self.assertFalse(self.output.exists())
++        self.assertEqual(self.receipt().read_text(), "preserve receipt")
++
++    def test_output_cannot_overwrite_source(self) -> None:
++        original = self.source.read_bytes()
++        code, result = self.invoke(output=self.source)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "output_exists")
++        self.assertEqual(self.source.read_bytes(), original)
++
++    def test_publication_race_cleans_receipt(self) -> None:
++        original_link = os.link
++        calls = 0
++
++        def racing_link(source: Path, destination: Path) -> None:
++            nonlocal calls
++            calls += 1
++            if calls == 2:
++                Path(destination).write_text("concurrent writer")
++            original_link(source, destination)
++
++        with mock.patch.object(synth.os, "link", side_effect=racing_link):
++            code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "output_exists")
++        self.assertEqual(self.output.read_text(), "concurrent writer")
++        self.assertFalse(self.receipt().exists())
++        self.assertFalse(list(self.root.glob(".kanon-synth-*")))
++
++    def test_provider_malformed_and_duplicate_json_leave_no_outputs(self) -> None:
++        for raw in ('{', '{"protocol_version":1,"protocol_version":1}', 'NaN'):
++            executable(self.provider, f"print({raw!r})\n")
++            code, result = self.invoke()
++            self.assertEqual(code, 1)
++            self.assertEqual(result["error"]["code"], "invalid_json")
++            self.assert_no_outputs()
++
++    def test_provider_structured_failure(self) -> None:
++        executable(self.provider, 'import sys\nprint(\'{"error":{"code":"model_missing","message":"fixture model unavailable"}}\')\nsys.exit(1)\n')
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "provider_error")
++        self.assert_no_outputs()
++
++    def test_provider_request_is_one_newline_terminated_json_object(self) -> None:
++        executable(self.provider, '''import json, sys
++wire = sys.stdin.buffer.read()
++if not wire.endswith(b"\\n") or wire.count(b"\\n") != 1:
++    print(json.dumps({"error": {"code": "invalid_request", "message": "newline required"}}))
++    sys.exit(1)
++request = json.loads(wire)
++assert request["max_candidates"] == 8
++assert request["max_new_tokens"] == 96
++assert request["allowed_axioms"] == ["Nat"]
++print(json.dumps({"protocol_version": 1, "candidates": ["1"], "provenance": {"kind": "fixture"}, "metrics": {}}))
++''')
++        code, result = self.invoke()
++        self.assertEqual(code, 0, result)
++        self.assertEqual(self.output.read_text(), "def one : Nat := 1\n")
++
++    def test_candidate_pool_membership_enforced(self) -> None:
++        pool = self.root / "pool.json"
++        pool.write_text('["2", "42"]')
++        code, result = self.invoke("--candidate-pool", str(pool))
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "candidate_pool")
++        self.assert_no_outputs()
++        fixture_provider(self.provider, ["42"])
++        code, result = self.invoke("--candidate-pool", str(pool), "--max-candidates", "1")
++        self.assertEqual(code, 0, result)
++
++    def test_final_fresh_check_required(self) -> None:
++        self.source.write_text(self.source.read_text() + "FAIL_FINAL\n")
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "final_check_rejected")
++        self.assert_no_outputs()
++
++    def test_hole_limit_leaves_no_outputs(self) -> None:
++        self.source.write_text(self.source.read_text() + 'def two : Nat := synth "return two"\n')
++        code, result = self.invoke("--max-holes", "1")
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "hole_limit")
++        self.assert_no_outputs()
++
++    def test_source_limit_leaves_no_outputs(self) -> None:
++        self.source.write_bytes(b" " * (synth.SOURCE_LIMIT + 1))
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "file_limit")
++        self.assert_no_outputs()
++
++    def test_provider_crash_without_stdout_reports_its_stderr(self) -> None:
++        executable(
++            self.provider,
++            'import sys\nsys.stderr.write("Traceback: ModuleNotFoundError: onnxruntime\\n")\nsys.exit(3)\n',
++        )
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "provider_failed")
++        self.assertIn("onnxruntime", result["error"]["message"])
++        self.assert_no_outputs()
++
++    def test_provider_failure_with_unparsable_stdout_reports_its_stderr(self) -> None:
++        executable(
++            self.provider,
++            'import sys\nsys.stdout.write("segmentation fault\\n")\n'
++            'sys.stderr.write("provider loader failed\\n")\nsys.exit(4)\n',
++        )
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "provider_failed")
++        self.assertIn("provider loader failed", result["error"]["message"])
++        self.assert_no_outputs()
++
++    def test_provider_deeply_nested_json_rejected(self) -> None:
++        executable(self.provider, 'print("[" * 100 + "]" * 100)\n')
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "invalid_json")
++        self.assertIn("nesting", result["error"]["message"])
++        self.assert_no_outputs()
++
++    def test_compiler_replaced_during_the_run_rejected(self) -> None:
++        executable(
++            self.compiler,
++            FIXTURE_COMPILER
++            + '\nif command == "check":\n'
++            + '    running = pathlib.Path(sys.argv[0])\n'
++            + '    running.write_text(running.read_text() + "# replaced compiler\\n")\n',
++        )
++        code, result = self.invoke()
++        self.assertEqual(code, 1, result)
++        self.assertEqual(result["error"]["code"], "compiler_changed")
++        self.assert_no_outputs()
++
++    def test_non_utf8_source_rejected(self) -> None:
++        self.source.write_bytes(b'def one : Nat := synth "\xff"\n')
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "invalid_source")
++        self.assert_no_outputs()
++
++    def test_oversized_receipt_leaves_no_outputs(self) -> None:
++        with mock.patch.object(synth, "RECEIPT_LIMIT", 16):
++            code, result = self.invoke()
++        self.assertEqual(code, 1, result)
++        self.assertEqual(result["error"]["code"], "receipt_limit")
++        self.assert_no_outputs()
++
++    def test_receipt_expansion_count_bound_enforced(self) -> None:
++        receipt = self.successful_receipt()
++        modified = dict(receipt, expansions=receipt["expansions"] * (synth.MAX_HOLES + 1))
++        replay_output = self.root / "expansions.kan"
++        code, result = self.invoke("--replay", str(self.rewrite_receipt(modified)), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "invalid_receipt")
++        self.assertIn("expansions must be a bounded list", result["error"]["message"])
++        self.assert_no_outputs(replay_output)
++
++    def test_receipt_rejected_list_bound_enforced(self) -> None:
++        receipt = self.successful_receipt()
++        entry = dict(
++            receipt["expansions"][0],
++            rejected=[
++                {"candidate_sha256": synth.sha256(str(index).encode("utf-8")),
++                 "error": {"code": "candidate_rejected", "message": "fixture"}}
++                for index in range(synth.MAX_CANDIDATES + 1)
++            ],
++        )
++        modified = dict(receipt, expansions=[entry])
++        replay_output = self.root / "rejected.kan"
++        code, result = self.invoke("--replay", str(self.rewrite_receipt(modified)), output=replay_output)
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "invalid_receipt")
++        self.assertIn("rejected candidates must be a bounded list", result["error"]["message"])
++        self.assert_no_outputs(replay_output)
++
++    def test_receipt_timing_values_validated(self) -> None:
++        for index, timing in enumerate(
++            ({"total_seconds": -1.0, "provider_seconds": 0.0, "checking_seconds": 0.0},
++             {"total_seconds": "fast", "provider_seconds": 0.0, "checking_seconds": 0.0})
++        ):
++            receipt = self.successful_receipt() if index == 0 else json.loads(self.receipt().read_text())
++            modified = dict(receipt, timing=timing)
++            replay_output = self.root / f"timing-{index}.kan"
++            code, result = self.invoke(
++                "--replay", str(self.rewrite_receipt(modified)), output=replay_output
++            )
++            self.assertEqual(code, 1)
++            self.assertEqual(result["error"]["code"], "invalid_receipt")
++            self.assertIn("Timing values", result["error"]["message"])
++            self.assert_no_outputs(replay_output)
++
++    def test_output_exists_precheck_runs_before_the_provider(self) -> None:
++        self.output.write_text("preserve this")
++        self.provider.unlink()
++        code, result = self.invoke()
++        self.assertEqual(code, 1)
++        self.assertEqual(result["error"]["code"], "output_exists")
++        self.assertEqual(self.output.read_text(), "preserve this")
++        self.assertFalse(self.receipt().exists())
++
++    def test_candidate_pool_is_sent_to_the_provider(self) -> None:
++        pool = self.root / "pool.json"
++        pool.write_text('["42", "1"]')
++        executable(self.provider, '''import json, sys
++request = json.loads(sys.stdin.buffer.read())
++if request.get("candidates") != ["42", "1"]:
++    sys.stderr.write("frozen pool missing from the request\\n")
++    sys.exit(7)
++print(json.dumps({"protocol_version": 1, "candidates": ["1"], "provenance": {"kind": "fixture"}, "metrics": {}}))
++''')
++        code, result = self.invoke("--candidate-pool", str(pool))
++        self.assertEqual(code, 0, result)
++        receipt = json.loads(self.receipt().read_text())
++        self.assertIn(receipt["expansions"][0]["candidate"], ["42", "1"])
++
++    def test_bad_arguments_are_structured(self) -> None:
++        for extra in (("--timeout", "nan"), ("--max-candidates", "9"), ("--max-holes", "0")):
++            code, result = self.invoke(*extra)
++            self.assertEqual(code, 1)
++            self.assertEqual(result["error"]["code"], "arguments")
++
++
++@unittest.skipUnless(os.environ.get("KANON_TEST_COMPILER"), "Set KANON_TEST_COMPILER to run real compiler tests")
++class RealCompilerBoundaryTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.directory = tempfile.TemporaryDirectory()
++        self.addCleanup(self.directory.cleanup)
++        self.root = Path(self.directory.name)
++        self.compiler = Path(os.environ["KANON_TEST_COMPILER"]).resolve()
++        self.source = self.root / "source.kan"
++        self.source.write_text('def main : Nat := synth "return forty-two"\n')
++        self.provider = self.root / "fixture-provider"
++        self.output = self.root / "resolved.kan"
++
++    def invoke(self, candidates: list[str]) -> tuple[int, dict]:
++        fixture_provider(self.provider, candidates)
++        out, err = io.StringIO(), io.StringIO()
++        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
++            code = synth.main([
++                "--compiler", str(self.compiler), str(self.source), "-o", str(self.output),
++                "--provider", str(self.provider), "--check-timeout", "5",
++            ])
++        return code, json.loads(out.getvalue() if code == 0 else err.getvalue())
++
++    def test_real_compiler_rejects_injection_and_wrong_type_then_accepts(self) -> None:
++        code, result = self.invoke([
++            "Type 0", "42\naxiom unsound : Nat", "42\ndef injected : Nat := 0",
++            'synth "recursive request"', "42",
++        ])
++        self.assertEqual(code, 0, result)
++        receipt = json.loads(Path(str(self.output) + ".synth.json").read_text())
++        self.assertEqual(receipt["expansions"][0]["candidate"], "42")
++        self.assertEqual(len(receipt["expansions"][0]["rejected"]), 4)
++        self.assertNotIn("unsound", self.output.read_text())
++        self.assertNotIn("injected", self.output.read_text())
++        checked = synth.bounded_process([str(self.compiler), "check", str(self.output)], timeout=5)
++        self.assertEqual(checked.returncode, 0, checked.stderr)
++
++    def test_real_compiler_all_injections_leave_no_outputs(self) -> None:
++        code, result = self.invoke(["42\naxiom unsound : Nat", 'synth "recursive request"'])
++        self.assertEqual(code, 1, result)
++        self.assertEqual(result["error"]["code"], "candidates_exhausted")
++        self.assertFalse(self.output.exists())
++        self.assertFalse(Path(str(self.output) + ".synth.json").exists())
++
++    def test_real_compiler_rejects_invalid_utf8_hint_before_protocol(self) -> None:
++        self.source.write_text('def main : Nat := synth "\\255"\n')
++        requested = synth.bounded_process([str(self.compiler), "synth-request", str(self.source)], timeout=5)
++        self.assertNotEqual(requested.returncode, 0)
++        self.assertEqual(requested.stdout, b"")
++        self.assertTrue(requested.stderr)
++        code, result = self.invoke(["42"])
++        self.assertEqual(code, 1, result)
++        self.assertFalse(self.output.exists())
++
++    def test_real_compiler_unicode_hint_roundtrips(self) -> None:
++        hint = "Return 42: λ ∀ 日本語"
++        self.source.write_text(f'def main : Nat := synth "{hint}"\n', encoding="utf-8")
++        requested = synth.bounded_process([str(self.compiler), "synth-request", str(self.source)], timeout=5)
++        self.assertEqual(requested.returncode, 0, requested.stderr)
++        self.assertEqual(synth.strict_json(requested.stdout, "compiler request")["hint"], hint)
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- /dev/null
++++ b/examples/synth-choice.candidates.json
+@@ -0,0 +1,4 @@
++[
++  "fun (earlier : Nat) (later : Nat) => earlier",
++  "fun (earlier : Nat) (later : Nat) => later"
++]
+--- /dev/null
++++ b/examples/synth-choice.kan
+@@ -0,0 +1,2 @@
++def select : (earlier : Nat) -> (later : Nat) -> Nat := synth "Return the later argument."
++def main : Nat := select 17 42
+--- /dev/null
++++ b/examples/synth-identity.kan
+@@ -0,0 +1,2 @@
++def identity : (A : Type 0) -> (x : A) -> A := synth "Return the argument unchanged."
++def main : Nat := identity Nat 42
+--- /dev/null
++++ b/kanon
+@@ -0,0 +1,4 @@
++#!/bin/sh
++set -eu
++kanon_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
++exec "$kanon_root/_build/default/bin/kanon.exe" "$@"
+--- a/surface/elab.ml
++++ b/surface/elab.ml
+@@ -27,6 +27,9 @@
+ 
+ let ( let* ) = Result.bind
+ 
++let unresolved_synth : Error.t =
++  Error.Cannot_infer "unresolved synth: materialize a checked candidate before checking"
++
+ let no_expect (what : string) : Error.t =
+   Error.Cannot_infer (what ^ " needs an expected type")
+ 
+@@ -102,7 +105,7 @@
+   match s with
+   | Syntax.SApp (f, a) -> Some (f, a)
+   | Syntax.SVar _ | Syntax.SNat _ | Syntax.SProp | Syntax.SType _ | Syntax.SPrim _
+-  | Syntax.SUnit | Syntax.SAuto | Syntax.SPair (_, _) | Syntax.STuple _ | Syntax.SSum _
++  | Syntax.SUnit | Syntax.SAuto | Syntax.SSynth _ | Syntax.SPair (_, _) | Syntax.STuple _ | Syntax.SSum _
+   | Syntax.SProd _ | Syntax.SProj (_, _) | Syntax.SInj (_, _, _) | Syntax.SAbsurd _
+   | Syntax.SFun (_, _) | Syntax.SArrow (_, _) | Syntax.SStar (_, _)
+   | Syntax.SLet (_, _, _, _) | Syntax.SAnn (_, _) | Syntax.SCase (_, _, _)
+@@ -113,7 +116,7 @@
+   match s with
+   | Syntax.SArrow (b, cod) -> Some (b, cod)
+   | Syntax.SVar _ | Syntax.SNat _ | Syntax.SProp | Syntax.SType _ | Syntax.SPrim _
+-  | Syntax.SUnit | Syntax.SAuto | Syntax.SPair (_, _) | Syntax.STuple _ | Syntax.SSum _
++  | Syntax.SUnit | Syntax.SAuto | Syntax.SSynth _ | Syntax.SPair (_, _) | Syntax.STuple _ | Syntax.SSum _
+   | Syntax.SProd _ | Syntax.SProj (_, _) | Syntax.SInj (_, _, _) | Syntax.SAbsurd _
+   | Syntax.SFun (_, _) | Syntax.SApp (_, _) | Syntax.SStar (_, _)
+   | Syntax.SLet (_, _, _, _) | Syntax.SAnn (_, _) | Syntax.SCase (_, _, _)
+@@ -124,7 +127,7 @@
+   match s with
+   | Syntax.SVar x -> Some x
+   | Syntax.SNat _ | Syntax.SProp | Syntax.SType _ | Syntax.SPrim _ | Syntax.SUnit
+-  | Syntax.SAuto | Syntax.SPair (_, _) | Syntax.STuple _ | Syntax.SSum _
++  | Syntax.SAuto | Syntax.SSynth _ | Syntax.SPair (_, _) | Syntax.STuple _ | Syntax.SSum _
+   | Syntax.SProd _ | Syntax.SProj (_, _) | Syntax.SInj (_, _, _) | Syntax.SAbsurd _
+   | Syntax.SFun (_, _) | Syntax.SApp (_, _) | Syntax.SArrow (_, _) | Syntax.SStar (_, _)
+   | Syntax.SLet (_, _, _, _) | Syntax.SAnn (_, _) | Syntax.SCase (_, _, _)
+@@ -200,6 +203,7 @@
+   | Syntax.SPrim p -> Ok (Term.Global (Syntax.prim_name p))
+   | Syntax.SUnit -> Ok Rules.unit_val
+   | Syntax.SAuto -> Ok Term.Auto
++  | Syntax.SSynth _ -> Error unresolved_synth
+   | Syntax.SPair (a, b) -> elab_pair c ~expected a b
+   | Syntax.STuple items ->
+       let* legs = elab_items c ~expected items ~left:false in
+@@ -1098,6 +1102,9 @@
+ let elab_program_in ?(budget : Budget.t = Budget.unlimited) (globals : Global.t)
+     (ds : Syntax.decl list) :
+     (Global.t * (string * Global.entry) list, Error.t) result =
++  let* () =
++    if List.exists Syntax.decl_contains_synth ds then Error unresolved_synth else Ok ()
++  in
+   List.fold_left
+     (fun
+       (acc : (Global.t * (string * Global.entry) list, Error.t) result)
+--- a/surface/lexer.ml
++++ b/surface/lexer.ml
+@@ -51,6 +51,7 @@
+     ("natEq", Token.KNatEq);
+     ("natLt", Token.KNatLt);
+     ("auto", Token.KAuto);
++    ("synth", Token.KSynth);
+     ("mu", Token.KMu);
+     ("mutual", Token.KMutual);
+     ("end", Token.KEnd);
+@@ -94,6 +95,57 @@
+       nat_of_digits loc digits |> Result.map (fun n ->
+         [ { Token.kind = Token.Dot; loc }; { Token.kind = Token.Nat n; loc = Token.next_col loc } ])
+ 
++(** A finite byte lookup makes decimal escape decoding total, without
++    relying on a character conversion that raises outside its domain. *)
++let bytes : char list =
++  "\000\001\002\003\004\005\006\007\008\009\010\011\012\013\014\015\
++   \016\017\018\019\020\021\022\023\024\025\026\027\028\029\030\031\
++   \032\033\034\035\036\037\038\039\040\041\042\043\044\045\046\047\
++   \048\049\050\051\052\053\054\055\056\057\058\059\060\061\062\063\
++   \064\065\066\067\068\069\070\071\072\073\074\075\076\077\078\079\
++   \080\081\082\083\084\085\086\087\088\089\090\091\092\093\094\095\
++   \096\097\098\099\100\101\102\103\104\105\106\107\108\109\110\111\
++   \112\113\114\115\116\117\118\119\120\121\122\123\124\125\126\127\
++   \128\129\130\131\132\133\134\135\136\137\138\139\140\141\142\143\
++   \144\145\146\147\148\149\150\151\152\153\154\155\156\157\158\159\
++   \160\161\162\163\164\165\166\167\168\169\170\171\172\173\174\175\
++   \176\177\178\179\180\181\182\183\184\185\186\187\188\189\190\191\
++   \192\193\194\195\196\197\198\199\200\201\202\203\204\205\206\207\
++   \208\209\210\211\212\213\214\215\216\217\218\219\220\221\222\223\
++   \224\225\226\227\228\229\230\231\232\233\234\235\236\237\238\239\
++   \240\241\242\243\244\245\246\247\248\249\250\251\252\253\254\255"
++  |> String.to_seq |> List.of_seq
++
++(** Hint strings accept every escape emitted by [%S]. Unknown escapes and
++    literal control characters fail before the parser sees a token. *)
++let rec string_literal (start : Token.loc) (loc : Token.loc) (cs : char list)
++    (acc : char list) : (string * Token.loc * char list, Error.t) result =
++  match cs with
++  | [] -> lex_err start "unterminated synthesis hint string"
++  | '"' :: rest ->
++      Ok (String.of_seq (List.to_seq (List.rev acc)), Token.next_col loc, rest)
++  | '\\' :: ('\\' | '"' as c) :: rest ->
++      string_literal start (Token.advance loc 2) rest (c :: acc)
++  | '\\' :: 'n' :: rest ->
++      string_literal start (Token.advance loc 2) rest ('\n' :: acc)
++  | '\\' :: 'r' :: rest ->
++      string_literal start (Token.advance loc 2) rest ('\r' :: acc)
++  | '\\' :: 't' :: rest ->
++      string_literal start (Token.advance loc 2) rest ('\t' :: acc)
++  | '\\' :: 'b' :: rest ->
++      string_literal start (Token.advance loc 2) rest ('\b' :: acc)
++  | '\\' :: a :: b :: c :: rest when is_digit a && is_digit b && is_digit c ->
++      let digit (d : char) : int = Char.code d - Char.code '0' in
++      let code = (100 * digit a) + (10 * digit b) + digit c in
++      List.find_opt (fun (byte : char) -> Int.equal (Char.code byte) code) bytes
++      |> Option.fold ~none:(lex_err loc "string byte escape exceeds 255")
++           ~some:(fun (byte : char) ->
++             string_literal start (Token.advance loc 4) rest (byte :: acc))
++  | '\\' :: _rest -> lex_err loc "invalid synthesis hint escape"
++  | c :: _rest when Char.code c < 32 || Char.code c = 127 ->
++      lex_err loc "control characters in synthesis hints must be escaped"
++  | c :: rest -> string_literal start (Token.next_col loc) rest (c :: acc)
++
+ (* mirrors kan-lang-tot-pin/surface/lexer.ml:85-135, arm by arm *)
+ let rec go (loc : Token.loc) (cs : char list) (acc : Token.t list) :
+     (Token.t list, Error.t) result =
+@@ -101,6 +153,10 @@
+   | [] -> Ok (List.rev ({ Token.kind = Token.Eof; loc } :: acc))
+   | ' ' :: rest | '\t' :: rest | '\r' :: rest -> go (Token.next_col loc) rest acc
+   | '\n' :: rest -> go (Token.next_line loc) rest acc
++  | '"' :: rest ->
++      Result.bind (string_literal loc (Token.next_col loc) rest [])
++        (fun (hint, loc', rest') ->
++          go loc' rest' ({ Token.kind = Token.Str hint; loc } :: acc))
+   | '-' :: '-' :: rest -> skip_comment (Token.advance loc 2) rest acc
+   | '-' :: '>' :: rest ->
+       go (Token.advance loc 2) rest ({ Token.kind = Token.Arrow; loc } :: acc)
+--- a/surface/parser.ml
++++ b/surface/parser.ml
+@@ -41,7 +41,7 @@
+ let kind_starts_atom (k : Token.kind) : bool =
+   match k with
+   | Token.Ident _ | Token.Nat _ | Token.LParen | Token.Unit | Token.KProp | Token.KType
+-  | Token.KAuto | Token.KTuple | Token.KSum | Token.KProd | Token.KNatAdd
++  | Token.KAuto | Token.KSynth | Token.KTuple | Token.KSum | Token.KProd | Token.KNatAdd
+   | Token.KNatSub | Token.KNatMul | Token.KNatEq | Token.KNatLt | Token.KNu ->
+       true
+   (* M1 Stage G, correction C7:  'mu' opens a declaration and 'and' joins
+@@ -53,7 +53,8 @@
+   (* M1 Stage I, SI-D8:  'rec' stands inside a declaration header and
+      never inside a term, so it starts no atom either. *)
+   | Token.KReturn | Token.KWith | Token.KAbsurd | Token.KLet | Token.KIn | Token.KMu
+-  | Token.KAnd | Token.KRec | Token.KMatch | Token.KMutual | Token.KEnd | Token.Eof ->
++  | Token.KAnd | Token.KRec | Token.KMatch | Token.KMutual | Token.KEnd | Token.Str _
++  | Token.Eof ->
+       false
+ 
+ let starts_atom (ts : Token.t list) : bool =
+@@ -373,6 +374,11 @@
+       Ok (Syntax.SType n, rest)
+   | { Token.kind = Token.KType; loc = _ } :: rest -> Ok (Syntax.SType 0, rest)
+   | { Token.kind = Token.KAuto; loc = _ } :: rest -> Ok (Syntax.SAuto, rest)
++  | { Token.kind = Token.KSynth; loc = _ }
++    :: { Token.kind = Token.Str hint; loc = _ } :: rest ->
++      Ok (Syntax.SSynth hint, rest)
++  | { Token.kind = Token.KSynth; loc = _ } :: rest ->
++      expected "a quoted hint after 'synth'" rest
+   | { Token.kind = Token.Unit; loc = _ } :: rest -> Ok (Syntax.SUnit, rest)
+   | { Token.kind = Token.KNatAdd; loc = _ } :: rest -> Ok (Syntax.SPrim Syntax.PAdd, rest)
+   | { Token.kind = Token.KNatSub; loc = _ } :: rest -> Ok (Syntax.SPrim Syntax.PSub, rest)
+@@ -609,3 +615,12 @@
+ let parse (src : string) : (Syntax.decl list, Error.t) result =
+   let* ts = Lexer.lex src in
+   parse_decls ts []
++
++(** The candidate protocol accepts exactly one expression. In particular,
++    a declaration after an otherwise valid term cannot change the context. *)
++let expression (src : string) : (Syntax.t, Error.t) result =
++  let* ts = Lexer.lex src in
++  let* term, rest = parse_term ts in
++  match rest with
++  | [ { Token.kind = Token.Eof; loc = _ } ] -> Ok term
++  | ({ Token.kind = _; loc = _ } :: _ | []) -> expected "end of input" rest
+--- a/surface/syntax.ml
++++ b/surface/syntax.ml
+@@ -105,6 +105,7 @@
+   | SPrim of prim
+   | SUnit
+   | SAuto
++  | SSynth of string
+   | SPair of t * t
+   | STuple of t list
+   | SSum of t list
+@@ -141,7 +142,54 @@
+       (** M1 Stage I, SI-D8:  a recursive definition group, one member
+           per "def rec" or "and" header.  The elaborator guards the
+           whole group before it translates any member (SI-D9). *)
++
++(** Ordinary checking must reject even a synthesis hole in an annotation
++    that elaboration does not otherwise inspect, such as a collection case
++    payload annotation. Every surface constructor participates in this walk. *)
++let rec contains_synth (term : t) : bool =
++  match term with
++  | SSynth _ -> true
++  | SVar _ | SNat _ | SProp | SType _ | SPrim _ | SUnit | SAuto -> false
++  | SPair (a, b) | SApp (a, b) | SAnn (a, b) -> contains_synth a || contains_synth b
++  | STuple items | SSum items | SProd items -> List.exists contains_synth items
++  | SProj (value, _) | SInj (_, _, value) | SAbsurd value -> contains_synth value
++  | SFun (binders, body) ->
++      List.exists binder_contains_synth binders || contains_synth body
++  | SArrow (binder, body) | SStar (binder, body) ->
++      binder_contains_synth binder || contains_synth body
++  | SLet (_, ty, value, body) ->
++      contains_synth ty || contains_synth value || contains_synth body
++  | SCase (scrutinee, motive, branches) | SMatch (scrutinee, motive, branches) ->
++      contains_synth scrutinee
++      || (motive |> Option.fold ~none:false ~some:(fun (m : motive) -> contains_synth m.mo_body))
++      || List.exists branch_contains_synth branches
++
++and binder_contains_synth (binder : binder) : bool = contains_synth binder.b_ty
++
++and branch_contains_synth (branch : branch) : bool =
++  match branch with
++  | BrLeg (_, binders, body) ->
++      List.exists binder_contains_synth binders || contains_synth body
++  | BrCtor (_, fields, body) ->
++      List.exists
++        (fun (field : field) -> field.fd_ty |> Option.fold ~none:false ~some:contains_synth)
++        fields
++      || contains_synth body
+ 
++let decl_contains_synth (decl : decl) : bool =
++  match decl with
++  | DDef (_, ty, body) -> contains_synth ty || contains_synth body
++  | DAxiom (_, ty) -> contains_synth ty
++  | DMu families ->
++      List.exists (fun (family : fam) ->
++        List.exists binder_contains_synth family.fm_params
++        || contains_synth family.fm_ty
++        || List.exists (fun (ctor : fam_ctor) -> contains_synth ctor.fc_ty) family.fm_ctors)
++        families
++  | DRec members ->
++      List.exists (fun (member : rec_def) ->
++        contains_synth member.rd_ty || contains_synth member.rd_body) members
++
+ let prim_name (p : prim) : string =
+   match p with
+   | PAdd -> "natAdd"
+@@ -164,6 +212,7 @@
+   | SPrim _ -> 2
+   | SUnit -> 2
+   | SAuto -> 2
++  | SSynth _ -> 2
+   | SPair (_, _) -> 2
+   | STuple _ -> 2
+   | SSum _ -> 2
+@@ -235,6 +284,7 @@
+   | SPrim p -> prim_name p
+   | SUnit -> "()"
+   | SAuto -> "auto"
++  | SSynth hint -> Printf.sprintf "synth %S" hint
+   | SPair (a, b) -> Printf.sprintf "(%s, %s)" (at 0 a) (at 0 b)
+   | STuple items ->
+       Printf.sprintf "tuple (%s)" (String.concat ", " (List.map (at 0) items))
+--- /dev/null
++++ b/surface/synthesis.ml
+@@ -0,0 +1,239 @@
++(** A synthesis candidate is untrusted source data. This module never calls
++    a model, adds a kernel constructor, or installs a candidate as an axiom. *)
++open Kanon_kernel
++
++let ( let* ) = Result.bind
++
++type request = {
++  declaration : string;
++  hint : string;
++  expected_type : string;
++  context : string;
++}
++
++let unsupported : Error.t =
++  Error.Cannot_infer
++    "synth is supported only as the entire body of an explicitly typed nonrecursive def"
++
++let rec each (check : 'a -> (unit, Error.t) result) (items : 'a list) :
++    (unit, Error.t) result =
++  match items with
++  | [] -> Ok ()
++  | item :: rest ->
++      let* () = check item in
++      each check rest
++
++(** Every term constructor and every annotation is visited explicitly.
++    Extending the syntax therefore makes the safety walk nonexhaustive until
++    the new constructor has a policy. *)
++let rec ordinary (term : Syntax.t) : (unit, Error.t) result =
++  match term with
++  | Syntax.SSynth _ -> Error unsupported
++  | Syntax.SAuto ->
++      Error (Error.Cannot_infer "unresolved auto is not allowed in synthesis sources or candidates")
++  | Syntax.SVar _ | Syntax.SNat _ | Syntax.SProp | Syntax.SType _
++  | Syntax.SPrim _ | Syntax.SUnit -> Ok ()
++  | Syntax.SPair (left, right) | Syntax.SApp (left, right)
++  | Syntax.SAnn (left, right) ->
++      let* () = ordinary left in
++      ordinary right
++  | Syntax.STuple items | Syntax.SSum items | Syntax.SProd items -> each ordinary items
++  | Syntax.SProj (value, _) | Syntax.SInj (_, _, value) | Syntax.SAbsurd value ->
++      ordinary value
++  | Syntax.SFun (binders, body) ->
++      let* () = each ordinary_binder binders in
++      ordinary body
++  | Syntax.SArrow (binder, body) | Syntax.SStar (binder, body) ->
++      let* () = ordinary_binder binder in
++      ordinary body
++  | Syntax.SLet (_, ty, value, body) ->
++      let* () = ordinary ty in
++      let* () = ordinary value in
++      ordinary body
++  | Syntax.SCase (scrutinee, motive, branches)
++  | Syntax.SMatch (scrutinee, motive, branches) ->
++      let* () = ordinary scrutinee in
++      let* () =
++        motive |> Option.fold ~none:(Ok ())
++          ~some:(fun (m : Syntax.motive) -> ordinary m.Syntax.mo_body)
++      in
++      each ordinary_branch branches
++
++and ordinary_binder (binder : Syntax.binder) : (unit, Error.t) result =
++  ordinary binder.Syntax.b_ty
++
++and ordinary_branch (branch : Syntax.branch) : (unit, Error.t) result =
++  match branch with
++  | Syntax.BrLeg (_, binders, body) ->
++      let* () = each ordinary_binder binders in
++      ordinary body
++  | Syntax.BrCtor (_, fields, body) ->
++      let* () = each ordinary_field fields in
++      ordinary body
++
++and ordinary_field (field : Syntax.field) : (unit, Error.t) result =
++  field.Syntax.fd_ty |> Option.fold ~none:(Ok ()) ~some:ordinary
++
++let ordinary_family (family : Syntax.fam) : (unit, Error.t) result =
++  let* () = each ordinary_binder family.Syntax.fm_params in
++  let* () = ordinary family.Syntax.fm_ty in
++  each (fun (ctor : Syntax.fam_ctor) -> ordinary ctor.Syntax.fc_ty) family.Syntax.fm_ctors
++
++let ordinary_recursive (member : Syntax.rec_def) : (unit, Error.t) result =
++  let* () = ordinary member.Syntax.rd_ty in
++  ordinary member.Syntax.rd_body
++
++let validate_decl (decl : Syntax.decl) : (unit, Error.t) result =
++  match decl with
++  | Syntax.DAxiom (name, _) ->
++      Error (Error.Cannot_infer ("synthesis disallows every source axiom: " ^ name))
++  | Syntax.DMu families -> each ordinary_family families
++  | Syntax.DRec members -> each ordinary_recursive members
++  | Syntax.DDef (_, ty, Syntax.SSynth _) -> ordinary ty
++  | Syntax.DDef (_, ty, body) ->
++      let* () = ordinary ty in
++      ordinary body
++
++(** Every name a declaration installs. The namespace is flat, so a family
++    group installs its member names and every constructor name, and a
++    recursive group installs one name per member. *)
++let bound_names (decl : Syntax.decl) : string list =
++  match decl with
++  | Syntax.DDef (name, _, _) | Syntax.DAxiom (name, _) -> [ name ]
++  | Syntax.DMu families ->
++      List.concat_map
++        (fun (family : Syntax.fam) ->
++          family.Syntax.fm_name
++          :: List.map
++               (fun (ctor : Syntax.fam_ctor) -> ctor.Syntax.fc_name)
++               family.Syntax.fm_ctors)
++        families
++  | Syntax.DRec members ->
++      List.map (fun (member : Syntax.rec_def) -> member.Syntax.rd_name) members
++
++(** The environment installs by overwrite. A declaration that repeats a name
++    already bound in the frozen prefix would therefore be checked against the
++    old entry and then replace it, so the checked term is not the installed
++    term. Synthesis refuses every such redefinition, including a redefinition
++    of a built-in name. *)
++let taken (globals : Global.t) (name : string) : bool =
++  Option.is_some (Global.find name globals)
++  || Option.is_some (Global.find_family name globals)
++  || Global.StringMap.exists
++       (fun (_declared : string) (family : Positivity.family) ->
++         Option.is_some (Positivity.ctor_of name family))
++       globals.Global.families
++
++let fresh (globals : Global.t) (names : string list) : (unit, Error.t) result =
++  each
++    (fun (name : string) ->
++      if taken globals name then
++        Error
++          (Error.Cannot_infer ("synthesis refuses a declaration that redefines " ^ name))
++      else Ok ())
++    names
++
++(** The constructor of an entry, as text, so two entries compare without a
++    wildcard match arm. *)
++let kind (entry : Global.entry) : string =
++  match entry with
++  | Global.Def _ -> "def"
++  | Global.Axiom _ -> "axiom"
++  | Global.Prim _ -> "prim"
++
++(** Defense in depth for the axiom scan below: every name of the initial
++    environment must still carry the same constructor and the same closed
++    type. A replaced built-in would let the axiom scan hold vacuously. *)
++let builtins_intact (globals : Global.t) : (unit, Error.t) result =
++  Global.StringMap.fold
++    (fun (name : string) (expected : Global.entry) (acc : (unit, Error.t) result) ->
++      let* () = acc in
++      Global.find name globals
++      |> Option.fold
++           ~none:
++             (Error (Error.Cannot_infer ("synthesis requires the built-in " ^ name)))
++           ~some:(fun (entry : Global.entry) ->
++             if
++               String.equal (kind expected) (kind entry)
++               && Global.entry_ty expected = Global.entry_ty entry
++             then Ok ()
++             else
++               Error
++                 (Error.Cannot_infer ("synthesis refuses a replaced built-in: " ^ name))))
++    Global.initial.Global.entries (Ok ())
++
++(** Inspect the entire immutable environment, so an indirect dependency
++    cannot hide a postulate behind an ordinary definition. The built-in Nat
++    postulate is permitted only with the exact type installed initially. *)
++let assumptions (globals : Global.t) : (unit, Error.t) result =
++  let* () = builtins_intact globals in
++  Global.StringMap.fold
++    (fun (name : string) (entry : Global.entry) (acc : (unit, Error.t) result) ->
++      let* () = acc in
++      match entry with
++      | Global.Def _ | Global.Prim _ -> Ok ()
++      | Global.Axiom axiom ->
++          let permitted =
++            String.equal name Prim.nat_name
++            && (Global.find_axiom Prim.nat_name Global.initial
++                |> Option.fold ~none:false ~some:(fun (initial : Global.axiom_entry) ->
++                     axiom.Global.ax_ty = initial.Global.ax_ty))
++          in
++          if permitted then Ok ()
++          else Error (Error.Cannot_infer ("unapproved axiom in synthesis context: " ^ name)))
++    globals.Global.entries (Ok ())
++
++type focus = {
++  request : request;
++  globals : Global.t;
++  prefix : Syntax.decl list;
++  goal : Syntax.t;
++  suffix : Syntax.decl list;
++}
++
++let rec locate (globals : Global.t) (prefix_rev : Syntax.decl list)
++    (remaining : Syntax.decl list) : (focus option, Error.t) result =
++  match remaining with
++  | [] ->
++      let* () = assumptions globals in
++      Ok None
++  | Syntax.DDef (name, ty, Syntax.SSynth hint) :: suffix ->
++      let* () = assumptions globals in
++      let* () = fresh globals [ name ] in
++      (* This temporary declaration checks only formation of the fixed goal.
++         Its returned environment is discarded. Candidate checking below uses
++         a real definition and the original prefix globals. *)
++      let* _goal_formation = Elab.elab_program_in globals [ Syntax.DAxiom (name, ty) ] in
++      let prefix = List.rev prefix_rev in
++      let request =
++        { declaration = name; hint; expected_type = Syntax.at 0 ty;
++          context = Syntax.print prefix }
++      in
++      Ok (Some { request; globals; prefix; goal = ty; suffix })
++  | ((Syntax.DDef (_, _, _) | Syntax.DAxiom (_, _) | Syntax.DMu _ | Syntax.DRec _) as decl)
++    :: rest ->
++      let* () = fresh globals (bound_names decl) in
++      let* checked, _rows = Elab.elab_program_in globals [ decl ] in
++      locate checked (decl :: prefix_rev) rest
++
++let prepare (source : string) : (focus option, Error.t) result =
++  let* declarations = Parser.parse source in
++  let* () = each validate_decl declarations in
++  locate Global.initial [] declarations
++
++let next (source : string) : (request option, Error.t) result =
++  prepare source |> Result.map (Option.map (fun (focus : focus) -> focus.request))
++
++let apply (source : string) (candidate : string) : (string, Error.t) result =
++  let* focus = prepare source in
++  let* focus =
++    focus |> Option.to_result ~none:(Error.Cannot_infer "source has no unresolved synth")
++  in
++  let* term = Parser.expression candidate in
++  let* () = ordinary term in
++  (* The same freshness rule as the check path, so the two cannot drift. *)
++  let* () = fresh focus.globals [ focus.request.declaration ] in
++  let definition = Syntax.DDef (focus.request.declaration, focus.goal, term) in
++  let* checked, _rows = Elab.elab_program_in focus.globals [ definition ] in
++  let* () = assumptions checked in
++  Ok (Syntax.print (focus.prefix @ (definition :: focus.suffix)))
+--- /dev/null
++++ b/surface/synthesis.mli
+@@ -0,0 +1,32 @@
++(** Pure checked synthesis for explicitly typed, nonrecursive definition
++    bodies. Models receive only ordinary source preceding the first hole.
++
++    The initial policy refuses every source axiom, including unused axioms,
++    and every axiom in the checked prefix except the unchanged built-in Nat
++    postulate. This is deliberately stronger than checking just the chosen
++    term's dependency closure. No custom environment can enter this API.
++
++    The policy also refuses every declaration that redefines a name already
++    bound in the checked prefix or in the initial environment. The
++    environment installs by overwrite, so a repeated name would be checked
++    against the old entry and then replace it. This rule covers the hole
++    itself, every other declaration, and every name a family or recursive
++    group binds. *)
++
++type request = {
++  declaration : string;
++  hint : string;
++  expected_type : string;
++  context : string;
++}
++
++val next : string -> (request option, Kanon_kernel.Error.t) result
++(** Check the prefix and goal of the first eligible hole. [Ok None] means
++    the entire source checked successfully and has no synthesis holes. *)
++
++val apply : string -> string -> (string, Kanon_kernel.Error.t) result
++(** Parse exactly one candidate expression, independently kernel-check its
++    complete definition in the fixed prefix, and print the replaced source.
++    Later holes remain in the result. Call [next] until it returns [None],
++    then check the complete materialized source again before publication.
++    The process caller must enforce byte and wall-time limits. *)
+--- a/surface/token.ml
++++ b/surface/token.ml
+@@ -64,6 +64,7 @@
+   | KLet
+   | KIn
+   | KAuto
++  | KSynth
+   | KMu
+   | KMutual
+   | KEnd
+@@ -82,6 +83,7 @@
+   | KNatEq
+   | KNatLt
+   | Ident of string
++  | Str of string
+   | Nat of Kanon_kernel.Bignum.t
+   | Eof
+ 
+@@ -125,6 +127,7 @@
+   | KLet -> "'let'"
+   | KIn -> "'in'"
+   | KAuto -> "'auto'"
++  | KSynth -> "'synth'"
+   | KMu -> "'mu'"
+   | KMutual -> "'mutual'"
+   | KEnd -> "'end'"
+@@ -137,5 +140,6 @@
+   | KNatEq -> "'natEq'"
+   | KNatLt -> "'natLt'"
+   | Ident s -> Printf.sprintf "identifier %s" s
++  | Str _ -> "a string literal"
+   | Nat n -> "number " ^ Kanon_kernel.Bignum.to_string n
+   | Eof -> "end of input"
+--- a/test/dune
++++ b/test/dune
+@@ -1,3 +1,3 @@
+ (tests
+- (names main wasm sl_surface)
++ (names main wasm sl_surface synthesis)
+  (libraries kanon_kernel kanon_surface kanon_wasm))
+--- /dev/null
++++ b/test/synthesis.ml
+@@ -0,0 +1,255 @@
++(** Adversarial tests for the boundary between proposed source and checked
++    definitions. No fixture proposer or model result substitutes for checking. *)
++open Kanon_kernel
++open Kanon_surface
++
++let ( let* ) = Result.bind
++
++let explain (result : ('a, Error.t) result) : ('a, string) result =
++  result |> Result.map_error Error.to_string
++
++let require (condition : bool) (message : string) : (unit, string) result =
++  if condition then Ok () else Error message
++
++let rejected (result : ('a, Error.t) result) : (unit, string) result =
++  result |> Result.fold ~ok:(fun _value -> Error "invalid input was accepted")
++    ~error:(fun (_error : Error.t) -> Ok ())
++
++let refusal (message : string) (result : ('a, Error.t) result) : (unit, string) result =
++  result |> Result.fold ~ok:(fun _value -> Error "invalid input was accepted")
++    ~error:(fun (error : Error.t) ->
++      require (String.equal message (Error.message error)) (Error.to_string error))
++
++let complete (source : string) : (unit, string) result =
++  let* request = explain (Synthesis.next source) in
++  let* () = require (Option.is_none request) "materialized source still has a hole" in
++  let* _checked = explain (Elab.check_in Global.initial source) in
++  Ok ()
++
++let next_request (source : string) : (Synthesis.request, string) result =
++  let* request = explain (Synthesis.next source) in
++  request |> Option.to_result ~none:"no request returned"
++
++let same_tree (first : string) (second : string) : (unit, string) result =
++  let* a = explain (Parser.parse first) in
++  let* b = explain (Parser.parse second) in
++  require (a = b) "materialization changed a declaration besides its selected body"
++
++let success (source : string) (candidate : string) (expected : string) :
++    (unit, string) result =
++  let* expanded = explain (Synthesis.apply source candidate) in
++  let* () = same_tree expanded expected in
++  complete expanded
++
++let invalid_candidate (source : string) (candidate : string) : (unit, string) result =
++  let* _parsed = explain (Parser.expression candidate) in
++  rejected (Synthesis.apply source candidate)
++
++let round_trip_hint (hint : string) : (unit, string) result =
++  let source = "def result : Nat := " ^ Syntax.at 0 (Syntax.SSynth hint) in
++  let* parsed = explain (Parser.parse source) in
++  let* printed = explain (Parser.parse (Syntax.print parsed)) in
++  let* () = require (parsed = printed) "hint changed during print/parse roundtrip" in
++  let* request = next_request source in
++  require (String.equal request.Synthesis.hint hint) "request hint differs from its literal"
++
++let unsupported =
++  "synth is supported only as the entire body of an explicitly typed nonrecursive def"
++
++let auto_refusal = "unresolved auto is not allowed in synthesis sources or candidates"
++let hole = "def result : Nat := synth \"return seven\"\n"
++let family = "mu N : Type 0 := | zero : N | succ (n : N) : N\n"
++
++let boundary_cases : (string * (unit -> (unit, string) result)) list =
++  [ "literal", (fun () -> success hole "7" "def result : Nat := 7");
++    "whole-lambda", (fun () -> success
++      "def id : Nat -> Nat := synth \"identity\""
++      "fun (x : Nat) => x" "def id : Nat -> Nat := fun (x : Nat) => x");
++    "linear-lambda", (fun () -> success
++      "def id : (1 x : Nat) -> Nat := synth \"identity\""
++      "fun (1 x : Nat) => x" "def id : (1 x : Nat) -> Nat := fun (1 x : Nat) => x");
++    "dependent-lambda", (fun () -> success
++      "def id : (0 A : Type 0) -> A -> A := synth \"identity\""
++      "fun (0 A : Type 0) (x : A) => x"
++      "def id : (0 A : Type 0) -> A -> A := fun (0 A : Type 0) (x : A) => x");
++    "existing-prefix", (fun () -> success
++      ("def base : Nat := 7\n" ^ hole) "base"
++      "def base : Nat := 7\ndef result : Nat := base");
++    "fixed-request", (fun () ->
++      let prefix = "def base : Nat := 7\n" in
++      let* request = next_request (prefix ^ hole ^ "def future : Nat := 8") in
++      let* () = require (String.equal request.Synthesis.declaration "result") "wrong declaration" in
++      let* () = require (String.equal request.Synthesis.expected_type "Nat") "wrong goal" in
++      same_tree request.Synthesis.context prefix);
++    "multiple-holes", (fun () ->
++      let source = hole ^ "def second : Nat := synth \"reuse the first\"" in
++      let* first = explain (Synthesis.apply source "7") in
++      let* request = next_request first in
++      let* () = require (String.equal request.Synthesis.declaration "second") "wrong next hole" in
++      let* () = same_tree request.Synthesis.context "def result : Nat := 7" in
++      success first "result" "def result : Nat := 7\ndef second : Nat := result");
++    "family-prefix", (fun () -> success
++      (family ^ "def result : N := synth \"zero\"") "zero"
++      (family ^ "def result : N := zero"));
++    "family-suffix", (fun () -> success
++      (hole ^ family ^ "def final : N := zero") "7"
++      ("def result : Nat := 7\n" ^ family ^ "def final : N := zero"));
++    "mutual-families", (fun () ->
++      let prefix = "mutual mu A : Type 0 := | a (b : B) : A mu B : Type 0 := | b : B end\n" in
++      success (prefix ^ hole) "7" (prefix ^ "def result : Nat := 7"));
++    "escaped-hint", (fun () -> round_trip_hint "quote \" slash \\ line\nreturn\rtab\tback\b");
++    "byte-hint", (fun () -> round_trip_hint "\000\001\031\127\128\255");
++    "unicode-hint", (fun () -> round_trip_hint "return λ with 日本語");
++    "declaration-like-hint", (fun () -> round_trip_hint "\" def injected : Nat := 9 --");
++    "unresolved-default", (fun () -> refusal
++      "unresolved synth: materialize a checked candidate before checking"
++      (Elab.check_in Global.initial hole));
++    "unresolved-ignored-annotation", (fun () -> refusal
++      "unresolved synth: materialize a checked candidate before checking"
++      (Elab.check_in Global.initial
++        "def result : Nat := case (inj 0 of 1 7 : sum (Nat)) with | 0 (x : synth \"Nat\") => x"));
++    "empty-candidate", (fun () -> rejected (Parser.expression ""));
++    "declaration-injection", (fun () -> rejected (Parser.expression "7 def injected : Nat := 9"));
++    "axiom-injection", (fun () -> rejected (Parser.expression "7 axiom poison : Type 0"));
++    "closing-token-injection", (fun () -> rejected (Parser.expression "7 )"));
++    "wrong-type", (fun () -> invalid_candidate hole "()");
++    "wrong-goal", (fun () -> invalid_candidate hole "(Type 0 : Type 1)");
++    "unknown-variable", (fun () -> invalid_candidate hole "missing");
++    "future-variable", (fun () -> invalid_candidate (hole ^ "def future : Nat := 7") "future");
++    "self-reference", (fun () -> invalid_candidate hole "result");
++    "linear-duplicate", (fun () -> invalid_candidate
++      "def result : (1 x : Nat) -> Nat := synth \"identity\""
++      "fun (1 x : Nat) => natAdd x x");
++    "linear-unused", (fun () -> invalid_candidate
++      "def result : (1 x : Nat) -> Nat := synth \"identity\""
++      "fun (1 x : Nat) => 0");
++    "erased-runtime-use", (fun () -> invalid_candidate
++      "def result : (0 x : Nat) -> Nat := synth \"ignore\""
++      "fun (0 x : Nat) => x");
++    "bad-prefix", (fun () -> rejected (Synthesis.next ("def bad : Nat := ()\n" ^ hole)));
++    "bad-goal", (fun () -> rejected (Synthesis.next "def result : 7 := synth \"a term\""));
++    "unknown-goal", (fun () -> rejected (Synthesis.next "def result : Missing := synth \"a term\""));
++    "no-hole-fully-checked", (fun () -> rejected (Synthesis.next "def bad : Nat := ()"));
++    "no-hole-valid", (fun () -> complete "def result : Nat := 7");
++    "empty-program", (fun () -> complete "");
++    "no-hole-apply-refused", (fun () -> refusal "source has no unresolved synth"
++      (Synthesis.apply "def result : Nat := 7" "8"));
++    "bad-suffix-on-final-check", (fun () ->
++      let* expanded = explain (Synthesis.apply (hole ^ "def bad : Nat := ()") "7") in
++      rejected (Synthesis.next expanded));
++    "failed-candidate-keeps-request", (fun () ->
++      let* before = next_request hole in
++      let* () = invalid_candidate hole "missing" in
++      let* after = next_request hole in
++      require (before = after) "a failed candidate changed the request");
++    "direct-axiom", (fun () -> refusal "synthesis disallows every source axiom: poison"
++      (Synthesis.next ("axiom poison : Nat\n" ^ hole)));
++    "transitive-axiom", (fun () -> refusal "synthesis disallows every source axiom: Poison"
++      (Synthesis.next ("axiom Poison : Type 0\ndef Alias : Type 0 := Poison\n" ^ hole)));
++    "suffix-axiom", (fun () -> refusal "synthesis disallows every source axiom: poison"
++      (Synthesis.next (hole ^ "axiom poison : Nat")));
++    "source-nat-repostulate", (fun () -> refusal "synthesis disallows every source axiom: Nat"
++      (Synthesis.next ("axiom Nat : Type 0\n" ^ hole)));
++    "redefined-hole", (fun () -> refusal
++      "synthesis refuses a declaration that redefines result"
++      (Synthesis.next ("def result : Nat := 7\n" ^ hole)));
++    "redefined-hole-apply", (fun () -> refusal
++      "synthesis refuses a declaration that redefines result"
++      (Synthesis.apply ("def result : Nat := 7\n" ^ hole) "result"));
++    "redefined-prefix", (fun () -> refusal
++      "synthesis refuses a declaration that redefines base"
++      (Synthesis.next ("def base : Nat := 7\ndef base : Nat := 8\n" ^ hole)));
++    "redefined-suffix-on-final-check", (fun () ->
++      let* expanded = explain (Synthesis.apply (hole ^ "def result : Nat := 8") "7") in
++      refusal "synthesis refuses a declaration that redefines result"
++        (Synthesis.next expanded));
++    (* The body stays ordinary: a self-referential body loops in a build
++       without the guard, and a regression must fail, not hang. *)
++    "redefined-builtin-type", (fun () -> refusal
++      "synthesis refuses a declaration that redefines Nat"
++      (Synthesis.next ("def Nat : Type 0 := Type 0\n" ^ hole)));
++    "redefined-family", (fun () -> refusal
++      "synthesis refuses a declaration that redefines N"
++      (Synthesis.next (family ^ family ^ hole)));
++    "redefined-constructor", (fun () -> refusal
++      "synthesis refuses a declaration that redefines zero"
++      (Synthesis.next (family ^ "mu M : Type 0 := | zero : M\n" ^ hole)));
++    "redefined-recursive", (fun () -> refusal
++      "synthesis refuses a declaration that redefines base"
++      (Synthesis.next
++        ("def base : Nat := 7\ndef rec base : Nat -> Nat := fun (x : Nat) => x\n" ^ hole)));
++    "missing-hint", (fun () -> rejected (Parser.parse "def result : Nat := synth"));
++    "bad-escape", (fun () -> rejected (Parser.parse {|def result : Nat := synth "\q"|}));
++    "bad-byte-escape", (fun () -> rejected (Parser.parse {|def result : Nat := synth "\256"|}));
++    "short-byte-escape", (fun () -> rejected (Parser.parse {|def result : Nat := synth "\12"|}));
++    "unterminated-hint", (fun () -> rejected (Parser.parse "def result : Nat := synth \"open"));
++    "raw-newline-hint", (fun () -> rejected (Parser.parse "def result : Nat := synth \"line\nline\"")) ]
++
++let unsupported_sources : (string * string) list =
++  [ "nested-lambda", "def id : Nat -> Nat := fun (x : Nat) => synth \"x\"";
++    "nested-let", "def result : Nat := let x : Nat := synth \"zero\" in x";
++    "type-position", "def result : synth \"Nat\" := 7";
++    "binder-type", "def id : Nat -> Nat := fun (x : synth \"Nat\") => x";
++    "recursive-body", "def rec result : Nat := synth \"zero\"";
++    "family-kind", "mu N : synth \"universe\" :=";
++    "family-parameter", "mu N (A : synth \"universe\") : Type 0 :=";
++    "constructor-type", "mu N : Type 0 := | zero : synth \"N\"";
++    "later-unsupported", hole ^ "def id : Nat -> Nat := fun (x : Nat) => synth \"x\"" ]
++
++let restricted_candidates : (string * string) list =
++  [ "body", "auto";
++    "binder-type", "fun (x : auto) => x";
++    "arrow-domain", "(x : auto) -> Nat";
++    "arrow-codomain", "(x : Nat) -> auto";
++    "star-domain", "(x : auto) * Nat";
++    "annotation", "(7 : auto)";
++    "let-type", "let x : auto := 7 in x";
++    "let-value", "let x : Nat := auto in x";
++    "let-body", "let x : Nat := 7 in auto";
++    "pair", "(7, auto)";
++    "tuple", "tuple (7, auto)";
++    "sum", "sum (Nat, auto)";
++    "product", "prod (Nat, auto)";
++    "projection", "auto.1";
++    "injection", "inj 0 of 1 auto";
++    "absurd", "absurd auto";
++    "application", "natAdd 7 auto";
++    "case-motive", "case 7 as x return auto with";
++    "case-branch", "case 7 with | 0 (x : Nat) => auto";
++    "case-binder", "case 7 with | 0 (x : auto) => x";
++    "match-motive", "match zero as x in N return auto with | zero => zero";
++    "match-field", "match zero with | succ (x : auto) => x";
++    "match-body", "match zero with | zero => auto" ]
++
++let cases : (string * (unit -> (unit, string) result)) list =
++  boundary_cases
++  @ List.map (fun (name, source) ->
++      ("unsupported-" ^ name, fun () -> refusal unsupported (Synthesis.next source)))
++      unsupported_sources
++  @ List.concat_map (fun (name, candidate) ->
++      [ ("candidate-auto-" ^ name, fun () ->
++          let* _parsed = explain (Parser.expression candidate) in
++          refusal auto_refusal (Synthesis.apply hole candidate));
++        ("source-auto-" ^ name, fun () ->
++          refusal auto_refusal (Synthesis.next ("def result : Nat := " ^ candidate))) ])
++      restricted_candidates
++  @ [ "candidate-nested-synth", (fun () -> refusal unsupported
++        (Synthesis.apply hole "let x : Nat := synth \"zero\" in x"));
++      "candidate-synth-binder", (fun () -> refusal unsupported
++        (Synthesis.apply hole "fun (x : synth \"Nat\") => x"));
++      "candidate-synth-motive", (fun () -> refusal unsupported
++        (Synthesis.apply hole "case 7 as x return synth \"Nat\" with"));
++      "candidate-synth-field", (fun () -> refusal unsupported
++        (Synthesis.apply hole "match zero with | succ (x : synth \"Nat\") => x")) ]
++
++let () =
++  let passed = List.fold_left
++    (fun (count : int) ((name : string), (run : unit -> (unit, string) result)) ->
++      run () |> Result.fold
++        ~ok:(fun () -> Printf.printf "SYNTHESIS %s OK\n" name; count + 1)
++        ~error:(fun (message : string) ->
++          Printf.printf "SYNTHESIS %s FAIL: %s\n" name message; count))
++    0 cases in
++  Printf.printf "SYNTHESIS-OK %d/%d\n" passed (List.length cases);
++  if Int.equal passed (List.length cases) then print_endline "SYNTHESIS OK"
++  else (print_endline "SYNTHESIS FAIL"; exit 1)

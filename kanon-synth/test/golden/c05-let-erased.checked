@@ -1,0 +1,1 @@
+def k : Nat := let A : Type 1 := Nat in let m : A := 4 in m

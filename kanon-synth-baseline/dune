@@ -1,0 +1,9 @@
+; SA-D6.  vendor/ holds the tot submodule at PIN.  It is read by the carry
+; check and by a human, never built, so dune treats it as data only.
+(data_only_dirs vendor)
+
+; SA-D6.  Every warning is an error, in every directory of this repository.
+(env
+ (_
+  (flags
+   (:standard -warn-error +a))))

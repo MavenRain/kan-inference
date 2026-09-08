@@ -1,0 +1,9 @@
+-- b08: what a file postulates is what "kanon axioms" prints.  One
+-- postulate, three definitions and the nat prims of the initial
+-- globals, so the disclosure of this file is the single line "Bit".
+
+axiom Bit : Type 0
+
+def Pair : Type 0 := prod (Bit, Bit)
+def diagonal : (x : Bit) -> Pair := fun (x : Bit) => tuple (x, x)
+def firstOfDiagonal : (x : Bit) -> Bit := fun (x : Bit) => (diagonal x).0

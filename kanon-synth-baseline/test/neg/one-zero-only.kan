@@ -1,0 +1,2 @@
+def ghost : (0 y : Nat) -> Nat := fun (0 y : Nat) => 0
+def erased : (1 x : Nat) -> Nat := fun (1 x : Nat) => ghost x

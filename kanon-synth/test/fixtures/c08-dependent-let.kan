@@ -1,0 +1,4 @@
+-- A runtime let definition resolves a later dependent tuple type.
+def Two : Type 0 := sum (Nat, Nat)
+def F : (x : Two) -> Type 0 := fun (x : Two) => case x as z return Type 0 with | 0 (a : Nat) => Nat | 1 (b : Nat) => prod (Nat, Nat)
+def n : Nat := let tag : Two := inj 1 of 2 5 in let v : F tag := tuple (5, 6) in v.0

@@ -1,0 +1,2 @@
+-- Internal big values are valid. Exporting one crosses the i32 ABI and traps.
+def main : Nat := 12345678901234567890123456789

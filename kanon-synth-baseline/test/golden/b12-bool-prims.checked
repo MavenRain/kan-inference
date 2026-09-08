@@ -1,0 +1,7 @@
+def Bool : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)]))
+def yes : Bool := (Out SPi w b Nat (APt w 4) (Out SPi w a Nat (APt w 4) natEq))
+def no : Bool := (Out SPi w b Nat (APt w 5) (Out SPi w a Nat (APt w 4) natEq))
+def below : Bool := (Out SPi w b Nat (APt w 2) (Out SPi w a Nat (APt w 1) natLt))
+def true : Bool := (In SColl 2 (ALeg 0) [(Sec SColl 0 [])])
+def false : Bool := (In SColl 2 (ALeg 1) [(Sec SColl 0 [])])
+def toNat : (Ran SPi w b Bool (Ran SPi w _ Nat Nat)) := (Sec SPi w b Bool [b => (Sec SPi w n Nat [n => (Elim SColl 2 b with | (ALeg 0) x => n | (ALeg 1) y => (Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w n) natAdd)))])])

@@ -1,0 +1,10 @@
+rec [mu<Box>; nat; leg<mu<Box>,0,union any>]
+fun unboxN (union mu<Box>) : union nat := KCase mu<Box> (KVar 0) [{0 1 (KVar 0)}]
+rec [mu<Box>; nat; leg<mu<Box>,0,union any>]
+fun unboxF (union mu<Box>) : union nat := KCase mu<Box> (KVar 0) [{0 1 (KTail (KVar 0) [KLit 8])}]
+rec [mu<Box>; nat; tuple<union nat,union nat>; leg<mu<Box>,0,union any>]
+fun unboxP (union mu<Box>) : union nat := KCase mu<Box> (KVar 0) [{0 1 (KProj tuple<union nat,union nat> 1 (KVar 0))}]
+rec [mu<Box>; nat; leg<mu<Box>,0,union any>]
+fun unboxU (union mu<Box>) : union nat := KCase mu<Box> (KVar 0) [{0 1 (KLit 9)}]
+rec [nat]
+fun main () : union nat := KLit 9

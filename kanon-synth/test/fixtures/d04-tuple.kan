@@ -1,0 +1,9 @@
+-- d04: a three leg tuple built and projected.  One struct holds the
+-- three legs, so a pair of pairs is a different golden (SD-M3).
+-- main is 10.
+
+def Triple : Type 0 := prod (Nat, Nat, Nat)
+
+def t : Triple := tuple (2, 3, 4)
+
+def main : Nat := natAdd (natMul t.0 t.1) t.2

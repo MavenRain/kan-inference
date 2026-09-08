@@ -1,0 +1,9 @@
+erased Bool
+rec [sum<unit|unit>; nat]
+fun toNat (union sum<unit|unit>) : union nat := KCase sum<unit|unit> (KVar 0) [{0 0 (KLit 0)}; {1 0 (KLit 1)}]
+rec [nat]
+fun scaled () : union nat := KTail (KGlobal natMul) [KApp (KGlobal natAdd) [KLit 2; KLit 3]; KApp (KGlobal natSub) [KLit 7; KLit 4]]
+rec [nat]
+fun flags () : union nat := KTail (KGlobal natAdd) [KApp (KGlobal toNat) [KApp (KGlobal natEq) [KLit 4; KLit 4]]; KApp (KGlobal toNat) [KApp (KGlobal natLt) [KLit 1; KLit 2]]]
+rec [nat]
+fun main () : union nat := KTail (KGlobal natAdd) [KGlobal scaled; KGlobal flags]

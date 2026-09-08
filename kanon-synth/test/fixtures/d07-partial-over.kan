@@ -1,0 +1,15 @@
+-- d07: partial application of a two argument definition and of natAdd,
+-- then application of the answers, beside an over application through
+-- the generic apply (the c09 and c10 shapes with a main).
+-- main is 25.
+
+def add3 : (a : Nat) -> (b : Nat) -> Nat :=
+  fun (a : Nat) (b : Nat) => natAdd (natAdd a b) 3
+
+def later : (f : Nat -> Nat -> Nat) -> (x : Nat) -> Nat -> Nat :=
+  fun (f : Nat -> Nat -> Nat) (x : Nat) => f x
+
+def half : Nat -> Nat := add3 4
+def alias : Nat -> Nat := natAdd 1
+
+def main : Nat := natAdd (natAdd (half 5) (alias 2)) (later natAdd 4 6)

@@ -1,0 +1,8 @@
+erased Nat
+erased arrowNamed
+erased arrowPlain
+erased arrowCurried
+erased starNamed
+erased starPlain
+erased starOfArrow
+erased erasedDomain

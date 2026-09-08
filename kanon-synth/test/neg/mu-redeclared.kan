@@ -1,0 +1,5 @@
+mu N : Type 0 with
+| z : N
+def witness : N := z
+mu N : Type 0 with
+def forged : N := witness

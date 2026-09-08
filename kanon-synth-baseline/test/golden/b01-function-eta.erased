@@ -1,0 +1,8 @@
+erased A
+axiom f : func fn<1>
+axiom F : func fn<0>
+erased w
+axiom H : func fn<0>
+erased v
+erased etaExpanded
+erased etaContracted

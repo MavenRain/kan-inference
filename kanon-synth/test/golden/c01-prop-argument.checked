@@ -1,0 +1,4 @@
+axiom P : Type 0
+axiom a : P
+def n : Nat := (Out SPi w p P (APt w a) ((Sec SPi w p P [p => 5]) : (Ran SPi w p P Nat)))
+def q : (Lan SPi w _ Nat P) := (In SPi w _ Nat (APt w 3) [a])

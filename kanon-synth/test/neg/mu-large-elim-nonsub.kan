@@ -1,0 +1,12 @@
+-- mu-large-elim-nonsub: a Prop family with one constructor whose one
+-- field is at the runtime mark, so part two of tot's criterion at
+-- kan-lang-tot-pin/lib/check.ml:231 refuses the large elimination (A1,
+-- M1 Stage H, brief 3.9).  SH-M6 drops part two and this file checks.
+
+axiom P : Prop
+axiom p : P
+
+mu Box : Prop with
+| box : P -> Box
+
+def big : Type 0 := case (box p : Box) as x in Box return Type 0 with | box y => Nat

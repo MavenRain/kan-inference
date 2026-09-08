@@ -1,0 +1,1 @@
+def capture : (Ran SPi 1 x Nat (Ran SPi w _ (Lan SMu Empty [] (Sec SColl 0 [])) Nat)) := (Sec SPi 1 x Nat [x => (Sec SPi w e (Lan SMu Empty [] (Sec SColl 0 [])) [e => let y : Nat := x in (Elim SMu Empty [] e as self return Nat with)])])

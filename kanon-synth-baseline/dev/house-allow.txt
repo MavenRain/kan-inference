@@ -1,0 +1,2 @@
+bin/host.ml	of_exit	| _other -> Invalid (strip "invalid: " (first_line (err_path ~wasm)))	D-M1-10: unknown integer host exits must retain their Invalid diagnostic (original bin/host.ml:89).
+bin/kanon.ml	dispatch	| _unknown ->	D-M1-10: unknown string commands must print usage and exit 64 (original bin/kanon.ml:282).

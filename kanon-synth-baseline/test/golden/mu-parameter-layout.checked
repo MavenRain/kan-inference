@@ -1,0 +1,5 @@
+def unboxN : (Ran SPi w _ (Lan SMu Box [] (Sec SColl 1 [ => Nat])) Nat) := (Sec SPi w b (Lan SMu Box [] (Sec SColl 1 [ => Nat])) [b => (Elim SMu Box [] b as x return Nat with | (ACtor box) n => n)])
+def unboxF : (Ran SPi w _ (Lan SMu Box [] (Sec SColl 1 [ => (Ran SPi w _ Nat Nat)])) Nat) := (Sec SPi w b (Lan SMu Box [] (Sec SColl 1 [ => (Ran SPi w _ Nat Nat)])) [b => (Elim SMu Box [] b as x return Nat with | (ACtor box) f => (Out SPi w _ Nat (APt w 8) f))])
+def unboxP : (Ran SPi w _ (Lan SMu Box [] (Sec SColl 1 [ => (Ran SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))])) Nat) := (Sec SPi w b (Lan SMu Box [] (Sec SColl 1 [ => (Ran SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))])) [b => (Elim SMu Box [] b as x return Nat with | (ACtor box) p => (Out SColl 2 (ALeg 1) p))])
+def unboxU : (Ran SPi w _ (Lan SMu Box [] (Sec SColl 1 [ => (Ran SColl 0 (Sec SColl 0 []))])) Nat) := (Sec SPi w b (Lan SMu Box [] (Sec SColl 1 [ => (Ran SColl 0 (Sec SColl 0 []))])) [b => (Elim SMu Box [] b as x return Nat with | (ACtor box) u => 9)])
+def main : Nat := 9

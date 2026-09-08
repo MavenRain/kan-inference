@@ -1,0 +1,2 @@
+rec [mu<V>; mu<N>; leg<mu<N>,0>; leg<mu<N>,1,union mu<N>>; leg<mu<V>,0>; leg<mu<V>,1,union mu<V>>]
+fun length (union mu<V>) : union mu<N> := KCase mu<V> (KVar 0) [{0 0 (KTag mu<N> 0 [])}; {1 1 (KTag mu<N> 1 [KApp (KGlobal length) [KVar 0]])}]

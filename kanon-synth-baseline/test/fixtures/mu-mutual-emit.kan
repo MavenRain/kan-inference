@@ -1,0 +1,16 @@
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu A : Type 0 with
+| leaf : A
+| node : B -> A
+and B : Type 0 with
+| cons : A -> B
+
+def rec sizeA : A -> N := fun (a : A) => case a as x in A return N with | leaf => zero | node b => succ (sizeB b)
+and sizeB : B -> N := fun (b : B) => case b as x in B return N with | cons a => succ (sizeA a)
+
+def rec toNat : N -> Nat := fun (n : N) => case n as x in N return Nat with | zero => 0 | succ m => natAdd 1 (toNat m)
+
+def main : Nat := toNat (sizeA (node (cons (node (cons leaf)))))

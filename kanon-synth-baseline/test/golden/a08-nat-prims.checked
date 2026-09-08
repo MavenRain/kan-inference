@@ -1,0 +1,8 @@
+axiom Nat : Type 1
+def Bool : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)]))
+def total : Nat := (Out SPi w b Nat (APt w 3) (Out SPi w a Nat (APt w 2) natAdd))
+def diff : Nat := (Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w 5) natSub))
+def product : Nat := (Out SPi w b Nat (APt w 7) (Out SPi w a Nat (APt w 6) natMul))
+def same : Bool := (Out SPi w b Nat (APt w 4) (Out SPi w a Nat (APt w 4) natEq))
+def less : Bool := (Out SPi w b Nat (APt w 2) (Out SPi w a Nat (APt w 1) natLt))
+def mixed : Nat := (Out SPi w b Nat (APt w 4) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w 3) (Out SPi w a Nat (APt w 2) natMul))) natAdd))

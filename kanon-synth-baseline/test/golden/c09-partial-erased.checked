@@ -1,0 +1,7 @@
+def f : (Ran SPi 0 A Type 1 (Ran SPi 0 B Type 1 Nat)) := (Sec SPi 0 A Type 1 [A => (Sec SPi 0 B Type 1 [B => 5])])
+def g : (Ran SPi 0 B Type 1 Nat) := (Out SPi 0 A Type 1 (APt 0 Nat) f)
+def n : Nat := (Out SPi 0 B Type 1 (APt 0 Nat) g)
+def local : Nat := let h : (Ran SPi 0 B Type 1 Nat) := (Out SPi 0 A Type 1 (APt 0 Nat) f) in (Out SPi 0 B Type 1 (APt 0 Nat) h)
+def both : Nat := (Out SPi 0 B Type 1 (APt 0 Nat) (Out SPi 0 A Type 1 (APt 0 Nat) f))
+def runtimeAlias : (Ran SPi w x Nat Nat) := (Out SPi w a Nat (APt w 1) natAdd)
+def appliedAlias : Nat := (Out SPi w x Nat (APt w 2) runtimeAlias)

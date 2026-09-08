@@ -1,0 +1,7 @@
+-- Dependent branches instantiate the motive at their own constructors.
+def Two : Type 0 := sum (Nat, Nat)
+def F : (x : Two) -> Type 0 := fun (x : Two) => case x as z return Type 0 with | 0 (a : Nat) => Nat | 1 (b : Nat) => prod (Nat, Nat)
+def choose : (x : Two) -> F x := fun (x : Two) => case x as y return F y with | 0 (a : Nat) => a | 1 (b : Nat) => tuple (b, b)
+
+def G : (x : Two) -> Type 0 := fun (x : Two) => case x as z return Type 0 with | 0 (a : Nat) => Nat | 1 (b : Nat) => (n : Nat) -> Nat
+def chooseFun : (x : Two) -> G x := fun (x : Two) => case x as y return G y with | 0 (a : Nat) => a | 1 (b : Nat) => fun (n : Nat) => natAdd b n

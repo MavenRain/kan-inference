@@ -1,0 +1,10 @@
+-- b06: the universe of an arrow is imax, not max.  A codomain at
+-- level zero puts the whole arrow at level zero however high the
+-- domain sits, which is what keeps Prop closed under the arrow.
+
+axiom A : Type 0
+axiom B : Type 1
+
+def impFromType : Prop := (0 x : A) -> sum ()
+def impFromHigher : Prop := (0 x : B) -> sum ()
+def impFromProp : Prop := (0 x : sum ()) -> sum ()

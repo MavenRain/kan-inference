@@ -1,0 +1,12 @@
+-- mu-empty-large-elim: a large elimination out of the empty family,
+-- which is ex falso (M1 Stage H, brief 3.9, SH-D3).  The family has no
+-- constructor, so it passes part one of tot's criterion at
+-- kan-lang-tot-pin/lib/check.ml:227 and the elimination needs no
+-- branch.  The scrutinee is a postulate, because the empty family has
+-- no closed term.
+
+mu Void : Prop with
+
+axiom stuck : Void
+
+def anything : Type 0 := case stuck as x in Void return Type 0 with

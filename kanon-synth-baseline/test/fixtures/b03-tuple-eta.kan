@@ -1,0 +1,13 @@
+-- b03: eta at the right former of the collection shape.  A tuple of
+-- the legs of a section is that section, so a predicate over the
+-- product type takes either spelling of the same witness.
+
+axiom A : Type 0
+axiom t : prod (A, A)
+axiom F : (0 s : prod (A, A)) -> Prop
+axiom v : F t
+axiom G : (0 s : prod (A, A)) -> Prop
+axiom w : G (tuple (t.0, t.1))
+
+def tupleExpanded : F (tuple (t.0, t.1)) := v
+def tupleContracted : G t := w

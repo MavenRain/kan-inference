@@ -1,0 +1,1000 @@
+-- test/corpus/m1-corpus.kan: M0 forms and the recursive M1 forms.
+-- main is 814.
+-- Every runtime M0 example contributes 521 through m0Total.
+-- Direct, mutual and indexed recursion, dependent match, large elimination,
+-- One and a large Nat contribute 78 through spineM1Total.
+-- There are no postulates.  Auto and nu remain M2 work.
+
+-- The types.  A type is erased, so none of these reaches a row of the
+-- emission table on its own.
+
+def Unit : Type
+  0 := prod ()
+def Empty :
+  Prop := sum ()
+def Bool : Type
+  0 := sum ((prod
+  () : Type 0),
+    (prod () : Type 0))
+def Pair : Type 0
+  := (a : Nat) * Nat
+def NatPair : Type
+  0 := Nat * Nat
+def Triple : Type 0 :=
+  prod (Nat, Nat, Nat)
+def Four : Type 0
+  := sum ((prod () :
+  Type 0), (prod () :
+    Type 0), Nat, Nat)
+def Two : Type 0
+  := sum (Nat, Nat)
+
+-- The universes.
+
+def propAtZero
+  : Type 0 := Prop
+def typeZeroAtOne
+  : Type 1 := Type 0
+def bareType :
+  Type 1 := Type
+def propArrow : Type 0
+  := (0 P :
+    Prop) -> Prop
+
+-- The empty collection at both formers.
+
+def u : Unit := ()
+def uTuple :
+  Unit := tuple ()
+
+-- The five prims.  natSub stops at zero, and natEq and natLt answer the
+-- two leg sum that toNat reads back into a Nat.
+
+def toNat : (b :
+  Bool) -> Nat :=
+  fun (b : Bool) =>
+    case b with
+    | 0 (x : prod ()) => 0
+    | 1 (y : prod ()) => 1
+
+def sumTwo : Nat
+  := natAdd 2 3
+def diff : Nat
+  := natSub 7 4
+def truncated :
+  Nat := natSub 3 9
+def scaled : Nat :=
+  natMul sumTwo diff
+def eqFlag : Nat :=
+  toNat (natEq 4 4)
+def neFlag : Nat :=
+  toNat (natEq 4 5)
+def ltFlag : Nat :=
+  toNat (natLt 1 2)
+def geFlag : Nat :=
+  toNat (natLt 5 2)
+
+def prims : Nat :=
+  natAdd (natAdd
+    scaled truncated)
+    (natAdd (natAdd
+      eqFlag ltFlag)
+      (natAdd neFlag
+        geFlag))
+
+-- A chain of tail calls through a helper of arity two.
+
+def step : (a : Nat)
+  -> (b : Nat) -> Nat :=
+  fun (a : Nat) (b :
+    Nat) => natAdd a b
+
+def chain : (a : Nat)
+  -> (b : Nat) -> Nat :=
+  fun (a : Nat)
+    (b : Nat)
+    => step (natAdd a 1) b
+
+def outer : (a : Nat)
+  -> (b : Nat) -> Nat :=
+  fun (a : Nat)
+    (b : Nat)
+    => chain
+      (natAdd a 2) b
+
+def tailChain :
+  Nat := outer 3 4
+
+-- A pair built and projected on both sides, once from a definition and
+-- once from the answer of a function.
+
+def p : Pair
+  := (11, 6)
+
+def mkPair : (x : Nat)
+  -> (a : Nat) * Nat :=
+  fun (x : Nat) =>
+    (x, natAdd x 1)
+
+def q : Pair
+  := mkPair 4
+
+def pairs :
+  Nat := natAdd
+  (natAdd p.1 p.2)
+    (natAdd q.1 q.2)
+
+-- A three leg tuple built and projected.
+
+def t : Triple :=
+  tuple (2, 3, 4)
+
+def tuples :
+  Nat := natAdd
+  (natMul t.0 t.1) t.2
+
+-- A sum with two payload free legs and two payload legs, cased on every
+-- leg, and a second case that writes the motive.
+
+def z0 : Four := inj
+  0 of 4 (tuple ())
+def z1 : Four := inj
+  1 of 4 (tuple ())
+def p2 : Four
+  := inj 2 of 4 5
+def p3 : Four
+  := inj 3 of 4 6
+
+def readFour : (x
+  : Four) -> Nat :=
+  fun (x : Four) =>
+    case x with
+    | 0 (a : prod ()) => 1
+    | 1 (b : prod ()) => 2
+    | 2 (c : Nat)
+      => natAdd c 10
+    | 3 (d : Nat)
+      => natMul d 10
+
+def sums : Nat :=
+  natAdd (natAdd
+    (readFour
+      z0) (readFour
+    z1)) (natAdd (readFour
+      p2) (readFour p3))
+
+def readMotive : (x
+  : Two) -> Nat :=
+  fun (x : Two) =>
+    case x as y
+      return Nat with
+    | 0 (a : Nat) => a
+    | 1 (b : Nat)
+      => natAdd b 1
+
+def motives : Nat :=
+  natAdd (readMotive
+  (inj 0 of 2 3))
+    (readMotive
+      (inj 1 of 2 4))
+
+-- A closure with a parameter capture and a closure with a let bound
+-- capture, each stored in a pair and applied later.
+
+def mk : (x
+  : Nat) -> (f
+  : Nat -> Nat)
+    * Nat :=
+  fun (x : Nat) =>
+    ((fun (y : Nat)
+    => natAdd x
+      y), natMul x 2)
+
+def mkLet :
+  (x : Nat) ->
+  (f : Nat ->
+    Nat) * Nat :=
+  fun (x : Nat) =>
+    let z : Nat :=
+      natAdd x 1 in
+    ((fun (y : Nat) =>
+      natAdd z y), z)
+
+def closures : Nat :=
+  natAdd (natAdd ((mk
+    5).1 6) (mk 5).2)
+    (natAdd ((mkLet 2).1
+      4) (mkLet 2).2)
+
+-- A partial application under the arity, an application over the arity
+-- and a call through a function parameter of an unknown arity.
+
+def add3 : (a : Nat)
+  -> (b : Nat)
+    -> Nat :=
+  fun (a : Nat)
+    (b : Nat)
+    => natAdd
+      (natAdd a b) 3
+
+def apply2 : (f
+  : Nat -> Nat ->
+  Nat) -> (x : Nat)
+    -> Nat -> Nat :=
+  fun (f : Nat
+    -> Nat ->
+    Nat) (x : Nat) => f x
+
+def half : Nat
+  -> Nat := add3 4
+def alias : Nat ->
+  Nat := natAdd 1
+
+def applications :
+  Nat := natAdd (natAdd
+  (half 5) (alias 2))
+    (apply2 natAdd 4 6)
+
+def viaParam
+  : (f : Nat ->
+  Nat) -> (x :
+    Nat) -> Nat :=
+  fun (f : Nat -> Nat)
+    (x : Nat) => f x
+
+def viaParamValue :
+  Nat := viaParam
+    half 6
+
+-- The erased polymorphic identity, used at Nat, and the linear binder.
+
+def id : (0 A : Type
+  0) -> (x : A) -> A :=
+  fun (0 A : Type
+    0) (x : A) => x
+
+def idNat : (x : Nat)
+  -> Nat := id Nat
+
+def erasedPoly
+  : Nat :=
+  natAdd (id Nat
+    3) (idNat 4)
+
+def linear : (1 x
+  : Nat) -> Nat :=
+  fun (1 x : Nat) => x
+
+-- Stage K: natAdd consumes unrestricted arguments; the identity uses x once.
+def linearValue : Nat
+  := natAdd
+    (linear 8) 1
+
+-- A nested let with a case inside it, and the annotation form.
+
+def pick : (s :
+  Two) -> Nat :=
+  fun (s : Two) =>
+    let base :
+      Nat := 10 in
+    let bump :
+      Nat := (case
+      s with | 0 (a : Nat)
+      => natAdd a
+        1 | 1 (b :
+        Nat) => natMul
+          b 2) in
+    let total : Nat :=
+      natAdd base bump in
+    natAdd total 100
+
+def lets : Nat :=
+  natAdd (pick (inj
+  0 of 2 3)) (pick
+    (inj 1 of 2 4))
+
+def annotated :
+  Nat := (5 : Nat)
+def letOfAnn
+  : Nat := let
+  x : Nat := (7
+    : Nat) in x
+
+def annotations
+  : Nat :=
+  natAdd annotated
+    letOfAnn
+
+-- A function over the empty sum.  main never calls it, so the emitter
+-- writes the unreachable row without a trap at run time.
+
+def fromEmpty :
+  (x : sum ()) ->
+  Nat := fun (x :
+    sum ()) => absurd x
+
+-- Aggregates under an erased type parameter, in both directions.
+
+def box : (0
+  A : Type 0) ->
+  (x : A) -> (a
+    : A) * A :=
+  fun (0 A : Type 0)
+    (x : A) => (x, x)
+
+def first : (0
+  A : Type 0)
+  -> (r : (a : A)
+    * A) -> A :=
+  fun (0 A : Type 0) (r
+    : (a : A) * A) => r.1
+
+def pack : (0
+  A : Type 0) ->
+  (x : A) ->
+    prod (A, A) :=
+  fun (0 A : Type 0) (x
+    : A) => tuple (x, x)
+
+def choose :
+  (0 A : Type 0)
+  -> (x : A) ->
+    sum (A, A) :=
+  fun (0 A : Type 0) (x
+    : A) => inj 1 of 2 x
+
+def unchoose :
+  (0 A : Type 0)
+  -> (s : sum
+    (A, A)) -> A :=
+  fun (0 A : Type 0)
+    (s : sum (A, A)) =>
+    case s with
+    | 0 (a : A) => a
+    | 1 (b : A) => b
+
+def sumNat : Nat :=
+  case (id (sum
+    (Nat, Nat))
+    (choose Nat 7)) with
+  | 0 (a : Nat) => a
+  | 1 (b : Nat)
+    => natAdd b 1
+
+def nested :
+  Nat := (box ((a
+  : Nat) * Nat)
+    (box Nat 5)).1.2
+
+def inc :
+  Nat -> Nat :=
+  fun (x : Nat)
+    => natAdd x 1
+
+def fromClosure
+  : Nat :=
+  (pack (Nat ->
+    Nat) inc).0 8
+
+def generics : Nat :=
+  natAdd (natAdd
+    (first Nat
+    (3, 4)) (pack
+      Nat 9).1)
+    (natAdd (unchoose
+      Nat (inj 0 of 2 2))
+      (natAdd sumNat
+        (natAdd
+        nested fromClosure)))
+
+-- A case over the answer of a call through a function parameter, and a
+-- case that keeps its sum after the erased identity answers any.
+
+def readBool : (f :
+  Nat -> Bool)
+    -> Nat :=
+  fun (f : Nat
+    -> Bool) =>
+    case (f 1) with
+    | 0 (a : prod
+      ()) => 0
+    | 1 (b : prod
+      ()) => 1
+
+def eqOne :
+  Nat -> Bool :=
+  fun (x : Nat)
+    => natEq x 1
+
+def functionCase :
+  Nat := readBool eqOne
+
+def polyPair : Nat
+  := (box Nat 5).1
+
+def polyCase : Nat :=
+  case (id Bool
+    (natEq 1 1)) with
+  | 0 (a : prod
+    ()) => 0
+  | 1 (b : prod
+    ()) => 1
+
+-- The export.  Every group above reaches this value.
+--
+--   groupA  17 + 10 + 26 + 10   =  63
+--   groupB  78 +  8 + 31 + 25   = 142
+--   groupC  13 +  7 +  9 + 232  = 261
+--   groupD  12 + 36 +  1 + 5 + 1 =  55
+--
+-- and 63 + 142 + 261 + 55 = 521.
+
+def groupA : Nat
+  := natAdd (natAdd
+  prims tailChain)
+    (natAdd pairs tuples)
+
+def groupB : Nat :=
+  natAdd (natAdd sums
+  motives) (natAdd
+    closures
+      applications)
+
+def groupC : Nat :=
+  natAdd (natAdd
+    viaParamValue
+    erasedPoly) (natAdd
+      linearValue lets)
+
+def groupD : Nat :=
+  natAdd (natAdd
+    annotations generics)
+    (natAdd functionCase
+      (natAdd polyPair
+        polyCase))
+
+def m0Total : Nat
+  := natAdd (natAdd
+  groupA groupB)
+    (natAdd groupC
+      groupD)
+
+-- Direct structural recursion uses the immediate constructor field.
+mu SpineN : Type 0 :=
+| spineZero : SpineN
+| spineSucc (n :
+  SpineN) : SpineN
+
+def rec spineCount
+  : SpineN -> Nat :=
+  fun (n : SpineN) =>
+    match n as
+      x in SpineN
+      return Nat with
+    | spineZero => 0
+    | spineSucc
+      smaller => natAdd
+      1 (spineCount
+        smaller)
+
+def spineThree :
+  SpineN := spineSucc
+  (spineSucc (spineSucc
+    spineZero))
+def spineDirect
+  : Nat :=
+  spineCount spineThree
+
+-- Mutual declarations share a recursive family set and constructor layout.
+mutual
+mu SpineA : Type 0 :=
+| spineLeaf : SpineA
+| spineNode (b :
+  SpineB) : SpineA
+mu SpineB : Type 0 :=
+| spineCons (a :
+  SpineA) : SpineB
+end
+
+def rec spineSizeA
+  : SpineA -> Nat :=
+  fun (a : SpineA) =>
+    match a as
+      x in SpineA
+      return Nat with
+    | spineLeaf => 0
+    | spineNode
+      b => natAdd
+      1 (spineSizeB b)
+and spineSizeB :
+  SpineB -> Nat :=
+  fun (b : SpineB) =>
+    match b as
+      x in SpineB
+      return Nat with
+    | spineCons
+      a => natAdd
+      1 (spineSizeA a)
+
+def spineMutual :
+  Nat := spineSizeA
+  (spineNode (spineCons
+    spineLeaf))
+
+-- Indexed recursion and a dependent result preserve the erased index.
+mu SpineV : (0 i :
+  SpineN) -> Type 0 :=
+| spineNil :
+  SpineV spineZero
+| spinePush (0 i :
+  SpineN) (a : Nat)
+  (v : SpineV i) :
+    SpineV (spineSucc i)
+
+def rec spineCopy
+  : (0 i :
+  SpineN) -> SpineV
+    i -> SpineV i :=
+  fun (0 i : SpineN)
+    (v : SpineV i) =>
+    match v as
+      x in SpineV
+      j return
+        SpineV j with
+    | spineNil
+      => spineNil
+    | spinePush
+      0 j a rest =>
+      spinePush j a
+        (spineCopy j rest)
+
+def rec spineTotal
+  : (0 i :
+  SpineN) -> SpineV
+    i -> Nat :=
+  fun (0 i : SpineN)
+    (v : SpineV i) =>
+    match v as
+      x in SpineV
+      j return Nat with
+    | spineNil => 0
+    | spinePush
+      0 j a rest =>
+      natAdd a
+        (spineTotal j rest)
+
+def spineValues :
+  SpineV (spineSucc
+  (spineSucc
+    spineZero)) :=
+  spinePush (spineSucc
+    spineZero) 17
+    (spinePush spineZero
+      25 spineNil)
+def spineCopied :
+  SpineV (spineSucc
+  (spineSucc
+    spineZero)) :=
+  spineCopy (spineSucc
+    (spineSucc
+    spineZero))
+      spineValues
+def spineIndexed :
+  Nat := spineTotal
+  (spineSucc (spineSucc
+    spineZero))
+      spineCopied
+
+-- A nonrecursive singleton Prop family permits this Type-valued motive.
+mu SpineTruth
+  : Prop :=
+| spineTriv
+  : SpineTruth
+
+def spineChosen
+  : Type 0 :=
+  match (spineTriv
+    : SpineTruth) as
+    p in SpineTruth
+      return Type 0 with
+  | spineTriv => Nat
+def spineLargeElim
+  : spineChosen := 7
+
+-- Empty-family elimination is checked under a binder without an axiom.
+mu SpineVoid
+  : Prop :=
+
+def spineExFalso
+  : (p :
+  SpineVoid)
+    -> Type 0 :=
+  fun (p : SpineVoid)
+    => match p as
+    q in SpineVoid
+      return Type 0 with
+
+-- The One binder consumes its value exactly once through an identity.
+def spineLinear
+  : (1 x : Nat)
+  -> Nat := fun (1
+    x : Nat) => x
+def
+  spineLinearValue :
+  Nat := spineLinear 11
+
+-- The intermediate is above i31; its small observation crosses both hosts.
+def spineBig :
+  Nat := 1073741824
+def spineBigValue
+  : Nat := natSub
+  (natAdd spineBig
+    13) spineBig
+
+-- Every runtime M1 witness reaches the export: 3 + 2 + 42 + 7 + 11 + 13.
+def spineM1Total
+  : Nat :=
+  natAdd (natAdd
+    spineDirect
+      spineMutual)
+    (natAdd (natAdd
+      spineIndexed
+      spineLargeElim)
+      (natAdd
+        spineLinearValue
+        spineBigValue))
+
+-- Five small typed witnesses compare unary recursion with the literal path.
+-- The permanent AGREEMENT gate checks the full ratified finite matrices.
+def spineOne : SpineN
+  := spineSucc
+    spineZero
+def spineTwo : SpineN
+  := spineSucc spineOne
+def spineYes : Bool
+  := inj 1 of 2 ()
+def spineNo : Bool
+  := inj 0 of 2 ()
+
+def rec spineUAdd
+  : SpineN
+  -> SpineN ->
+    SpineN :=
+  fun (n : SpineN)
+    (m : SpineN) =>
+    match n as
+      x in SpineN
+      return SpineN with
+    | spineZero => m
+    | spineSucc p =>
+      spineSucc
+        (spineUAdd p m)
+def rec spineUSub
+  : SpineN
+  -> SpineN ->
+    SpineN :=
+  fun (n : SpineN)
+    (m : SpineN) =>
+    match n as
+      x in SpineN
+      return SpineN with
+    | spineZero
+      => spineZero
+    | spineSucc p
+      => (match m as
+      y in SpineN return
+        SpineN with
+      | spineZero =>
+        n | spineSucc
+        q => spineUSub p q)
+def rec spineUMul
+  : SpineN
+  -> SpineN ->
+    SpineN :=
+  fun (n : SpineN)
+    (m : SpineN) =>
+    match n as
+      x in SpineN
+      return SpineN with
+    | spineZero
+      => spineZero
+    | spineSucc p
+      => spineUAdd
+      m (spineUMul p m)
+def rec spineUEq
+  : SpineN
+  -> SpineN -> Bool :=
+  fun (n : SpineN)
+    (m : SpineN) =>
+    match n as
+      x in SpineN
+      return Bool with
+    | spineZero =>
+      (match m as
+      y in SpineN
+        return Bool with
+      | spineZero
+        => spineYes
+        | spineSucc
+          q => spineNo)
+    | spineSucc p
+      => (match m as
+      y in SpineN
+        return Bool with
+      | spineZero
+        => spineNo |
+        spineSucc q =>
+          spineUEq p q)
+def rec spineULt
+  : SpineN
+  -> SpineN -> Bool :=
+  fun (n : SpineN)
+    (m : SpineN) =>
+    match n as
+      x in SpineN
+      return Bool with
+    | spineZero =>
+      (match m as
+      y in SpineN
+        return Bool with
+      | spineZero
+        => spineNo |
+        spineSucc q
+          => spineYes)
+    | spineSucc p
+      => (match m as
+      y in SpineN
+        return Bool with
+      | spineZero
+        => spineNo |
+        spineSucc q =>
+          spineULt p q)
+
+mu SpineAgreement
+  : (0 a : Nat)
+  -> (0 b : Nat)
+    -> Type 0 :=
+| spineSame
+  (0 a : Nat)
+  : SpineAgreement a a
+def spineAgreeAdd
+  : SpineAgreement
+  (spineCount
+    (spineUAdd spineOne
+    spineTwo)) (natAdd
+      1 2) := spineSame 3
+def spineAgreeSub
+  : SpineAgreement
+  (spineCount
+    (spineUSub spineOne
+    spineTwo)) (natSub
+      1 2) := spineSame 0
+def spineAgreeMul
+  : SpineAgreement
+  (spineCount
+    (spineUMul spineTwo
+    spineTwo)) (natMul
+      2 2) := spineSame 4
+def spineAgreeEq
+  : SpineAgreement
+  (toNat (spineUEq
+    spineTwo spineTwo))
+    (toNat (natEq 2
+      2)) := spineSame 1
+def spineAgreeLt
+  : SpineAgreement
+  (toNat (spineULt
+    spineOne spineTwo))
+    (toNat (natLt 1
+      2)) := spineSame 1
+
+def spineResult
+  : Nat :=
+  natAdd m0Total
+    spineM1Total
+
+-- Checked arithmetic grid.  Each cell contributes to the checksum.
+def grid0 : Nat :=
+  natAdd (natMul 0
+    0) (natAdd 0 0)
+def grid1 : Nat :=
+  natAdd (natMul 0
+    1) (natAdd 0 1)
+def grid2 : Nat :=
+  natAdd (natMul 0
+    2) (natAdd 0 2)
+def grid3 : Nat :=
+  natAdd (natMul 0
+    3) (natAdd 0 3)
+def grid4 : Nat :=
+  natAdd (natMul 0
+    4) (natAdd 0 4)
+def grid5 : Nat :=
+  natAdd (natMul 1
+    0) (natAdd 1 0)
+def grid6 : Nat :=
+  natAdd (natMul 1
+    1) (natAdd 1 1)
+def grid7 : Nat :=
+  natAdd (natMul 1
+    2) (natAdd 1 2)
+def grid8 : Nat :=
+  natAdd (natMul 1
+    3) (natAdd 1 3)
+def grid9 : Nat :=
+  natAdd (natMul 1
+    4) (natAdd 1 4)
+def grid10 : Nat :=
+  natAdd (natMul 2
+    0) (natAdd 2 0)
+def grid11 : Nat :=
+  natAdd (natMul 2
+    1) (natAdd 2 1)
+def grid12 : Nat :=
+  natAdd (natMul 2
+    2) (natAdd 2 2)
+def grid13 : Nat :=
+  natAdd (natMul 2
+    3) (natAdd 2 3)
+def grid14 : Nat :=
+  natAdd (natMul 2
+    4) (natAdd 2 4)
+def grid15 : Nat :=
+  natAdd (natMul 3
+    0) (natAdd 3 0)
+def grid16 : Nat :=
+  natAdd (natMul 3
+    1) (natAdd 3 1)
+def grid17 : Nat :=
+  natAdd (natMul 3
+    2) (natAdd 3 2)
+def grid18 : Nat :=
+  natAdd (natMul 3
+    3) (natAdd 3 3)
+def grid19 : Nat :=
+  natAdd (natMul 3
+    4) (natAdd 3 4)
+def grid20 : Nat :=
+  natAdd (natMul 4
+    0) (natAdd 4 0)
+def grid21 : Nat :=
+  natAdd (natMul 4
+    1) (natAdd 4 1)
+def grid22 : Nat :=
+  natAdd (natMul 4
+    2) (natAdd 4 2)
+def grid23 : Nat :=
+  natAdd (natMul 4
+    3) (natAdd 4 3)
+def grid24 : Nat :=
+  natAdd (natMul 4
+    4) (natAdd 4 4)
+def gridChecksum
+  : Nat :=
+  (natAdd
+    (natAdd (natAdd
+  (natAdd grid0 (natAdd
+    grid1 grid2))
+      (natAdd grid3
+  (natAdd grid4
+    grid5)))
+    (natAdd (natAdd
+      grid6 (natAdd
+    grid7 grid8))
+      (natAdd grid9
+      (natAdd grid10
+        grid11))))
+  (natAdd (natAdd
+    (natAdd grid12
+    (natAdd grid13
+      grid14))
+    (natAdd grid15
+      (natAdd
+      grid16 grid17)))
+        (natAdd
+    (natAdd grid18
+      (natAdd
+      grid19 grid20))
+        (natAdd
+      (natAdd grid21
+        grid22)
+        (natAdd grid23
+          grid24)))))
+
+-- Indexed values exercise copy and folding at several payloads.
+def vector0 : SpineV
+  (spineSucc spineZero)
+  := spinePush
+    spineZero 0 spineNil
+def vectorCopy0
+  : SpineV
+  (spineSucc spineZero)
+  := spineCopy
+    (spineSucc
+    spineZero) vector0
+def vectorRead0 :
+  Nat := spineTotal
+  (spineSucc spineZero)
+    vectorCopy0
+def vector1 : SpineV
+  (spineSucc spineZero)
+  := spinePush
+    spineZero 1 spineNil
+def vectorCopy1
+  : SpineV
+  (spineSucc spineZero)
+  := spineCopy
+    (spineSucc
+    spineZero) vector1
+def vectorRead1 :
+  Nat := spineTotal
+  (spineSucc spineZero)
+    vectorCopy1
+def vector2 : SpineV
+  (spineSucc spineZero)
+  := spinePush
+    spineZero 2 spineNil
+def vectorCopy2
+  : SpineV
+  (spineSucc spineZero)
+  := spineCopy
+    (spineSucc
+    spineZero) vector2
+def vectorRead2 :
+  Nat := spineTotal
+  (spineSucc spineZero)
+    vectorCopy2
+def vector3 : SpineV
+  (spineSucc spineZero)
+  := spinePush
+    spineZero 3 spineNil
+def vectorCopy3
+  : SpineV
+  (spineSucc spineZero)
+  := spineCopy
+    (spineSucc
+    spineZero) vector3
+def vectorRead3 :
+  Nat := spineTotal
+  (spineSucc spineZero)
+    vectorCopy3
+def vector4 : SpineV
+  (spineSucc spineZero)
+  := spinePush
+    spineZero 4 spineNil
+def vectorCopy4
+  : SpineV
+  (spineSucc spineZero)
+  := spineCopy
+    (spineSucc
+    spineZero) vector4
+def vectorRead4 :
+  Nat := spineTotal
+  (spineSucc spineZero)
+    vectorCopy4
+def vector5 : SpineV
+  (spineSucc spineZero)
+  := spinePush
+    spineZero 5 spineNil
+def vectorCopy5
+  : SpineV
+  (spineSucc spineZero)
+  := spineCopy
+    (spineSucc
+    spineZero) vector5
+def vectorRead5 :
+  Nat := spineTotal
+  (spineSucc spineZero)
+    vectorCopy5
+def vectorChecksum
+  : Nat := (natAdd
+  (natAdd vectorRead0
+    (natAdd vectorRead1
+  vectorRead2))
+    (natAdd vectorRead3
+    (natAdd vectorRead4
+      vectorRead5)))
+def main : Nat :=
+  natAdd spineResult
+  (natAdd gridChecksum
+    vectorChecksum)

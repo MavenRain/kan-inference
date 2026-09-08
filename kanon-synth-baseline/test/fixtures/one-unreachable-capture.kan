@@ -1,0 +1,3 @@
+mu Empty : Type 0 with
+def capture : (1 x : Nat) -> Empty -> Nat := fun (1 x : Nat) =>
+  fun (e : Empty) => let y : Nat := x in case e as self in Empty return Nat with

@@ -1,0 +1,7 @@
+def identity : (1 x : Nat) -> Nat := fun (1 x : Nat) => x
+def through : (1 x : Nat) -> Nat := fun (1 x : Nat) => identity x
+def alias : (1 x : Nat) -> Nat := fun (1 x : Nat) => let y : Nat := x in y
+def discardAlias : (1 x : Nat) -> Nat := fun (1 x : Nat) => let y : Nat := x in 0
+def ghost : (0 x : Nat) -> Nat := fun (0 x : Nat) => 0
+def erasedThenOnce : (1 x : Nat) -> Nat := fun (1 x : Nat) => let y : Nat := ghost x in x
+def main : Nat := through 7

@@ -1,0 +1,18 @@
+-- Copy preserves the vector's erased length index and runtime payloads.
+-- The motive depends on each constructor's result index.  Main is 42.
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu V : (0 i : N) -> Type 0 with
+| vz : V zero
+| vs : (0 i : N) -> Nat -> V i -> V (succ i)
+
+def rec copy : (0 i : N) -> V i -> V i := fun (0 i : N) (v : V i) => case v as x in V j return V j with | vz => vz | vs 0 j a w => vs j a (copy j w)
+
+def rec total : (0 i : N) -> V i -> Nat := fun (0 i : N) (v : V i) => case v as x in V j return Nat with | vz => 0 | vs 0 j a w => natAdd a (total j w)
+
+def empty : V zero := copy zero vz
+def values : V (succ (succ zero)) := vs (succ zero) 17 (vs zero 25 empty)
+def copied : V (succ (succ zero)) := copy (succ (succ zero)) values
+def main : Nat := total (succ (succ zero)) copied

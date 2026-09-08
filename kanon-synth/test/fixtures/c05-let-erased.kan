@@ -1,0 +1,5 @@
+-- c05: a let of a type and a let of a runtime value.  The first let
+-- binds a type, so it is dropped and every use of it is erased;  the
+-- second one binds a number, so it stays.
+
+def k : Nat := let A : Type 0 := Nat in let m : A := 4 in m

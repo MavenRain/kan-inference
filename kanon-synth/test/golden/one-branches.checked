@@ -1,0 +1,6 @@
+def Unit : Type 1 := ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)
+def Both : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => Unit;  => Unit]))
+def choose : (Ran SPi 1 x Nat (Ran SPi w tag Both Nat)) := (Sec SPi 1 x Nat [x => (Sec SPi w tag Both [tag => (Elim SColl 2 tag with | (ALeg 0) z => x | (ALeg 1) z => x)])])
+def nested : (Ran SPi 1 x Nat (Ran SPi w tag Both Nat)) := (Sec SPi 1 x Nat [x => (Sec SPi w tag Both [tag => (Elim SColl 2 tag with | (ALeg 0) z => (Elim SColl 2 tag with | (ALeg 0) w => x | (ALeg 1) w => x) | (ALeg 1) z => x)])])
+def payload : (Ran SPi w value (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat])) Nat) := (Sec SPi w value (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat])) [value => (Elim SColl 2 value with | (ALeg 0) x => x | (ALeg 1) x => x)])
+def main : Nat := (Out SPi w tag (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)])) (APt w (In SColl 2 (ALeg 0) [(Sec SColl 0 [])])) (Out SPi 1 x Nat (APt 1 7) choose))

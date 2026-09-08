@@ -1,0 +1,5 @@
+-- n09: a nat literal where the expected type is a postulate.
+
+axiom A : Type 0
+
+def bad : A := 1

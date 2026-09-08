@@ -1,0 +1,12 @@
+-- a02: the arrow and the star, in the named form and in the plain
+-- form.  Both are right associative.
+
+axiom Nat : Type 0
+
+def arrowNamed : Type 0 := (x : Nat) -> Nat
+def arrowPlain : Type 0 := Nat -> Nat
+def arrowCurried : Type 0 := Nat -> Nat -> Nat
+def starNamed : Type 0 := (a : Nat) * Nat
+def starPlain : Type 0 := Nat * Nat
+def starOfArrow : Type 0 := (f : Nat -> Nat) * Nat
+def erasedDomain : Type 1 := (0 A : Type 0) -> Nat

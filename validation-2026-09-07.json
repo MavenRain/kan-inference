@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-07",
+  "scope": "Git repository setup and semantic diagnostic evaluation",
+  "checks": [
+    {
+      "command": "make test",
+      "exit_code": 0,
+      "python_tests": 41,
+      "synthesis_boundary_cases": 114,
+      "driver_tests": 47,
+      "skipped_tests": 0
+    },
+    {
+      "command": "kanon-inference/.venv/bin/python -I kanon-inference/test_protocol.py",
+      "exit_code": 0,
+      "tests": 7
+    },
+    {
+      "command": "python3 kanon-inference/benchmark.py --corpus kanon-inference/benchmarks/diagnostic-v1.json --compiler kanon-synth/_build/default/bin/kanon.exe --provider kanon-inference/provider --hosts kernel,node,wasmtime --output REPORT.json",
+      "exit_code": 0,
+      "complete": true,
+      "tasks_per_strategy": 32,
+      "evidence": "kanon-inference/results/diagnostic-135m-2026-09-07.json"
+    }
+  ],
+  "review": {
+    "shadowed_definition_false_positive": "reproduced and fixed; real compiler regression passes",
+    "host_value_vs_failure_disagreement": "fixed",
+    "material_findings_remaining": 0
+  },
+  "compiler_sha256": "ba750e67cad5714606de0eec9b7bacb9248a140784d4d0bb42c7c65e13b27b67",
+  "corpus_sha256": "1bb2b0539f6a8e1e03a4df2b2b1911f0bf9ed8a5778d22743de280a7b5dda19f",
+  "implementation_hashes": {
+    "baseline_sha256": "1d75e5b5479dc73f28d2f5ff3ed8d5db534974f66dddca4e04c0a3a3d8e5bed6",
+    "benchmark_sha256": "0a77927dd21a0d05ba98b5175c75ed27686f5daade929791e1b9033caf8ce2b0",
+    "driver_sha256": "21abd39fe42689fc3230317c6555fc50969ef348987f7f10b4f349018fca3d97"
+  },
+  "limitations": [
+    "The recorded benchmark run passed --hosts kernel,node,wasmtime explicitly. The Makefile default is HOSTS=kernel, which needs no external host binary.",
+    "The saved report kanon-inference/results/diagnostic-135m-2026-09-07.json was recorded under benchmark.py 615f3a044edc66c0cfd005b90fcca720b3906f47a1839b094c25bfacb098a9b8, before the host comparison and host availability fixes. The hash above is the current file.",
+    "The compiler was rebuilt after the review fixes, so compiler_sha256 above is the rebuilt binary. The saved receipts under kanon-synth/dev/synthesis-results record the earlier binary 972916ac856c2bc09bd7fcba369860e060a0c4e3ca7183fd083efae23e5830d0, so receipt replay reports a stale compiler. The saved ordinary source still checks under the rebuilt compiler.",
+    "No claim of independently measured model usefulness, warm latency, full Kanon gate completion or Lean parity.",
+    "The review fixes changed kanon-synth/surface/synthesis.ml, kanon-synth/surface/synthesis.mli, kanon-synth/test/synthesis.ml, kanon-synth/dev/synth.py, kanon-synth/dev/test_synth.py, kanon-synth/SYNTHESIS.md and kanon-inference/benchmark.py. After the fixes, make build exited 0 and make test exited 0 with 41 unit tests, 114 synthesis boundary cases and 47 driver tests."
+  ]
+}

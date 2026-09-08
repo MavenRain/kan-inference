@@ -1,0 +1,8 @@
+axiom Nat : Type 1
+def arrowNamed : Type 1 := (Ran SPi w x Nat Nat)
+def arrowPlain : Type 1 := (Ran SPi w _ Nat Nat)
+def arrowCurried : Type 1 := (Ran SPi w _ Nat (Ran SPi w _ Nat Nat))
+def starNamed : Type 1 := (Lan SPi w a Nat Nat)
+def starPlain : Type 1 := (Lan SPi w _ Nat Nat)
+def starOfArrow : Type 1 := (Lan SPi w f (Ran SPi w _ Nat Nat) Nat)
+def erasedDomain : Type 2 := (Ran SPi 0 A Type 1 Nat)

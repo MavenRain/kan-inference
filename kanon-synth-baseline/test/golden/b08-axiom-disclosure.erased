@@ -1,0 +1,6 @@
+erased Bit
+erased Pair
+rec [any; tuple<union any,union any>]
+fun diagonal (union any) : struct tuple<union any,union any> := KStruct tuple<union any,union any> [KVar 0; KVar 0]
+rec [any; tuple<union any,union any>]
+fun firstOfDiagonal (union any) : union any := KProj tuple<union any,union any> 0 (KApp (KGlobal diagonal) [KVar 0])

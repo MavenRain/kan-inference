@@ -1,0 +1,5 @@
+def Bool : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)]))
+def toNat : (Ran SPi w b Bool Nat) := (Sec SPi w b Bool [b => (Elim SColl 2 b with | (ALeg 0) x => 0 | (ALeg 1) y => 1)])
+def scaled : Nat := (Out SPi w b Nat (APt w (Out SPi w b Nat (APt w 4) (Out SPi w a Nat (APt w 7) natSub))) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w 3) (Out SPi w a Nat (APt w 2) natAdd))) natMul))
+def flags : Nat := (Out SPi w b Nat (APt w (Out SPi w b (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)])) (APt w (Out SPi w b Nat (APt w 2) (Out SPi w a Nat (APt w 1) natLt))) toNat)) (Out SPi w a Nat (APt w (Out SPi w b (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)])) (APt w (Out SPi w b Nat (APt w 4) (Out SPi w a Nat (APt w 4) natEq))) toNat)) natAdd))
+def main : Nat := (Out SPi w b Nat (APt w flags) (Out SPi w a Nat (APt w scaled) natAdd))

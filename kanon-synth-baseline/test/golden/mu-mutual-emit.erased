@@ -1,0 +1,8 @@
+rec [mu<A>; mu<N>; leg<mu<N>,0>; leg<mu<N>,1,union mu<N>>; leg<mu<A>,0>; leg<mu<A>,1,union mu<B>>]
+fun sizeA (union mu<A>) : union mu<N> := KCase mu<A> (KVar 0) [{0 0 (KTag mu<N> 0 [])}; {1 1 (KTag mu<N> 1 [KApp (KGlobal sizeB) [KVar 0]])}]
+rec [mu<B>; mu<N>; leg<mu<N>,0>; leg<mu<N>,1,union mu<N>>; leg<mu<B>,0,union mu<A>>]
+fun sizeB (union mu<B>) : union mu<N> := KCase mu<B> (KVar 0) [{0 1 (KTag mu<N> 1 [KApp (KGlobal sizeA) [KVar 0]])}]
+rec [mu<N>; nat; leg<mu<N>,0>; leg<mu<N>,1,union mu<N>>]
+fun toNat (union mu<N>) : union nat := KCase mu<N> (KVar 0) [{0 0 (KLit 0)}; {1 1 (KTail (KGlobal natAdd) [KLit 1; KApp (KGlobal toNat) [KVar 0]])}]
+rec [nat; mu<A>; mu<B>; leg<mu<A>,0>; leg<mu<A>,1,union mu<B>>; leg<mu<B>,0,union mu<A>>]
+fun main () : union nat := KTail (KGlobal toNat) [KApp (KGlobal sizeA) [KTag mu<A> 1 [KTag mu<B> 0 [KTag mu<A> 1 [KTag mu<B> 0 [KTag mu<A> 0 []]]]]]]

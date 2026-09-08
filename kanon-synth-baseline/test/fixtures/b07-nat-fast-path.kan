@@ -1,0 +1,15 @@
+-- b07: the literal fast path of SB-D4.  "natMul 2 3" reduces to the
+-- literal 6 during conversion, so a predicate over Nat takes the
+-- computed spelling and the written one as one argument.  "natEq" and
+-- "natLt" answer at the two leg sum of SB-D8.
+
+axiom F : (0 n : Nat) -> Prop
+axiom v : F 6
+
+def w : F (natMul 2 3) := v
+
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+
+def same : Bool := natEq 4 4
+def below : Bool := natLt 1 2
+def sum6 : Nat := natAdd 4 2

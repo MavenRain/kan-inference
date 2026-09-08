@@ -1,0 +1,7 @@
+axiom Nat : Type 1
+def Triple : Type 1 := (Ran SColl 3 (Sec SColl 3 [ => Nat;  => Nat;  => Nat]))
+def t : Triple := (Sec SColl 3 [ => 1;  => 2;  => 3])
+def leg0 : Nat := (Out SColl 3 (ALeg 0) t)
+def leg1 : Nat := (Out SColl 3 (ALeg 1) t)
+def leg2 : Nat := (Out SColl 3 (ALeg 2) t)
+def rebuilt : Triple := (Sec SColl 3 [ => (Out SColl 3 (ALeg 0) t);  => (Out SColl 3 (ALeg 1) t);  => (Out SColl 3 (ALeg 2) t)])

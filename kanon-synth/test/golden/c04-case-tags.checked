@@ -1,0 +1,4 @@
+def Opt : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => Nat]))
+def none : Opt := (In SColl 2 (ALeg 0) [(Sec SColl 0 [])])
+def some : Opt := (In SColl 2 (ALeg 1) [7])
+def unwrap : (Ran SPi w x Opt Nat) := (Sec SPi w x Opt [x => (Elim SColl 2 x with | (ALeg 0) u => 0 | (ALeg 1) v => v)])

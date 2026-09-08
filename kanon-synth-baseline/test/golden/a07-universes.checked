@@ -1,0 +1,5 @@
+def propAtZero : Type 1 := Type 0
+def typeZeroAtOne : Type 2 := Type 1
+def typeOneAtTwo : Type 3 := Type 2
+def propArrow : Type 1 := (Ran SPi 0 P Type 0 Type 0)
+def bareType : Type 2 := Type 1

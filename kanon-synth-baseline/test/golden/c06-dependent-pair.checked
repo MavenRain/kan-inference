@@ -1,0 +1,1 @@
+def packed : (Lan SPi 0 A Type 1 A) := (In SPi 0 A Type 1 (APt 0 (Ran SPi w x Nat Nat)) [(Sec SPi w x Nat [x => x])])

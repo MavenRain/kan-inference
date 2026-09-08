@@ -1,0 +1,3 @@
+(library
+ (name kanon_wasm)
+ (libraries kanon_kernel))

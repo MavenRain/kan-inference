@@ -1,0 +1,5 @@
+def Two : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))
+def F : (Ran SPi w x Two Type 1) := (Sec SPi w x Two [x => (Elim SColl 2 x as z return Type 1 with | (ALeg 0) a => Nat | (ALeg 1) b => (Ran SColl 2 (Sec SColl 2 [ => Nat;  => Nat])))])
+def choose : (Ran SPi w x Two (Out SPi w x (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat])) (APt w x) F)) := (Sec SPi w x Two [x => (Elim SColl 2 x as y return (Out SPi w x (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat])) (APt w y) F) with | (ALeg 0) a => a | (ALeg 1) b => (Sec SColl 2 [ => b;  => b]))])
+def G : (Ran SPi w x Two Type 1) := (Sec SPi w x Two [x => (Elim SColl 2 x as z return Type 1 with | (ALeg 0) a => Nat | (ALeg 1) b => (Ran SPi w n Nat Nat))])
+def chooseFun : (Ran SPi w x Two (Out SPi w x (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat])) (APt w x) G)) := (Sec SPi w x Two [x => (Elim SColl 2 x as y return (Out SPi w x (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat])) (APt w y) G) with | (ALeg 0) a => a | (ALeg 1) b => (Sec SPi w n Nat [n => (Out SPi w b Nat (APt w n) (Out SPi w a Nat (APt w b) natAdd))]))])

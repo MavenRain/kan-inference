@@ -1,0 +1,4 @@
+rec [nat]
+fun g (union nat) : union nat := KTail (KGlobal natAdd) [KVar 0; KLit 1]
+rec [nat]
+fun h (union nat) : union nat := KTail (KGlobal g) [KApp (KGlobal g) [KVar 0]]

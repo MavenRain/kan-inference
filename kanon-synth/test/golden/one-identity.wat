@@ -1,0 +1,56 @@
+(module
+ (type $0 (func (param (ref eq)) (result (ref eq))))
+ (type $1 (func (result (ref eq))))
+ (type $2 (func (result i32)))
+ (export "main" (func $7))
+ (func $0 (type $0) (param $0 (ref eq)) (result (ref eq))
+  (local.get $0)
+ )
+ (func $1 (type $0) (param $0 (ref eq)) (result (ref eq))
+  (return_call $0
+   (local.get $0)
+  )
+ )
+ (func $2 (type $0) (param $0 (ref eq)) (result (ref eq))
+  (local $1 (ref eq))
+  (local.set $1
+   (local.get $0)
+  )
+  (local.get $1)
+ )
+ (func $3 (type $0) (param $0 (ref eq)) (result (ref eq))
+  (local $1 (ref eq))
+  (local.set $1
+   (local.get $0)
+  )
+  (ref.i31
+   (i32.const 0)
+  )
+ )
+ (func $4 (type $1) (result (ref eq))
+  (ref.i31
+   (i32.const 0)
+  )
+ )
+ (func $5 (type $0) (param $0 (ref eq)) (result (ref eq))
+  (local $1 (ref eq))
+  (local.set $1
+   (call $4)
+  )
+  (local.get $0)
+ )
+ (func $6 (type $1) (result (ref eq))
+  (return_call $1
+   (ref.i31
+    (i32.const 7)
+   )
+  )
+ )
+ (func $7 (type $2) (result i32)
+  (i31.get_s
+   (ref.cast (ref i31)
+    (call $6)
+   )
+  )
+ )
+)

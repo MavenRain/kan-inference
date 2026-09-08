@@ -1,0 +1,3 @@
+mu Box : Type 0 with
+| box : Nat -> Box
+def duplicate : (1 x : Box) -> Box := fun (1 x : Box) => case x as self in Box return Box with | box y => x

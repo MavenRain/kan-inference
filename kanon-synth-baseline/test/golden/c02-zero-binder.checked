@@ -1,0 +1,2 @@
+def id : (Ran SPi 0 A Type 1 (Ran SPi w x A A)) := (Sec SPi 0 A Type 1 [A => (Sec SPi w x A [x => x])])
+def five : Nat := (Out SPi w x Nat (APt w 5) (Out SPi 0 A Type 1 (APt 0 Nat) id))

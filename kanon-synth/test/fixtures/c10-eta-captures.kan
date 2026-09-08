@@ -1,0 +1,16 @@
+-- Complete function-valued bodies under existing runtime binders.
+def later : (f : Nat -> Nat -> Nat) -> (x : Nat) -> Nat -> Nat :=
+  fun (f : Nat -> Nat -> Nat) (x : Nat) => f x
+
+def letHead : (x : Nat) -> Nat -> Nat :=
+  fun (x : Nat) => let z : Nat := x in natAdd z
+
+def lifted : (x : Nat) -> prod (Nat -> Nat -> Nat) :=
+  fun (x : Nat) => tuple (fun (y : Nat) => natAdd (natAdd x y))
+
+def Two : Type 0 := sum (Nat, Nat)
+def caseHead : (bias : Nat) -> (s : Two) -> Nat -> Nat :=
+  fun (bias : Nat) (s : Two) =>
+    case s with
+    | 0 (a : Nat) => natAdd (natAdd bias a)
+    | 1 (b : Nat) => fun (n : Nat) => natAdd b n

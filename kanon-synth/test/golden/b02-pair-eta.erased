@@ -1,0 +1,8 @@
+erased A
+axiom p : struct pair<union any,union any>
+axiom F : func fn<0>
+erased v
+axiom G : func fn<0>
+erased w
+erased pairExpanded
+erased pairContracted

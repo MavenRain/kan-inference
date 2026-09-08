@@ -1,0 +1,5 @@
+axiom Nat : Type 1
+def Two : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))
+def plain : (Ran SPi w x Two Nat) := (Sec SPi w x Two [x => (Elim SColl 2 x with | (ALeg 0) a => a | (ALeg 1) b => (Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w b) natAdd)))])
+def withMotive : (Ran SPi w x Two Nat) := (Sec SPi w x Two [x => (Elim SColl 2 x as y return Nat with | (ALeg 0) a => a | (ALeg 1) b => b)])
+def fromVoid : (Ran SPi 0 A Type 1 (Ran SPi w x (Lan SColl 0 (Sec SColl 0 [])) A)) := (Sec SPi 0 A Type 1 [A => (Sec SPi w x (Lan SColl 0 (Sec SColl 0 [])) [x => (Elim SColl 0 x with)])])

@@ -1,0 +1,14 @@
+-- d09: nested lets, with a case inside a let.  Every let is a typed
+-- local and the branch binders follow the lets (SD-D12).
+-- main is 232.
+
+def Two : Type 0 := sum (Nat, Nat)
+
+def pick : (s : Two) -> Nat :=
+  fun (s : Two) =>
+    let base : Nat := 10 in
+    let bump : Nat := (case s with | 0 (a : Nat) => natAdd a 1 | 1 (b : Nat) => natMul b 2) in
+    let total : Nat := natAdd base bump in
+    natAdd total 100
+
+def main : Nat := natAdd (pick (inj 0 of 2 3)) (pick (inj 1 of 2 4))

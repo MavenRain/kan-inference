@@ -1,0 +1,2 @@
+mu V : (0 i : Nat) -> Type 0 with
+| bad : V (Type 0)

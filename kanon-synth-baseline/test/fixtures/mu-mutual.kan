@@ -1,0 +1,9 @@
+-- mu-mutual: a mutual group.  Every member is declared before the
+-- first constructor of the group is installed (A4), so the field of
+-- node names B while B is still provisional.
+
+mu A : Type 0 with
+| leaf : A
+| node : B -> A
+and B : Type 0 with
+| cons : A -> B

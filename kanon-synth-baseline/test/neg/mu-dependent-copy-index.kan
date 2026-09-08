@@ -1,0 +1,10 @@
+-- A successor-length vector cannot inhabit the zero-length branch motive.
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu V : (0 i : N) -> Type 0 with
+| vz : V zero
+| vs : (0 i : N) -> Nat -> V i -> V (succ i)
+
+def rec copy : (0 i : N) -> V i -> V i := fun (0 i : N) (v : V i) => case v as x in V j return V j with | vz => vs zero 7 vz | vs 0 j a w => vs j a (copy j w)

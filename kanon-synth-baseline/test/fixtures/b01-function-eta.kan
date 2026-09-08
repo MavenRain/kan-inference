@@ -1,0 +1,14 @@
+-- b01: eta at the right former of the point shape.  "f" and
+-- "fun (x : A) => f x" are the same section, so the argument of a
+-- predicate converts in both directions and neither definition below
+-- needs a cast.
+
+axiom A : Type 0
+axiom f : A -> A
+axiom F : (0 g : A -> A) -> Prop
+axiom w : F f
+axiom H : (0 g : A -> A) -> Prop
+axiom v : H (fun (x : A) => f x)
+
+def etaExpanded : F (fun (x : A) => f x) := w
+def etaContracted : H f := v

@@ -1,0 +1,4 @@
+def identity : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => x])
+def shadow : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => let y : Nat := x in let x : Nat := 0 in y])
+def closure : (Ran SPi 1 x Nat Nat) := (Sec SPi 1 x Nat [x => let f : (Ran SPi w y Nat Nat) := (Sec SPi w y Nat [y => x]) in (Out SPi w y Nat (APt w 0) f)])
+def main : Nat := (Out SPi 1 x Nat (APt 1 7) shadow)

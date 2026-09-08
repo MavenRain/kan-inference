@@ -1,0 +1,1 @@
+def duplicate : (1 x : Nat) -> Nat := fun (1 x : Nat) => let y : Nat := x in x

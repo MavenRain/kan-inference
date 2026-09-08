@@ -1,0 +1,7 @@
+-- n10: a name that no binder and no earlier declaration introduces.
+-- The elaborator emits it as a global (SB-D30), so the checker is the
+-- one that reports it and the failure is not a parse failure.
+
+axiom Nat : Type 0
+
+def bad : Nat := missingName

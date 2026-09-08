@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-07T07:50:43.750763+00:00",
+  "corpus_sha256": "0040407e5ee8bc9c8d3f329dfc27398a31e02ee74f3b71ed8d38ec0a80dd6d07",
+  "provider": "/Users/oobi/Documents/gpt16/kanon-inference/provider360",
+  "records": [
+    {
+      "id": "literal_seven",
+      "request": {
+        "protocol_version": 1,
+        "context": "",
+        "max_new_tokens": 96,
+        "max_candidates": 8,
+        "allowed_axioms": [],
+        "declaration": "seven",
+        "hint": "Return seven.",
+        "expected_type": "Nat",
+        "candidates": [
+          "3",
+          "7"
+        ]
+      },
+      "expected_candidate": "7",
+      "first_candidate_matches_intent": true,
+      "candidate_order_baseline_matches_intent": false,
+      "end_to_end_seconds": 13.022904957877472,
+      "response": {
+        "protocol_version": 1,
+        "candidates": [
+          "7",
+          "3"
+        ],
+        "provenance": {
+          "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+          "sha256": "cb7375a212a6583cbd96eaa739142f3a1a0d17cbd51043c60f081ea5ce6d21e3",
+          "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "backend": "onnxruntime-cpu",
+          "backend_version": "1.29.0",
+          "tokenizers_version": "0.22.2",
+          "numpy_version": "2.5.3",
+          "quantization": "publisher-onnx-int8",
+          "model_size_bytes": 364564558,
+          "tokenizer_size_bytes": 2104556,
+          "prompt_version": "kanon-source-completion-v3",
+          "cpu_threads": 4,
+          "python": "3.12.12",
+          "platform": "macOS-26.4-arm64-arm-64bit",
+          "provider_code_sha256": "c8b57f203b85003cf6551ee409c0cc3bdf25bc88ab55e2e397a0db083a0ade2c",
+          "decoding": "conditional-loglikelihood",
+          "prompt_sha256": "98cd31c8df8e1a528e03f7b02b75aa09be32973922cd76380d3772e0a016da5b"
+        },
+        "metrics": {
+          "load_seconds": 8.070061583071947,
+          "inference_seconds": 2.974806207930669,
+          "prompt_tokens": 53,
+          "peak_rss_bytes": 821002240,
+          "mode": "conditional-loglikelihood",
+          "mean_token_logprobs": [
+            -11.213147916253313,
+            -5.435706414635881
+          ],
+          "ranked_indices": [
+            1,
+            0
+          ],
+          "generated_tokens": 0,
+          "scored_tokens": 2
+        }
+      }
+    },
+    {
+      "id": "literal_three",
+      "request": {
+        "protocol_version": 1,
+        "context": "",
+        "max_new_tokens": 96,
+        "max_candidates": 8,
+        "allowed_axioms": [],
+        "declaration": "three",
+        "hint": "Return three.",
+        "expected_type": "Nat",
+        "candidates": [
+          "3",
+          "7"
+        ]
+      },
+      "expected_candidate": "3",
+      "first_candidate_matches_intent": true,
+      "candidate_order_baseline_matches_intent": true,
+      "end_to_end_seconds": 12.473288000095636,
+      "response": {
+        "protocol_version": 1,
+        "candidates": [
+          "3",
+          "7"
+        ],
+        "provenance": {
+          "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+          "sha256": "cb7375a212a6583cbd96eaa739142f3a1a0d17cbd51043c60f081ea5ce6d21e3",
+          "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "backend": "onnxruntime-cpu",
+          "backend_version": "1.29.0",
+          "tokenizers_version": "0.22.2",
+          "numpy_version": "2.5.3",
+          "quantization": "publisher-onnx-int8",
+          "model_size_bytes": 364564558,
+          "tokenizer_size_bytes": 2104556,
+          "prompt_version": "kanon-source-completion-v3",
+          "cpu_threads": 4,
+          "python": "3.12.12",
+          "platform": "macOS-26.4-arm64-arm-64bit",
+          "provider_code_sha256": "c8b57f203b85003cf6551ee409c0cc3bdf25bc88ab55e2e397a0db083a0ade2c",
+          "decoding": "conditional-loglikelihood",
+          "prompt_sha256": "008a94bdfa079867bfe0d1191564abfb70e6f2c973a490710bf58551c9ea4ec7"
+        },
+        "metrics": {
+          "load_seconds": 7.103375459089875,
+          "inference_seconds": 4.188302499940619,
+          "prompt_tokens": 53,
+          "peak_rss_bytes": 848134144,
+          "mode": "conditional-loglikelihood",
+          "mean_token_logprobs": [
+            -6.90820814769204,
+            -10.329188601183251
+          ],
+          "ranked_indices": [
+            0,
+            1
+          ],
+          "generated_tokens": 0,
+          "scored_tokens": 2
+        }
+      }
+    },
+    {
+      "id": "later_argument",
+      "request": {
+        "protocol_version": 1,
+        "context": "",
+        "max_new_tokens": 96,
+        "max_candidates": 8,
+        "allowed_axioms": [],
+        "declaration": "select",
+        "hint": "Return the later argument.",
+        "expected_type": "(earlier : Nat) -> (later : Nat) -> Nat",
+        "candidates": [
+          "fun (earlier : Nat) (later : Nat) => earlier",
+          "fun (earlier : Nat) (later : Nat) => later"
+        ]
+      },
+      "expected_candidate": "fun (earlier : Nat) (later : Nat) => later",
+      "first_candidate_matches_intent": true,
+      "candidate_order_baseline_matches_intent": false,
+      "end_to_end_seconds": 24.438103792024776,
+      "response": {
+        "protocol_version": 1,
+        "candidates": [
+          "fun (earlier : Nat) (later : Nat) => later",
+          "fun (earlier : Nat) (later : Nat) => earlier"
+        ],
+        "provenance": {
+          "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+          "sha256": "cb7375a212a6583cbd96eaa739142f3a1a0d17cbd51043c60f081ea5ce6d21e3",
+          "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "backend": "onnxruntime-cpu",
+          "backend_version": "1.29.0",
+          "tokenizers_version": "0.22.2",
+          "numpy_version": "2.5.3",
+          "quantization": "publisher-onnx-int8",
+          "model_size_bytes": 364564558,
+          "tokenizer_size_bytes": 2104556,
+          "prompt_version": "kanon-source-completion-v3",
+          "cpu_threads": 4,
+          "python": "3.12.12",
+          "platform": "macOS-26.4-arm64-arm-64bit",
+          "provider_code_sha256": "c8b57f203b85003cf6551ee409c0cc3bdf25bc88ab55e2e397a0db083a0ade2c",
+          "decoding": "conditional-loglikelihood",
+          "prompt_sha256": "cb144492f5c36991ad50bc1bf060affaa7c3a73f547a6a8e149881cd42caf396"
+        },
+        "metrics": {
+          "load_seconds": 11.284865667112172,
+          "inference_seconds": 11.338136374950409,
+          "prompt_tokens": 68,
+          "peak_rss_bytes": 958087168,
+          "mode": "conditional-loglikelihood",
+          "mean_token_logprobs": [
+            -2.462031296950094,
+            -2.157218729375457
+          ],
+          "ranked_indices": [
+            1,
+            0
+          ],
+          "generated_tokens": 0,
+          "scored_tokens": 28
+        }
+      }
+    },
+    {
+      "id": "earlier_argument",
+      "request": {
+        "protocol_version": 1,
+        "context": "",
+        "max_new_tokens": 96,
+        "max_candidates": 8,
+        "allowed_axioms": [],
+        "declaration": "select",
+        "hint": "Return the earlier argument.",
+        "expected_type": "(earlier : Nat) -> (later : Nat) -> Nat",
+        "candidates": [
+          "fun (earlier : Nat) (later : Nat) => earlier",
+          "fun (earlier : Nat) (later : Nat) => later"
+        ]
+      },
+      "expected_candidate": "fun (earlier : Nat) (later : Nat) => earlier",
+      "first_candidate_matches_intent": false,
+      "candidate_order_baseline_matches_intent": true,
+      "end_to_end_seconds": 24.14721112488769,
+      "response": {
+        "protocol_version": 1,
+        "candidates": [
+          "fun (earlier : Nat) (later : Nat) => later",
+          "fun (earlier : Nat) (later : Nat) => earlier"
+        ],
+        "provenance": {
+          "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+          "sha256": "cb7375a212a6583cbd96eaa739142f3a1a0d17cbd51043c60f081ea5ce6d21e3",
+          "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "backend": "onnxruntime-cpu",
+          "backend_version": "1.29.0",
+          "tokenizers_version": "0.22.2",
+          "numpy_version": "2.5.3",
+          "quantization": "publisher-onnx-int8",
+          "model_size_bytes": 364564558,
+          "tokenizer_size_bytes": 2104556,
+          "prompt_version": "kanon-source-completion-v3",
+          "cpu_threads": 4,
+          "python": "3.12.12",
+          "platform": "macOS-26.4-arm64-arm-64bit",
+          "provider_code_sha256": "c8b57f203b85003cf6551ee409c0cc3bdf25bc88ab55e2e397a0db083a0ade2c",
+          "decoding": "conditional-loglikelihood",
+          "prompt_sha256": "9a93b797e8255b0995b97eecba47caaaab1a9a4c1c4d3f95a328369cec89f616"
+        },
+        "metrics": {
+          "load_seconds": 7.910744208842516,
+          "inference_seconds": 13.411519499961287,
+          "prompt_tokens": 68,
+          "peak_rss_bytes": 1001619456,
+          "mode": "conditional-loglikelihood",
+          "mean_token_logprobs": [
+            -2.410823268062624,
+            -2.2340838478530114
+          ],
+          "ranked_indices": [
+            1,
+            0
+          ],
+          "generated_tokens": 0,
+          "scored_tokens": 28
+        }
+      }
+    },
+    {
+      "id": "increment",
+      "request": {
+        "protocol_version": 1,
+        "context": "",
+        "max_new_tokens": 96,
+        "max_candidates": 8,
+        "allowed_axioms": [],
+        "declaration": "transform",
+        "hint": "Add one to the input.",
+        "expected_type": "(n : Nat) -> Nat",
+        "candidates": [
+          "fun (n : Nat) => natAdd n 1",
+          "fun (n : Nat) => n"
+        ]
+      },
+      "expected_candidate": "fun (n : Nat) => natAdd n 1",
+      "first_candidate_matches_intent": false,
+      "candidate_order_baseline_matches_intent": true,
+      "end_to_end_seconds": 10.315586040960625,
+      "response": {
+        "protocol_version": 1,
+        "candidates": [
+          "fun (n : Nat) => n",
+          "fun (n : Nat) => natAdd n 1"
+        ],
+        "provenance": {
+          "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+          "sha256": "cb7375a212a6583cbd96eaa739142f3a1a0d17cbd51043c60f081ea5ce6d21e3",
+          "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "backend": "onnxruntime-cpu",
+          "backend_version": "1.29.0",
+          "tokenizers_version": "0.22.2",
+          "numpy_version": "2.5.3",
+          "quantization": "publisher-onnx-int8",
+          "model_size_bytes": 364564558,
+          "tokenizer_size_bytes": 2104556,
+          "prompt_version": "kanon-source-completion-v3",
+          "cpu_threads": 4,
+          "python": "3.12.12",
+          "platform": "macOS-26.4-arm64-arm-64bit",
+          "provider_code_sha256": "c8b57f203b85003cf6551ee409c0cc3bdf25bc88ab55e2e397a0db083a0ade2c",
+          "decoding": "conditional-loglikelihood",
+          "prompt_sha256": "aad3f36c3043e7a2ec8b9e1ecbbd2e2b6bc62c4e9756c9ec494f3b7b5800530d"
+        },
+        "metrics": {
+          "load_seconds": 6.027214915957302,
+          "inference_seconds": 2.885228040860966,
+          "prompt_tokens": 62,
+          "peak_rss_bytes": 997392384,
+          "mode": "conditional-loglikelihood",
+          "mean_token_logprobs": [
+            -3.885635258816656,
+            -2.9362546224053903
+          ],
+          "ranked_indices": [
+            1,
+            0
+          ],
+          "generated_tokens": 0,
+          "scored_tokens": 20
+        }
+      }
+    },
+    {
+      "id": "unchanged",
+      "request": {
+        "protocol_version": 1,
+        "context": "",
+        "max_new_tokens": 96,
+        "max_candidates": 8,
+        "allowed_axioms": [],
+        "declaration": "transform",
+        "hint": "Return the input unchanged.",
+        "expected_type": "(n : Nat) -> Nat",
+        "candidates": [
+          "fun (n : Nat) => natAdd n 1",
+          "fun (n : Nat) => n"
+        ]
+      },
+      "expected_candidate": "fun (n : Nat) => n",
+      "first_candidate_matches_intent": true,
+      "candidate_order_baseline_matches_intent": false,
+      "end_to_end_seconds": 8.281234540976584,
+      "response": {
+        "protocol_version": 1,
+        "candidates": [
+          "fun (n : Nat) => n",
+          "fun (n : Nat) => natAdd n 1"
+        ],
+        "provenance": {
+          "model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+          "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+          "sha256": "cb7375a212a6583cbd96eaa739142f3a1a0d17cbd51043c60f081ea5ce6d21e3",
+          "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "backend": "onnxruntime-cpu",
+          "backend_version": "1.29.0",
+          "tokenizers_version": "0.22.2",
+          "numpy_version": "2.5.3",
+          "quantization": "publisher-onnx-int8",
+          "model_size_bytes": 364564558,
+          "tokenizer_size_bytes": 2104556,
+          "prompt_version": "kanon-source-completion-v3",
+          "cpu_threads": 4,
+          "python": "3.12.12",
+          "platform": "macOS-26.4-arm64-arm-64bit",
+          "provider_code_sha256": "c8b57f203b85003cf6551ee409c0cc3bdf25bc88ab55e2e397a0db083a0ade2c",
+          "decoding": "conditional-loglikelihood",
+          "prompt_sha256": "3cb6bfd0300879d0fae5a2202346e83fe44a1fbe9a5aadc992b4616cbda60c9b"
+        },
+        "metrics": {
+          "load_seconds": 3.9955005410593003,
+          "inference_seconds": 3.5414991250727326,
+          "prompt_tokens": 61,
+          "peak_rss_bytes": 1018609664,
+          "mode": "conditional-loglikelihood",
+          "mean_token_logprobs": [
+            -3.7818487554815476,
+            -2.4582226859280145
+          ],
+          "ranked_indices": [
+            1,
+            0
+          ],
+          "generated_tokens": 0,
+          "scored_tokens": 20
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Small independent smoke set, not the 500-task held-out evaluation contract.",
+    "Intent scored by exact expected expression; kernel and Wasm checks are separate.",
+    "Candidate order is a weak baseline, not the strongest deterministic search baseline.",
+    "Each request launches a fresh process and loads the model; timing includes cold process startup."
+  ],
+  "summary": {
+    "tasks_completed": 6,
+    "model_correct": 4,
+    "order_baseline_correct": 3,
+    "errors": 0,
+    "median_end_to_end_seconds": 12.748096478986554
+  }
+}

@@ -1,0 +1,9 @@
+-- Preserve partial erased functions and invoke fully applied nullary ones.
+def f : (0 A : Type 0) -> (0 B : Type 0) -> Nat := fun (0 A : Type 0) (0 B : Type 0) => 5
+def g : (0 B : Type 0) -> Nat := f Nat
+def n : Nat := g Nat
+
+def local : Nat := let h : (0 B : Type 0) -> Nat := f Nat in h Nat
+def both : Nat := f Nat Nat
+def runtimeAlias : (x : Nat) -> Nat := natAdd 1
+def appliedAlias : Nat := runtimeAlias 2

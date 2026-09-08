@@ -1,0 +1,12 @@
+-- Erasing a type payload does not equate it with every other type.
+-- The cast must fail even though Code passes the large elimination
+-- criterion.  Accepting it lets bad treat the integer 0 as a function.
+
+mu Code : Type 1 with
+| code : (0 A : Type 0) -> Code
+
+def cast : (0 F : Code -> Type 0) -> F (code Nat : Code) -> F (code (Nat -> Nat) : Code) := fun (0 F : Code -> Type 0) (x : F (code Nat : Code)) => x
+
+def bad : Nat -> Nat := cast (fun (c : Code) => case c as x in Code return Type 0 with | code 0 A => A) 0
+
+def main : Nat := bad 1

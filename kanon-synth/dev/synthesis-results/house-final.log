@@ -1,0 +1,7 @@
+HOUSE no-exception OK
+HOUSE no-mutable-state OK
+HOUSE one-catch-site OK
+/Users/oobi/Documents/gpt16/kanon-synth/test/sys_io.ml:19:  try Ok (thunk ()) with Sys_error m -> Error m
+HOUSE no-bool-match OK
+HOUSE no-em-dash OK
+HOUSE OK

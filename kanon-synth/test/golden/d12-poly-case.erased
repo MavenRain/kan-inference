@@ -1,0 +1,5 @@
+erased Bool
+rec [any]
+fun id (union any) : union any := KVar 0
+rec [nat; sum<unit|unit>]
+fun main () : union nat := KCase sum<unit|unit> (KApp (KGlobal id) [KApp (KGlobal natEq) [KLit 1; KLit 1]]) [{0 0 (KLit 0)}; {1 0 (KLit 1)}]

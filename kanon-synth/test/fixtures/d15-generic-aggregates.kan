@@ -1,0 +1,27 @@
+-- Exercise aggregate layout crossings in both directions, nested fields,
+-- sum payloads, and a generic tuple containing a closure.
+-- main is 36.
+def id : (0 A : Type 0) -> (x : A) -> A :=
+  fun (0 A : Type 0) (x : A) => x
+def box : (0 A : Type 0) -> (x : A) -> (a : A) * A :=
+  fun (0 A : Type 0) (x : A) => (x, x)
+def first : (0 A : Type 0) -> (p : (a : A) * A) -> A :=
+  fun (0 A : Type 0) (p : (a : A) * A) => p.1
+def pack : (0 A : Type 0) -> (x : A) -> prod (A, A) :=
+  fun (0 A : Type 0) (x : A) => tuple (x, x)
+def choose : (0 A : Type 0) -> (x : A) -> sum (A, A) :=
+  fun (0 A : Type 0) (x : A) => inj 1 of 2 x
+def unchoose : (0 A : Type 0) -> (s : sum (A, A)) -> A :=
+  fun (0 A : Type 0) (s : sum (A, A)) =>
+    case s with | 0 (x : A) => x | 1 (y : A) => y
+def fromEmpty : (x : sum ()) -> Nat := fun (x : sum ()) => absurd x
+def sumNat : Nat :=
+  case (id (sum (Nat, Nat)) (choose Nat 7)) with
+  | 0 (x : Nat) => x
+  | 1 (y : Nat) => natAdd y 1
+def nested : Nat := (box ((a : Nat) * Nat) (box Nat 5)).1.2
+def inc : Nat -> Nat := fun (x : Nat) => natAdd x 1
+def fromClosure : Nat := (pack (Nat -> Nat) inc).0 8
+def main : Nat :=
+  natAdd (natAdd (first Nat (3, 4)) (pack Nat 9).1)
+    (natAdd (unchoose Nat (inj 0 of 2 2)) (natAdd sumNat (natAdd nested fromClosure)))

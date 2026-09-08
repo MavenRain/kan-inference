@@ -1,0 +1,3 @@
+def Triple : Type 1 := (Ran SColl 3 (Sec SColl 3 [ => Nat;  => Nat;  => Nat]))
+def t : Triple := (Sec SColl 3 [ => 2;  => 3;  => 4])
+def main : Nat := (Out SPi w b Nat (APt w (Out SColl 3 (ALeg 2) t)) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w (Out SColl 3 (ALeg 1) t)) (Out SPi w a Nat (APt w (Out SColl 3 (ALeg 0) t)) natMul))) natAdd))

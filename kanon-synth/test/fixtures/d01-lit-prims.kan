@@ -1,0 +1,14 @@
+-- d01: the literals and all five prims.  natEq and natLt answer at the
+-- two leg sum of SB-D1, and one case reads that answer back into a Nat,
+-- so every prim of M0 reaches the emitter from one file.
+-- main is 17.
+
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+
+def toNat : (b : Bool) -> Nat :=
+  fun (b : Bool) => case b with | 0 (x : prod ()) => 0 | 1 (y : prod ()) => 1
+
+def scaled : Nat := natMul (natAdd 2 3) (natSub 7 4)
+def flags : Nat := natAdd (toNat (natEq 4 4)) (toNat (natLt 1 2))
+
+def main : Nat := natAdd scaled flags

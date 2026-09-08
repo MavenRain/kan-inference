@@ -1,0 +1,15 @@
+-- Parameter variables are checked beneath both constructor fields.
+mu Pair (0 A : Type 0) (0 B : Type 0) : Type 0 with
+| pair : A -> B -> Pair A B
+
+-- The result index is scoped under a parameter and a field.
+mu Ix (0 A : Type 0) : (0 x : A) -> Type 0 with
+| ix : (0 x : A) -> Ix A x
+
+-- The second index type depends on the first result index.
+mu Dep : (0 A : Type 0) -> (0 x : A) -> Type 1 with
+| dep : (0 A : Type 0) -> (0 x : A) -> Dep A x
+
+-- A field at exactly the declared universe bound is valid.
+mu Large : Type 1 with
+| packLarge : Type 0 -> Large

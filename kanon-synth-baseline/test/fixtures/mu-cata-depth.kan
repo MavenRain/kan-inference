@@ -1,0 +1,22 @@
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def rec dbl : N -> N := fun (n : N) => case n as x in N return N with | zero => zero | succ m => succ (succ (dbl m))
+
+def n0 : N := succ zero
+def n1 : N := succ (dbl n0)
+def n2 : N := succ (dbl n1)
+def n3 : N := succ (dbl n2)
+def n4 : N := succ (dbl n3)
+def n5 : N := succ (dbl n4)
+def n6 : N := succ (dbl n5)
+def n7 : N := succ (dbl n6)
+def n8 : N := succ (dbl n7)
+def n9 : N := succ (dbl n8)
+def n10 : N := succ (dbl n9)
+def n11 : N := succ (dbl n10)
+
+def rec toNat : N -> Nat := fun (n : N) => case n as x in N return Nat with | zero => 0 | succ m => natAdd 1 (toNat m)
+
+def main : Nat := natAdd 0 (toNat n11)

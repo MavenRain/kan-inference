@@ -1,0 +1,3 @@
+def box : (Ran SPi 0 A Type 1 (Ran SPi w x A (Lan SPi w a A A))) := (Sec SPi 0 A Type 1 [A => (Sec SPi w x A [x => (In SPi w a A (APt w x) [x])])])
+def mk : (Ran SPi w x Nat (Ran SPi w _ Nat Nat)) := (Sec SPi w x Nat [x => (Sec SPi w y Nat [y => (Out SPi w b Nat (APt w x) (Out SPi w a Nat (APt w (Out SPi w b Nat (APt w y) (Out SPi w a Nat (APt w x) natAdd))) natSub))])])
+def main : Nat := (Out SPi w _ Nat (APt w 19) (Out SPi w x Nat (APt w (Elim SPi w a Nat (Out SPi w x Nat (APt w 12345678901234567890123456789) (Out SPi 0 A Type 1 (APt 0 Nat) box)) as self return Nat with | (ALeg 0) x y => x)) mk))

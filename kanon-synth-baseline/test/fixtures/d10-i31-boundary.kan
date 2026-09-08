@@ -1,0 +1,6 @@
+-- d10: the i31 boundary of SD-D7.  The kernel value of main is
+-- 1073741824, one above the range an i31 holds, so the module traps at
+-- run time and the runner exits 1.
+-- main is 1073741824, which traps.
+
+def main : Nat := natAdd 1073741823 1

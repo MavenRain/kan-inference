@@ -1,0 +1,1 @@
+def main : Nat := (Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w 1073741823) natAdd))

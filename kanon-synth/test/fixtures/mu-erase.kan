@@ -1,0 +1,13 @@
+-- mu-erase: the erasure of an introduction at a mu family (M1 Stage J,
+-- brief 3.1 and M1-PLAN.md:103).  The erased form is a KTag of the
+-- family tid, the constructor index in declaration order and the erased
+-- fields, and "zero", which takes no field, is a tag with no payload,
+-- which is the tagged integer the sum already uses (SD-D5, SJ-D5).  The
+-- file stood under erase-neg until Stage J landed the rows, where it
+-- read the interim word of SG-D7 (brief 3.3).
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def one : N := succ zero

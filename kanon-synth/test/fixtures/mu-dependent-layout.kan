@@ -1,0 +1,10 @@
+-- A generic field keeps its slot when instantiated at an erased type.
+-- The following Nat field must retain its position.  Main is 27.
+mu Pack : Type 1 with
+| pack : (0 A : Type 0) -> A -> Nat -> Pack
+
+def pn : Pack := pack Nat 7 8
+def pu : Pack := pack (prod ()) (tuple ()) 9
+def pf : Pack := pack (Nat -> Nat) (fun (n : Nat) => natAdd n 1) 10
+def last : Pack -> Nat := fun (p : Pack) => case p as x in Pack return Nat with | pack 0 A v n => n
+def main : Nat := natAdd (last pn) (natAdd (last pu) (last pf))

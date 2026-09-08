@@ -1,0 +1,15 @@
+-- d02: a chain of tail calls through a helper of arity two.  The value
+-- of main does not depend on the calls being tail calls, so the .wat
+-- golden is the only reader of the tail form (SD-M2).
+-- main is 10.
+
+def step : (a : Nat) -> (b : Nat) -> Nat :=
+  fun (a : Nat) (b : Nat) => natAdd a b
+
+def chain : (a : Nat) -> (b : Nat) -> Nat :=
+  fun (a : Nat) (b : Nat) => step (natAdd a 1) b
+
+def outer : (a : Nat) -> (b : Nat) -> Nat :=
+  fun (a : Nat) (b : Nat) => chain (natAdd a 2) b
+
+def main : Nat := outer 3 4

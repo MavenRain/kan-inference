@@ -1,0 +1,2 @@
+rec [nat; mu<Empty>]
+fun capture (union nat, union mu<Empty>) : union nat := KLet y (KVar 1) (KCase mu<Empty> (KVar 1) [])

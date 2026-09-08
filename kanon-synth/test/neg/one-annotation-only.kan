@@ -1,0 +1,3 @@
+axiom F : (0 index : Nat) -> Type 0
+axiom inhabit : (0 index : Nat) -> F index
+def unused : (1 x : Nat) -> F x := fun (1 x : Nat) => (inhabit x : F x)

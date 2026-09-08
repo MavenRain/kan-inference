@@ -1,0 +1,7 @@
+erased Bool
+rec [fn<1>; nat; sum<unit|unit>]
+fun read (func fn<1>) : union nat := KCase sum<unit|unit> (KApp (KVar 0) [KLit 1]) [{0 0 (KLit 0)}; {1 0 (KLit 1)}]
+rec [nat; sum<unit|unit>]
+fun eqOne (union nat) : union sum<unit|unit> := KTail (KGlobal natEq) [KVar 0; KLit 1]
+rec [nat]
+fun main () : union nat := KTail (KGlobal read) [KGlobal eqOne]

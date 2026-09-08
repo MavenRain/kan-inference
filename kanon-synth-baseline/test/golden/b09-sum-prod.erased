@@ -1,0 +1,15 @@
+erased Nat
+erased Two
+erased Pair
+erased Triple
+erased Void
+erased Unit
+rec [sum<union nat|union nat>]
+fun leftOfTwo () : union sum<union nat|union nat> := KTag sum<union nat|union nat> 0 [KLit 1]
+rec [sum<union nat|union nat>]
+fun rightOfTwo () : union sum<union nat|union nat> := KTag sum<union nat|union nat> 1 [KLit 2]
+rec [tuple<union nat,union nat>]
+fun onePair () : struct tuple<union nat,union nat> := KStruct tuple<union nat,union nat> [KLit 1; KLit 2]
+rec [tuple<union nat,union nat,union nat>]
+fun oneTriple () : struct tuple<union nat,union nat,union nat> := KStruct tuple<union nat,union nat,union nat> [KLit 1; KLit 2; KLit 3]
+erased star

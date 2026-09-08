@@ -1,0 +1,807 @@
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+def yes : Bool := inj 1 of 2 ()
+def no : Bool := inj 0 of 2 ()
+def Unit : Type 0 := prod ()
+mu Agreement : (0 a : Bool) -> (0 b : Bool) -> Type 0 with
+| same : (0 a : Bool) -> Agreement a a
+def agree0 : Agreement (natEq 0 0) yes := same (natEq 0 0)
+def test0 : Nat := case (natEq 0 0) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree1 : Agreement (natEq 0 1) no := same (natEq 0 1)
+def test1 : Nat := case (natEq 0 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree2 : Agreement (natEq 0 2) no := same (natEq 0 2)
+def test2 : Nat := case (natEq 0 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree3 : Agreement (natEq 0 32767) no := same (natEq 0 32767)
+def test3 : Nat := case (natEq 0 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree4 : Agreement (natEq 0 32768) no := same (natEq 0 32768)
+def test4 : Nat := case (natEq 0 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree5 : Agreement (natEq 0 32769) no := same (natEq 0 32769)
+def test5 : Nat := case (natEq 0 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree6 : Agreement (natEq 0 1073741822) no := same (natEq 0 1073741822)
+def test6 : Nat := case (natEq 0 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree7 : Agreement (natEq 0 1073741823) no := same (natEq 0 1073741823)
+def test7 : Nat := case (natEq 0 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree8 : Agreement (natEq 0 1073741824) no := same (natEq 0 1073741824)
+def test8 : Nat := case (natEq 0 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree9 : Agreement (natEq 0 1073741825) no := same (natEq 0 1073741825)
+def test9 : Nat := case (natEq 0 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree10 : Agreement (natEq 0 2147483647) no := same (natEq 0 2147483647)
+def test10 : Nat := case (natEq 0 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree11 : Agreement (natEq 0 2147483648) no := same (natEq 0 2147483648)
+def test11 : Nat := case (natEq 0 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree12 : Agreement (natEq 0 2147483649) no := same (natEq 0 2147483649)
+def test12 : Nat := case (natEq 0 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree13 : Agreement (natEq 0 4611686018427387903) no := same (natEq 0 4611686018427387903)
+def test13 : Nat := case (natEq 0 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree14 : Agreement (natEq 0 4611686018427387904) no := same (natEq 0 4611686018427387904)
+def test14 : Nat := case (natEq 0 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree15 : Agreement (natEq 0 18446744073709551615) no := same (natEq 0 18446744073709551615)
+def test15 : Nat := case (natEq 0 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree16 : Agreement (natEq 0 18446744073709551616) no := same (natEq 0 18446744073709551616)
+def test16 : Nat := case (natEq 0 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree17 : Agreement (natEq 0 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 0 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test17 : Nat := case (natEq 0 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree18 : Agreement (natEq 0 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 0 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test18 : Nat := case (natEq 0 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree19 : Agreement (natEq 0 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 0 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test19 : Nat := case (natEq 0 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree20 : Agreement (natEq 1 0) no := same (natEq 1 0)
+def test20 : Nat := case (natEq 1 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree21 : Agreement (natEq 1 1) yes := same (natEq 1 1)
+def test21 : Nat := case (natEq 1 1) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree22 : Agreement (natEq 1 2) no := same (natEq 1 2)
+def test22 : Nat := case (natEq 1 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree23 : Agreement (natEq 1 32767) no := same (natEq 1 32767)
+def test23 : Nat := case (natEq 1 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree24 : Agreement (natEq 1 32768) no := same (natEq 1 32768)
+def test24 : Nat := case (natEq 1 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree25 : Agreement (natEq 1 32769) no := same (natEq 1 32769)
+def test25 : Nat := case (natEq 1 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree26 : Agreement (natEq 1 1073741822) no := same (natEq 1 1073741822)
+def test26 : Nat := case (natEq 1 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree27 : Agreement (natEq 1 1073741823) no := same (natEq 1 1073741823)
+def test27 : Nat := case (natEq 1 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree28 : Agreement (natEq 1 1073741824) no := same (natEq 1 1073741824)
+def test28 : Nat := case (natEq 1 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree29 : Agreement (natEq 1 1073741825) no := same (natEq 1 1073741825)
+def test29 : Nat := case (natEq 1 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree30 : Agreement (natEq 1 2147483647) no := same (natEq 1 2147483647)
+def test30 : Nat := case (natEq 1 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree31 : Agreement (natEq 1 2147483648) no := same (natEq 1 2147483648)
+def test31 : Nat := case (natEq 1 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree32 : Agreement (natEq 1 2147483649) no := same (natEq 1 2147483649)
+def test32 : Nat := case (natEq 1 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree33 : Agreement (natEq 1 4611686018427387903) no := same (natEq 1 4611686018427387903)
+def test33 : Nat := case (natEq 1 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree34 : Agreement (natEq 1 4611686018427387904) no := same (natEq 1 4611686018427387904)
+def test34 : Nat := case (natEq 1 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree35 : Agreement (natEq 1 18446744073709551615) no := same (natEq 1 18446744073709551615)
+def test35 : Nat := case (natEq 1 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree36 : Agreement (natEq 1 18446744073709551616) no := same (natEq 1 18446744073709551616)
+def test36 : Nat := case (natEq 1 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree37 : Agreement (natEq 1 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 1 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test37 : Nat := case (natEq 1 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree38 : Agreement (natEq 1 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 1 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test38 : Nat := case (natEq 1 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree39 : Agreement (natEq 1 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 1 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test39 : Nat := case (natEq 1 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree40 : Agreement (natEq 2 0) no := same (natEq 2 0)
+def test40 : Nat := case (natEq 2 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree41 : Agreement (natEq 2 1) no := same (natEq 2 1)
+def test41 : Nat := case (natEq 2 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree42 : Agreement (natEq 2 2) yes := same (natEq 2 2)
+def test42 : Nat := case (natEq 2 2) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree43 : Agreement (natEq 2 32767) no := same (natEq 2 32767)
+def test43 : Nat := case (natEq 2 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree44 : Agreement (natEq 2 32768) no := same (natEq 2 32768)
+def test44 : Nat := case (natEq 2 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree45 : Agreement (natEq 2 32769) no := same (natEq 2 32769)
+def test45 : Nat := case (natEq 2 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree46 : Agreement (natEq 2 1073741822) no := same (natEq 2 1073741822)
+def test46 : Nat := case (natEq 2 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree47 : Agreement (natEq 2 1073741823) no := same (natEq 2 1073741823)
+def test47 : Nat := case (natEq 2 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree48 : Agreement (natEq 2 1073741824) no := same (natEq 2 1073741824)
+def test48 : Nat := case (natEq 2 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree49 : Agreement (natEq 2 1073741825) no := same (natEq 2 1073741825)
+def test49 : Nat := case (natEq 2 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree50 : Agreement (natEq 2 2147483647) no := same (natEq 2 2147483647)
+def test50 : Nat := case (natEq 2 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree51 : Agreement (natEq 2 2147483648) no := same (natEq 2 2147483648)
+def test51 : Nat := case (natEq 2 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree52 : Agreement (natEq 2 2147483649) no := same (natEq 2 2147483649)
+def test52 : Nat := case (natEq 2 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree53 : Agreement (natEq 2 4611686018427387903) no := same (natEq 2 4611686018427387903)
+def test53 : Nat := case (natEq 2 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree54 : Agreement (natEq 2 4611686018427387904) no := same (natEq 2 4611686018427387904)
+def test54 : Nat := case (natEq 2 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree55 : Agreement (natEq 2 18446744073709551615) no := same (natEq 2 18446744073709551615)
+def test55 : Nat := case (natEq 2 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree56 : Agreement (natEq 2 18446744073709551616) no := same (natEq 2 18446744073709551616)
+def test56 : Nat := case (natEq 2 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree57 : Agreement (natEq 2 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 2 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test57 : Nat := case (natEq 2 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree58 : Agreement (natEq 2 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 2 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test58 : Nat := case (natEq 2 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree59 : Agreement (natEq 2 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 2 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test59 : Nat := case (natEq 2 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree60 : Agreement (natEq 32767 0) no := same (natEq 32767 0)
+def test60 : Nat := case (natEq 32767 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree61 : Agreement (natEq 32767 1) no := same (natEq 32767 1)
+def test61 : Nat := case (natEq 32767 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree62 : Agreement (natEq 32767 2) no := same (natEq 32767 2)
+def test62 : Nat := case (natEq 32767 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree63 : Agreement (natEq 32767 32767) yes := same (natEq 32767 32767)
+def test63 : Nat := case (natEq 32767 32767) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree64 : Agreement (natEq 32767 32768) no := same (natEq 32767 32768)
+def test64 : Nat := case (natEq 32767 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree65 : Agreement (natEq 32767 32769) no := same (natEq 32767 32769)
+def test65 : Nat := case (natEq 32767 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree66 : Agreement (natEq 32767 1073741822) no := same (natEq 32767 1073741822)
+def test66 : Nat := case (natEq 32767 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree67 : Agreement (natEq 32767 1073741823) no := same (natEq 32767 1073741823)
+def test67 : Nat := case (natEq 32767 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree68 : Agreement (natEq 32767 1073741824) no := same (natEq 32767 1073741824)
+def test68 : Nat := case (natEq 32767 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree69 : Agreement (natEq 32767 1073741825) no := same (natEq 32767 1073741825)
+def test69 : Nat := case (natEq 32767 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree70 : Agreement (natEq 32767 2147483647) no := same (natEq 32767 2147483647)
+def test70 : Nat := case (natEq 32767 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree71 : Agreement (natEq 32767 2147483648) no := same (natEq 32767 2147483648)
+def test71 : Nat := case (natEq 32767 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree72 : Agreement (natEq 32767 2147483649) no := same (natEq 32767 2147483649)
+def test72 : Nat := case (natEq 32767 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree73 : Agreement (natEq 32767 4611686018427387903) no := same (natEq 32767 4611686018427387903)
+def test73 : Nat := case (natEq 32767 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree74 : Agreement (natEq 32767 4611686018427387904) no := same (natEq 32767 4611686018427387904)
+def test74 : Nat := case (natEq 32767 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree75 : Agreement (natEq 32767 18446744073709551615) no := same (natEq 32767 18446744073709551615)
+def test75 : Nat := case (natEq 32767 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree76 : Agreement (natEq 32767 18446744073709551616) no := same (natEq 32767 18446744073709551616)
+def test76 : Nat := case (natEq 32767 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree77 : Agreement (natEq 32767 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 32767 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test77 : Nat := case (natEq 32767 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree78 : Agreement (natEq 32767 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 32767 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test78 : Nat := case (natEq 32767 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree79 : Agreement (natEq 32767 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 32767 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test79 : Nat := case (natEq 32767 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree80 : Agreement (natEq 32768 0) no := same (natEq 32768 0)
+def test80 : Nat := case (natEq 32768 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree81 : Agreement (natEq 32768 1) no := same (natEq 32768 1)
+def test81 : Nat := case (natEq 32768 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree82 : Agreement (natEq 32768 2) no := same (natEq 32768 2)
+def test82 : Nat := case (natEq 32768 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree83 : Agreement (natEq 32768 32767) no := same (natEq 32768 32767)
+def test83 : Nat := case (natEq 32768 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree84 : Agreement (natEq 32768 32768) yes := same (natEq 32768 32768)
+def test84 : Nat := case (natEq 32768 32768) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree85 : Agreement (natEq 32768 32769) no := same (natEq 32768 32769)
+def test85 : Nat := case (natEq 32768 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree86 : Agreement (natEq 32768 1073741822) no := same (natEq 32768 1073741822)
+def test86 : Nat := case (natEq 32768 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree87 : Agreement (natEq 32768 1073741823) no := same (natEq 32768 1073741823)
+def test87 : Nat := case (natEq 32768 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree88 : Agreement (natEq 32768 1073741824) no := same (natEq 32768 1073741824)
+def test88 : Nat := case (natEq 32768 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree89 : Agreement (natEq 32768 1073741825) no := same (natEq 32768 1073741825)
+def test89 : Nat := case (natEq 32768 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree90 : Agreement (natEq 32768 2147483647) no := same (natEq 32768 2147483647)
+def test90 : Nat := case (natEq 32768 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree91 : Agreement (natEq 32768 2147483648) no := same (natEq 32768 2147483648)
+def test91 : Nat := case (natEq 32768 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree92 : Agreement (natEq 32768 2147483649) no := same (natEq 32768 2147483649)
+def test92 : Nat := case (natEq 32768 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree93 : Agreement (natEq 32768 4611686018427387903) no := same (natEq 32768 4611686018427387903)
+def test93 : Nat := case (natEq 32768 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree94 : Agreement (natEq 32768 4611686018427387904) no := same (natEq 32768 4611686018427387904)
+def test94 : Nat := case (natEq 32768 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree95 : Agreement (natEq 32768 18446744073709551615) no := same (natEq 32768 18446744073709551615)
+def test95 : Nat := case (natEq 32768 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree96 : Agreement (natEq 32768 18446744073709551616) no := same (natEq 32768 18446744073709551616)
+def test96 : Nat := case (natEq 32768 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree97 : Agreement (natEq 32768 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 32768 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test97 : Nat := case (natEq 32768 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree98 : Agreement (natEq 32768 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 32768 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test98 : Nat := case (natEq 32768 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree99 : Agreement (natEq 32768 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 32768 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test99 : Nat := case (natEq 32768 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree100 : Agreement (natEq 32769 0) no := same (natEq 32769 0)
+def test100 : Nat := case (natEq 32769 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree101 : Agreement (natEq 32769 1) no := same (natEq 32769 1)
+def test101 : Nat := case (natEq 32769 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree102 : Agreement (natEq 32769 2) no := same (natEq 32769 2)
+def test102 : Nat := case (natEq 32769 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree103 : Agreement (natEq 32769 32767) no := same (natEq 32769 32767)
+def test103 : Nat := case (natEq 32769 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree104 : Agreement (natEq 32769 32768) no := same (natEq 32769 32768)
+def test104 : Nat := case (natEq 32769 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree105 : Agreement (natEq 32769 32769) yes := same (natEq 32769 32769)
+def test105 : Nat := case (natEq 32769 32769) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree106 : Agreement (natEq 32769 1073741822) no := same (natEq 32769 1073741822)
+def test106 : Nat := case (natEq 32769 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree107 : Agreement (natEq 32769 1073741823) no := same (natEq 32769 1073741823)
+def test107 : Nat := case (natEq 32769 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree108 : Agreement (natEq 32769 1073741824) no := same (natEq 32769 1073741824)
+def test108 : Nat := case (natEq 32769 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree109 : Agreement (natEq 32769 1073741825) no := same (natEq 32769 1073741825)
+def test109 : Nat := case (natEq 32769 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree110 : Agreement (natEq 32769 2147483647) no := same (natEq 32769 2147483647)
+def test110 : Nat := case (natEq 32769 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree111 : Agreement (natEq 32769 2147483648) no := same (natEq 32769 2147483648)
+def test111 : Nat := case (natEq 32769 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree112 : Agreement (natEq 32769 2147483649) no := same (natEq 32769 2147483649)
+def test112 : Nat := case (natEq 32769 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree113 : Agreement (natEq 32769 4611686018427387903) no := same (natEq 32769 4611686018427387903)
+def test113 : Nat := case (natEq 32769 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree114 : Agreement (natEq 32769 4611686018427387904) no := same (natEq 32769 4611686018427387904)
+def test114 : Nat := case (natEq 32769 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree115 : Agreement (natEq 32769 18446744073709551615) no := same (natEq 32769 18446744073709551615)
+def test115 : Nat := case (natEq 32769 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree116 : Agreement (natEq 32769 18446744073709551616) no := same (natEq 32769 18446744073709551616)
+def test116 : Nat := case (natEq 32769 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree117 : Agreement (natEq 32769 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 32769 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test117 : Nat := case (natEq 32769 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree118 : Agreement (natEq 32769 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 32769 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test118 : Nat := case (natEq 32769 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree119 : Agreement (natEq 32769 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 32769 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test119 : Nat := case (natEq 32769 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree120 : Agreement (natEq 1073741822 0) no := same (natEq 1073741822 0)
+def test120 : Nat := case (natEq 1073741822 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree121 : Agreement (natEq 1073741822 1) no := same (natEq 1073741822 1)
+def test121 : Nat := case (natEq 1073741822 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree122 : Agreement (natEq 1073741822 2) no := same (natEq 1073741822 2)
+def test122 : Nat := case (natEq 1073741822 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree123 : Agreement (natEq 1073741822 32767) no := same (natEq 1073741822 32767)
+def test123 : Nat := case (natEq 1073741822 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree124 : Agreement (natEq 1073741822 32768) no := same (natEq 1073741822 32768)
+def test124 : Nat := case (natEq 1073741822 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree125 : Agreement (natEq 1073741822 32769) no := same (natEq 1073741822 32769)
+def test125 : Nat := case (natEq 1073741822 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree126 : Agreement (natEq 1073741822 1073741822) yes := same (natEq 1073741822 1073741822)
+def test126 : Nat := case (natEq 1073741822 1073741822) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree127 : Agreement (natEq 1073741822 1073741823) no := same (natEq 1073741822 1073741823)
+def test127 : Nat := case (natEq 1073741822 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree128 : Agreement (natEq 1073741822 1073741824) no := same (natEq 1073741822 1073741824)
+def test128 : Nat := case (natEq 1073741822 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree129 : Agreement (natEq 1073741822 1073741825) no := same (natEq 1073741822 1073741825)
+def test129 : Nat := case (natEq 1073741822 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree130 : Agreement (natEq 1073741822 2147483647) no := same (natEq 1073741822 2147483647)
+def test130 : Nat := case (natEq 1073741822 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree131 : Agreement (natEq 1073741822 2147483648) no := same (natEq 1073741822 2147483648)
+def test131 : Nat := case (natEq 1073741822 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree132 : Agreement (natEq 1073741822 2147483649) no := same (natEq 1073741822 2147483649)
+def test132 : Nat := case (natEq 1073741822 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree133 : Agreement (natEq 1073741822 4611686018427387903) no := same (natEq 1073741822 4611686018427387903)
+def test133 : Nat := case (natEq 1073741822 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree134 : Agreement (natEq 1073741822 4611686018427387904) no := same (natEq 1073741822 4611686018427387904)
+def test134 : Nat := case (natEq 1073741822 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree135 : Agreement (natEq 1073741822 18446744073709551615) no := same (natEq 1073741822 18446744073709551615)
+def test135 : Nat := case (natEq 1073741822 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree136 : Agreement (natEq 1073741822 18446744073709551616) no := same (natEq 1073741822 18446744073709551616)
+def test136 : Nat := case (natEq 1073741822 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree137 : Agreement (natEq 1073741822 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 1073741822 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test137 : Nat := case (natEq 1073741822 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree138 : Agreement (natEq 1073741822 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 1073741822 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test138 : Nat := case (natEq 1073741822 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree139 : Agreement (natEq 1073741822 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 1073741822 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test139 : Nat := case (natEq 1073741822 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree140 : Agreement (natEq 1073741823 0) no := same (natEq 1073741823 0)
+def test140 : Nat := case (natEq 1073741823 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree141 : Agreement (natEq 1073741823 1) no := same (natEq 1073741823 1)
+def test141 : Nat := case (natEq 1073741823 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree142 : Agreement (natEq 1073741823 2) no := same (natEq 1073741823 2)
+def test142 : Nat := case (natEq 1073741823 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree143 : Agreement (natEq 1073741823 32767) no := same (natEq 1073741823 32767)
+def test143 : Nat := case (natEq 1073741823 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree144 : Agreement (natEq 1073741823 32768) no := same (natEq 1073741823 32768)
+def test144 : Nat := case (natEq 1073741823 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree145 : Agreement (natEq 1073741823 32769) no := same (natEq 1073741823 32769)
+def test145 : Nat := case (natEq 1073741823 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree146 : Agreement (natEq 1073741823 1073741822) no := same (natEq 1073741823 1073741822)
+def test146 : Nat := case (natEq 1073741823 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree147 : Agreement (natEq 1073741823 1073741823) yes := same (natEq 1073741823 1073741823)
+def test147 : Nat := case (natEq 1073741823 1073741823) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree148 : Agreement (natEq 1073741823 1073741824) no := same (natEq 1073741823 1073741824)
+def test148 : Nat := case (natEq 1073741823 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree149 : Agreement (natEq 1073741823 1073741825) no := same (natEq 1073741823 1073741825)
+def test149 : Nat := case (natEq 1073741823 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree150 : Agreement (natEq 1073741823 2147483647) no := same (natEq 1073741823 2147483647)
+def test150 : Nat := case (natEq 1073741823 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree151 : Agreement (natEq 1073741823 2147483648) no := same (natEq 1073741823 2147483648)
+def test151 : Nat := case (natEq 1073741823 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree152 : Agreement (natEq 1073741823 2147483649) no := same (natEq 1073741823 2147483649)
+def test152 : Nat := case (natEq 1073741823 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree153 : Agreement (natEq 1073741823 4611686018427387903) no := same (natEq 1073741823 4611686018427387903)
+def test153 : Nat := case (natEq 1073741823 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree154 : Agreement (natEq 1073741823 4611686018427387904) no := same (natEq 1073741823 4611686018427387904)
+def test154 : Nat := case (natEq 1073741823 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree155 : Agreement (natEq 1073741823 18446744073709551615) no := same (natEq 1073741823 18446744073709551615)
+def test155 : Nat := case (natEq 1073741823 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree156 : Agreement (natEq 1073741823 18446744073709551616) no := same (natEq 1073741823 18446744073709551616)
+def test156 : Nat := case (natEq 1073741823 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree157 : Agreement (natEq 1073741823 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 1073741823 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test157 : Nat := case (natEq 1073741823 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree158 : Agreement (natEq 1073741823 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 1073741823 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test158 : Nat := case (natEq 1073741823 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree159 : Agreement (natEq 1073741823 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 1073741823 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test159 : Nat := case (natEq 1073741823 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree160 : Agreement (natEq 1073741824 0) no := same (natEq 1073741824 0)
+def test160 : Nat := case (natEq 1073741824 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree161 : Agreement (natEq 1073741824 1) no := same (natEq 1073741824 1)
+def test161 : Nat := case (natEq 1073741824 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree162 : Agreement (natEq 1073741824 2) no := same (natEq 1073741824 2)
+def test162 : Nat := case (natEq 1073741824 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree163 : Agreement (natEq 1073741824 32767) no := same (natEq 1073741824 32767)
+def test163 : Nat := case (natEq 1073741824 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree164 : Agreement (natEq 1073741824 32768) no := same (natEq 1073741824 32768)
+def test164 : Nat := case (natEq 1073741824 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree165 : Agreement (natEq 1073741824 32769) no := same (natEq 1073741824 32769)
+def test165 : Nat := case (natEq 1073741824 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree166 : Agreement (natEq 1073741824 1073741822) no := same (natEq 1073741824 1073741822)
+def test166 : Nat := case (natEq 1073741824 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree167 : Agreement (natEq 1073741824 1073741823) no := same (natEq 1073741824 1073741823)
+def test167 : Nat := case (natEq 1073741824 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree168 : Agreement (natEq 1073741824 1073741824) yes := same (natEq 1073741824 1073741824)
+def test168 : Nat := case (natEq 1073741824 1073741824) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree169 : Agreement (natEq 1073741824 1073741825) no := same (natEq 1073741824 1073741825)
+def test169 : Nat := case (natEq 1073741824 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree170 : Agreement (natEq 1073741824 2147483647) no := same (natEq 1073741824 2147483647)
+def test170 : Nat := case (natEq 1073741824 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree171 : Agreement (natEq 1073741824 2147483648) no := same (natEq 1073741824 2147483648)
+def test171 : Nat := case (natEq 1073741824 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree172 : Agreement (natEq 1073741824 2147483649) no := same (natEq 1073741824 2147483649)
+def test172 : Nat := case (natEq 1073741824 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree173 : Agreement (natEq 1073741824 4611686018427387903) no := same (natEq 1073741824 4611686018427387903)
+def test173 : Nat := case (natEq 1073741824 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree174 : Agreement (natEq 1073741824 4611686018427387904) no := same (natEq 1073741824 4611686018427387904)
+def test174 : Nat := case (natEq 1073741824 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree175 : Agreement (natEq 1073741824 18446744073709551615) no := same (natEq 1073741824 18446744073709551615)
+def test175 : Nat := case (natEq 1073741824 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree176 : Agreement (natEq 1073741824 18446744073709551616) no := same (natEq 1073741824 18446744073709551616)
+def test176 : Nat := case (natEq 1073741824 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree177 : Agreement (natEq 1073741824 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 1073741824 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test177 : Nat := case (natEq 1073741824 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree178 : Agreement (natEq 1073741824 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 1073741824 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test178 : Nat := case (natEq 1073741824 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree179 : Agreement (natEq 1073741824 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 1073741824 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test179 : Nat := case (natEq 1073741824 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree180 : Agreement (natEq 1073741825 0) no := same (natEq 1073741825 0)
+def test180 : Nat := case (natEq 1073741825 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree181 : Agreement (natEq 1073741825 1) no := same (natEq 1073741825 1)
+def test181 : Nat := case (natEq 1073741825 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree182 : Agreement (natEq 1073741825 2) no := same (natEq 1073741825 2)
+def test182 : Nat := case (natEq 1073741825 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree183 : Agreement (natEq 1073741825 32767) no := same (natEq 1073741825 32767)
+def test183 : Nat := case (natEq 1073741825 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree184 : Agreement (natEq 1073741825 32768) no := same (natEq 1073741825 32768)
+def test184 : Nat := case (natEq 1073741825 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree185 : Agreement (natEq 1073741825 32769) no := same (natEq 1073741825 32769)
+def test185 : Nat := case (natEq 1073741825 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree186 : Agreement (natEq 1073741825 1073741822) no := same (natEq 1073741825 1073741822)
+def test186 : Nat := case (natEq 1073741825 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree187 : Agreement (natEq 1073741825 1073741823) no := same (natEq 1073741825 1073741823)
+def test187 : Nat := case (natEq 1073741825 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree188 : Agreement (natEq 1073741825 1073741824) no := same (natEq 1073741825 1073741824)
+def test188 : Nat := case (natEq 1073741825 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree189 : Agreement (natEq 1073741825 1073741825) yes := same (natEq 1073741825 1073741825)
+def test189 : Nat := case (natEq 1073741825 1073741825) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree190 : Agreement (natEq 1073741825 2147483647) no := same (natEq 1073741825 2147483647)
+def test190 : Nat := case (natEq 1073741825 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree191 : Agreement (natEq 1073741825 2147483648) no := same (natEq 1073741825 2147483648)
+def test191 : Nat := case (natEq 1073741825 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree192 : Agreement (natEq 1073741825 2147483649) no := same (natEq 1073741825 2147483649)
+def test192 : Nat := case (natEq 1073741825 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree193 : Agreement (natEq 1073741825 4611686018427387903) no := same (natEq 1073741825 4611686018427387903)
+def test193 : Nat := case (natEq 1073741825 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree194 : Agreement (natEq 1073741825 4611686018427387904) no := same (natEq 1073741825 4611686018427387904)
+def test194 : Nat := case (natEq 1073741825 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree195 : Agreement (natEq 1073741825 18446744073709551615) no := same (natEq 1073741825 18446744073709551615)
+def test195 : Nat := case (natEq 1073741825 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree196 : Agreement (natEq 1073741825 18446744073709551616) no := same (natEq 1073741825 18446744073709551616)
+def test196 : Nat := case (natEq 1073741825 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree197 : Agreement (natEq 1073741825 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 1073741825 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test197 : Nat := case (natEq 1073741825 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree198 : Agreement (natEq 1073741825 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 1073741825 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test198 : Nat := case (natEq 1073741825 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree199 : Agreement (natEq 1073741825 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 1073741825 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test199 : Nat := case (natEq 1073741825 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree200 : Agreement (natEq 2147483647 0) no := same (natEq 2147483647 0)
+def test200 : Nat := case (natEq 2147483647 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree201 : Agreement (natEq 2147483647 1) no := same (natEq 2147483647 1)
+def test201 : Nat := case (natEq 2147483647 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree202 : Agreement (natEq 2147483647 2) no := same (natEq 2147483647 2)
+def test202 : Nat := case (natEq 2147483647 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree203 : Agreement (natEq 2147483647 32767) no := same (natEq 2147483647 32767)
+def test203 : Nat := case (natEq 2147483647 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree204 : Agreement (natEq 2147483647 32768) no := same (natEq 2147483647 32768)
+def test204 : Nat := case (natEq 2147483647 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree205 : Agreement (natEq 2147483647 32769) no := same (natEq 2147483647 32769)
+def test205 : Nat := case (natEq 2147483647 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree206 : Agreement (natEq 2147483647 1073741822) no := same (natEq 2147483647 1073741822)
+def test206 : Nat := case (natEq 2147483647 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree207 : Agreement (natEq 2147483647 1073741823) no := same (natEq 2147483647 1073741823)
+def test207 : Nat := case (natEq 2147483647 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree208 : Agreement (natEq 2147483647 1073741824) no := same (natEq 2147483647 1073741824)
+def test208 : Nat := case (natEq 2147483647 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree209 : Agreement (natEq 2147483647 1073741825) no := same (natEq 2147483647 1073741825)
+def test209 : Nat := case (natEq 2147483647 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree210 : Agreement (natEq 2147483647 2147483647) yes := same (natEq 2147483647 2147483647)
+def test210 : Nat := case (natEq 2147483647 2147483647) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree211 : Agreement (natEq 2147483647 2147483648) no := same (natEq 2147483647 2147483648)
+def test211 : Nat := case (natEq 2147483647 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree212 : Agreement (natEq 2147483647 2147483649) no := same (natEq 2147483647 2147483649)
+def test212 : Nat := case (natEq 2147483647 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree213 : Agreement (natEq 2147483647 4611686018427387903) no := same (natEq 2147483647 4611686018427387903)
+def test213 : Nat := case (natEq 2147483647 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree214 : Agreement (natEq 2147483647 4611686018427387904) no := same (natEq 2147483647 4611686018427387904)
+def test214 : Nat := case (natEq 2147483647 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree215 : Agreement (natEq 2147483647 18446744073709551615) no := same (natEq 2147483647 18446744073709551615)
+def test215 : Nat := case (natEq 2147483647 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree216 : Agreement (natEq 2147483647 18446744073709551616) no := same (natEq 2147483647 18446744073709551616)
+def test216 : Nat := case (natEq 2147483647 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree217 : Agreement (natEq 2147483647 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 2147483647 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test217 : Nat := case (natEq 2147483647 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree218 : Agreement (natEq 2147483647 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 2147483647 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test218 : Nat := case (natEq 2147483647 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree219 : Agreement (natEq 2147483647 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 2147483647 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test219 : Nat := case (natEq 2147483647 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree220 : Agreement (natEq 2147483648 0) no := same (natEq 2147483648 0)
+def test220 : Nat := case (natEq 2147483648 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree221 : Agreement (natEq 2147483648 1) no := same (natEq 2147483648 1)
+def test221 : Nat := case (natEq 2147483648 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree222 : Agreement (natEq 2147483648 2) no := same (natEq 2147483648 2)
+def test222 : Nat := case (natEq 2147483648 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree223 : Agreement (natEq 2147483648 32767) no := same (natEq 2147483648 32767)
+def test223 : Nat := case (natEq 2147483648 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree224 : Agreement (natEq 2147483648 32768) no := same (natEq 2147483648 32768)
+def test224 : Nat := case (natEq 2147483648 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree225 : Agreement (natEq 2147483648 32769) no := same (natEq 2147483648 32769)
+def test225 : Nat := case (natEq 2147483648 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree226 : Agreement (natEq 2147483648 1073741822) no := same (natEq 2147483648 1073741822)
+def test226 : Nat := case (natEq 2147483648 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree227 : Agreement (natEq 2147483648 1073741823) no := same (natEq 2147483648 1073741823)
+def test227 : Nat := case (natEq 2147483648 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree228 : Agreement (natEq 2147483648 1073741824) no := same (natEq 2147483648 1073741824)
+def test228 : Nat := case (natEq 2147483648 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree229 : Agreement (natEq 2147483648 1073741825) no := same (natEq 2147483648 1073741825)
+def test229 : Nat := case (natEq 2147483648 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree230 : Agreement (natEq 2147483648 2147483647) no := same (natEq 2147483648 2147483647)
+def test230 : Nat := case (natEq 2147483648 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree231 : Agreement (natEq 2147483648 2147483648) yes := same (natEq 2147483648 2147483648)
+def test231 : Nat := case (natEq 2147483648 2147483648) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree232 : Agreement (natEq 2147483648 2147483649) no := same (natEq 2147483648 2147483649)
+def test232 : Nat := case (natEq 2147483648 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree233 : Agreement (natEq 2147483648 4611686018427387903) no := same (natEq 2147483648 4611686018427387903)
+def test233 : Nat := case (natEq 2147483648 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree234 : Agreement (natEq 2147483648 4611686018427387904) no := same (natEq 2147483648 4611686018427387904)
+def test234 : Nat := case (natEq 2147483648 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree235 : Agreement (natEq 2147483648 18446744073709551615) no := same (natEq 2147483648 18446744073709551615)
+def test235 : Nat := case (natEq 2147483648 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree236 : Agreement (natEq 2147483648 18446744073709551616) no := same (natEq 2147483648 18446744073709551616)
+def test236 : Nat := case (natEq 2147483648 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree237 : Agreement (natEq 2147483648 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 2147483648 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test237 : Nat := case (natEq 2147483648 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree238 : Agreement (natEq 2147483648 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 2147483648 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test238 : Nat := case (natEq 2147483648 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree239 : Agreement (natEq 2147483648 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 2147483648 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test239 : Nat := case (natEq 2147483648 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree240 : Agreement (natEq 2147483649 0) no := same (natEq 2147483649 0)
+def test240 : Nat := case (natEq 2147483649 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree241 : Agreement (natEq 2147483649 1) no := same (natEq 2147483649 1)
+def test241 : Nat := case (natEq 2147483649 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree242 : Agreement (natEq 2147483649 2) no := same (natEq 2147483649 2)
+def test242 : Nat := case (natEq 2147483649 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree243 : Agreement (natEq 2147483649 32767) no := same (natEq 2147483649 32767)
+def test243 : Nat := case (natEq 2147483649 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree244 : Agreement (natEq 2147483649 32768) no := same (natEq 2147483649 32768)
+def test244 : Nat := case (natEq 2147483649 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree245 : Agreement (natEq 2147483649 32769) no := same (natEq 2147483649 32769)
+def test245 : Nat := case (natEq 2147483649 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree246 : Agreement (natEq 2147483649 1073741822) no := same (natEq 2147483649 1073741822)
+def test246 : Nat := case (natEq 2147483649 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree247 : Agreement (natEq 2147483649 1073741823) no := same (natEq 2147483649 1073741823)
+def test247 : Nat := case (natEq 2147483649 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree248 : Agreement (natEq 2147483649 1073741824) no := same (natEq 2147483649 1073741824)
+def test248 : Nat := case (natEq 2147483649 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree249 : Agreement (natEq 2147483649 1073741825) no := same (natEq 2147483649 1073741825)
+def test249 : Nat := case (natEq 2147483649 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree250 : Agreement (natEq 2147483649 2147483647) no := same (natEq 2147483649 2147483647)
+def test250 : Nat := case (natEq 2147483649 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree251 : Agreement (natEq 2147483649 2147483648) no := same (natEq 2147483649 2147483648)
+def test251 : Nat := case (natEq 2147483649 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree252 : Agreement (natEq 2147483649 2147483649) yes := same (natEq 2147483649 2147483649)
+def test252 : Nat := case (natEq 2147483649 2147483649) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree253 : Agreement (natEq 2147483649 4611686018427387903) no := same (natEq 2147483649 4611686018427387903)
+def test253 : Nat := case (natEq 2147483649 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree254 : Agreement (natEq 2147483649 4611686018427387904) no := same (natEq 2147483649 4611686018427387904)
+def test254 : Nat := case (natEq 2147483649 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree255 : Agreement (natEq 2147483649 18446744073709551615) no := same (natEq 2147483649 18446744073709551615)
+def test255 : Nat := case (natEq 2147483649 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree256 : Agreement (natEq 2147483649 18446744073709551616) no := same (natEq 2147483649 18446744073709551616)
+def test256 : Nat := case (natEq 2147483649 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree257 : Agreement (natEq 2147483649 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 2147483649 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test257 : Nat := case (natEq 2147483649 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree258 : Agreement (natEq 2147483649 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 2147483649 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test258 : Nat := case (natEq 2147483649 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree259 : Agreement (natEq 2147483649 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 2147483649 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test259 : Nat := case (natEq 2147483649 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree260 : Agreement (natEq 4611686018427387903 0) no := same (natEq 4611686018427387903 0)
+def test260 : Nat := case (natEq 4611686018427387903 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree261 : Agreement (natEq 4611686018427387903 1) no := same (natEq 4611686018427387903 1)
+def test261 : Nat := case (natEq 4611686018427387903 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree262 : Agreement (natEq 4611686018427387903 2) no := same (natEq 4611686018427387903 2)
+def test262 : Nat := case (natEq 4611686018427387903 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree263 : Agreement (natEq 4611686018427387903 32767) no := same (natEq 4611686018427387903 32767)
+def test263 : Nat := case (natEq 4611686018427387903 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree264 : Agreement (natEq 4611686018427387903 32768) no := same (natEq 4611686018427387903 32768)
+def test264 : Nat := case (natEq 4611686018427387903 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree265 : Agreement (natEq 4611686018427387903 32769) no := same (natEq 4611686018427387903 32769)
+def test265 : Nat := case (natEq 4611686018427387903 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree266 : Agreement (natEq 4611686018427387903 1073741822) no := same (natEq 4611686018427387903 1073741822)
+def test266 : Nat := case (natEq 4611686018427387903 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree267 : Agreement (natEq 4611686018427387903 1073741823) no := same (natEq 4611686018427387903 1073741823)
+def test267 : Nat := case (natEq 4611686018427387903 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree268 : Agreement (natEq 4611686018427387903 1073741824) no := same (natEq 4611686018427387903 1073741824)
+def test268 : Nat := case (natEq 4611686018427387903 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree269 : Agreement (natEq 4611686018427387903 1073741825) no := same (natEq 4611686018427387903 1073741825)
+def test269 : Nat := case (natEq 4611686018427387903 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree270 : Agreement (natEq 4611686018427387903 2147483647) no := same (natEq 4611686018427387903 2147483647)
+def test270 : Nat := case (natEq 4611686018427387903 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree271 : Agreement (natEq 4611686018427387903 2147483648) no := same (natEq 4611686018427387903 2147483648)
+def test271 : Nat := case (natEq 4611686018427387903 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree272 : Agreement (natEq 4611686018427387903 2147483649) no := same (natEq 4611686018427387903 2147483649)
+def test272 : Nat := case (natEq 4611686018427387903 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree273 : Agreement (natEq 4611686018427387903 4611686018427387903) yes := same (natEq 4611686018427387903 4611686018427387903)
+def test273 : Nat := case (natEq 4611686018427387903 4611686018427387903) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree274 : Agreement (natEq 4611686018427387903 4611686018427387904) no := same (natEq 4611686018427387903 4611686018427387904)
+def test274 : Nat := case (natEq 4611686018427387903 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree275 : Agreement (natEq 4611686018427387903 18446744073709551615) no := same (natEq 4611686018427387903 18446744073709551615)
+def test275 : Nat := case (natEq 4611686018427387903 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree276 : Agreement (natEq 4611686018427387903 18446744073709551616) no := same (natEq 4611686018427387903 18446744073709551616)
+def test276 : Nat := case (natEq 4611686018427387903 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree277 : Agreement (natEq 4611686018427387903 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 4611686018427387903 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test277 : Nat := case (natEq 4611686018427387903 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree278 : Agreement (natEq 4611686018427387903 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 4611686018427387903 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test278 : Nat := case (natEq 4611686018427387903 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree279 : Agreement (natEq 4611686018427387903 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 4611686018427387903 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test279 : Nat := case (natEq 4611686018427387903 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree280 : Agreement (natEq 4611686018427387904 0) no := same (natEq 4611686018427387904 0)
+def test280 : Nat := case (natEq 4611686018427387904 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree281 : Agreement (natEq 4611686018427387904 1) no := same (natEq 4611686018427387904 1)
+def test281 : Nat := case (natEq 4611686018427387904 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree282 : Agreement (natEq 4611686018427387904 2) no := same (natEq 4611686018427387904 2)
+def test282 : Nat := case (natEq 4611686018427387904 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree283 : Agreement (natEq 4611686018427387904 32767) no := same (natEq 4611686018427387904 32767)
+def test283 : Nat := case (natEq 4611686018427387904 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree284 : Agreement (natEq 4611686018427387904 32768) no := same (natEq 4611686018427387904 32768)
+def test284 : Nat := case (natEq 4611686018427387904 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree285 : Agreement (natEq 4611686018427387904 32769) no := same (natEq 4611686018427387904 32769)
+def test285 : Nat := case (natEq 4611686018427387904 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree286 : Agreement (natEq 4611686018427387904 1073741822) no := same (natEq 4611686018427387904 1073741822)
+def test286 : Nat := case (natEq 4611686018427387904 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree287 : Agreement (natEq 4611686018427387904 1073741823) no := same (natEq 4611686018427387904 1073741823)
+def test287 : Nat := case (natEq 4611686018427387904 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree288 : Agreement (natEq 4611686018427387904 1073741824) no := same (natEq 4611686018427387904 1073741824)
+def test288 : Nat := case (natEq 4611686018427387904 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree289 : Agreement (natEq 4611686018427387904 1073741825) no := same (natEq 4611686018427387904 1073741825)
+def test289 : Nat := case (natEq 4611686018427387904 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree290 : Agreement (natEq 4611686018427387904 2147483647) no := same (natEq 4611686018427387904 2147483647)
+def test290 : Nat := case (natEq 4611686018427387904 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree291 : Agreement (natEq 4611686018427387904 2147483648) no := same (natEq 4611686018427387904 2147483648)
+def test291 : Nat := case (natEq 4611686018427387904 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree292 : Agreement (natEq 4611686018427387904 2147483649) no := same (natEq 4611686018427387904 2147483649)
+def test292 : Nat := case (natEq 4611686018427387904 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree293 : Agreement (natEq 4611686018427387904 4611686018427387903) no := same (natEq 4611686018427387904 4611686018427387903)
+def test293 : Nat := case (natEq 4611686018427387904 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree294 : Agreement (natEq 4611686018427387904 4611686018427387904) yes := same (natEq 4611686018427387904 4611686018427387904)
+def test294 : Nat := case (natEq 4611686018427387904 4611686018427387904) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree295 : Agreement (natEq 4611686018427387904 18446744073709551615) no := same (natEq 4611686018427387904 18446744073709551615)
+def test295 : Nat := case (natEq 4611686018427387904 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree296 : Agreement (natEq 4611686018427387904 18446744073709551616) no := same (natEq 4611686018427387904 18446744073709551616)
+def test296 : Nat := case (natEq 4611686018427387904 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree297 : Agreement (natEq 4611686018427387904 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 4611686018427387904 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test297 : Nat := case (natEq 4611686018427387904 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree298 : Agreement (natEq 4611686018427387904 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 4611686018427387904 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test298 : Nat := case (natEq 4611686018427387904 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree299 : Agreement (natEq 4611686018427387904 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 4611686018427387904 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test299 : Nat := case (natEq 4611686018427387904 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree300 : Agreement (natEq 18446744073709551615 0) no := same (natEq 18446744073709551615 0)
+def test300 : Nat := case (natEq 18446744073709551615 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree301 : Agreement (natEq 18446744073709551615 1) no := same (natEq 18446744073709551615 1)
+def test301 : Nat := case (natEq 18446744073709551615 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree302 : Agreement (natEq 18446744073709551615 2) no := same (natEq 18446744073709551615 2)
+def test302 : Nat := case (natEq 18446744073709551615 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree303 : Agreement (natEq 18446744073709551615 32767) no := same (natEq 18446744073709551615 32767)
+def test303 : Nat := case (natEq 18446744073709551615 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree304 : Agreement (natEq 18446744073709551615 32768) no := same (natEq 18446744073709551615 32768)
+def test304 : Nat := case (natEq 18446744073709551615 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree305 : Agreement (natEq 18446744073709551615 32769) no := same (natEq 18446744073709551615 32769)
+def test305 : Nat := case (natEq 18446744073709551615 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree306 : Agreement (natEq 18446744073709551615 1073741822) no := same (natEq 18446744073709551615 1073741822)
+def test306 : Nat := case (natEq 18446744073709551615 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree307 : Agreement (natEq 18446744073709551615 1073741823) no := same (natEq 18446744073709551615 1073741823)
+def test307 : Nat := case (natEq 18446744073709551615 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree308 : Agreement (natEq 18446744073709551615 1073741824) no := same (natEq 18446744073709551615 1073741824)
+def test308 : Nat := case (natEq 18446744073709551615 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree309 : Agreement (natEq 18446744073709551615 1073741825) no := same (natEq 18446744073709551615 1073741825)
+def test309 : Nat := case (natEq 18446744073709551615 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree310 : Agreement (natEq 18446744073709551615 2147483647) no := same (natEq 18446744073709551615 2147483647)
+def test310 : Nat := case (natEq 18446744073709551615 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree311 : Agreement (natEq 18446744073709551615 2147483648) no := same (natEq 18446744073709551615 2147483648)
+def test311 : Nat := case (natEq 18446744073709551615 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree312 : Agreement (natEq 18446744073709551615 2147483649) no := same (natEq 18446744073709551615 2147483649)
+def test312 : Nat := case (natEq 18446744073709551615 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree313 : Agreement (natEq 18446744073709551615 4611686018427387903) no := same (natEq 18446744073709551615 4611686018427387903)
+def test313 : Nat := case (natEq 18446744073709551615 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree314 : Agreement (natEq 18446744073709551615 4611686018427387904) no := same (natEq 18446744073709551615 4611686018427387904)
+def test314 : Nat := case (natEq 18446744073709551615 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree315 : Agreement (natEq 18446744073709551615 18446744073709551615) yes := same (natEq 18446744073709551615 18446744073709551615)
+def test315 : Nat := case (natEq 18446744073709551615 18446744073709551615) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree316 : Agreement (natEq 18446744073709551615 18446744073709551616) no := same (natEq 18446744073709551615 18446744073709551616)
+def test316 : Nat := case (natEq 18446744073709551615 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree317 : Agreement (natEq 18446744073709551615 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 18446744073709551615 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test317 : Nat := case (natEq 18446744073709551615 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree318 : Agreement (natEq 18446744073709551615 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 18446744073709551615 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test318 : Nat := case (natEq 18446744073709551615 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree319 : Agreement (natEq 18446744073709551615 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 18446744073709551615 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test319 : Nat := case (natEq 18446744073709551615 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree320 : Agreement (natEq 18446744073709551616 0) no := same (natEq 18446744073709551616 0)
+def test320 : Nat := case (natEq 18446744073709551616 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree321 : Agreement (natEq 18446744073709551616 1) no := same (natEq 18446744073709551616 1)
+def test321 : Nat := case (natEq 18446744073709551616 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree322 : Agreement (natEq 18446744073709551616 2) no := same (natEq 18446744073709551616 2)
+def test322 : Nat := case (natEq 18446744073709551616 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree323 : Agreement (natEq 18446744073709551616 32767) no := same (natEq 18446744073709551616 32767)
+def test323 : Nat := case (natEq 18446744073709551616 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree324 : Agreement (natEq 18446744073709551616 32768) no := same (natEq 18446744073709551616 32768)
+def test324 : Nat := case (natEq 18446744073709551616 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree325 : Agreement (natEq 18446744073709551616 32769) no := same (natEq 18446744073709551616 32769)
+def test325 : Nat := case (natEq 18446744073709551616 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree326 : Agreement (natEq 18446744073709551616 1073741822) no := same (natEq 18446744073709551616 1073741822)
+def test326 : Nat := case (natEq 18446744073709551616 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree327 : Agreement (natEq 18446744073709551616 1073741823) no := same (natEq 18446744073709551616 1073741823)
+def test327 : Nat := case (natEq 18446744073709551616 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree328 : Agreement (natEq 18446744073709551616 1073741824) no := same (natEq 18446744073709551616 1073741824)
+def test328 : Nat := case (natEq 18446744073709551616 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree329 : Agreement (natEq 18446744073709551616 1073741825) no := same (natEq 18446744073709551616 1073741825)
+def test329 : Nat := case (natEq 18446744073709551616 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree330 : Agreement (natEq 18446744073709551616 2147483647) no := same (natEq 18446744073709551616 2147483647)
+def test330 : Nat := case (natEq 18446744073709551616 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree331 : Agreement (natEq 18446744073709551616 2147483648) no := same (natEq 18446744073709551616 2147483648)
+def test331 : Nat := case (natEq 18446744073709551616 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree332 : Agreement (natEq 18446744073709551616 2147483649) no := same (natEq 18446744073709551616 2147483649)
+def test332 : Nat := case (natEq 18446744073709551616 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree333 : Agreement (natEq 18446744073709551616 4611686018427387903) no := same (natEq 18446744073709551616 4611686018427387903)
+def test333 : Nat := case (natEq 18446744073709551616 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree334 : Agreement (natEq 18446744073709551616 4611686018427387904) no := same (natEq 18446744073709551616 4611686018427387904)
+def test334 : Nat := case (natEq 18446744073709551616 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree335 : Agreement (natEq 18446744073709551616 18446744073709551615) no := same (natEq 18446744073709551616 18446744073709551615)
+def test335 : Nat := case (natEq 18446744073709551616 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree336 : Agreement (natEq 18446744073709551616 18446744073709551616) yes := same (natEq 18446744073709551616 18446744073709551616)
+def test336 : Nat := case (natEq 18446744073709551616 18446744073709551616) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree337 : Agreement (natEq 18446744073709551616 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 18446744073709551616 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test337 : Nat := case (natEq 18446744073709551616 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree338 : Agreement (natEq 18446744073709551616 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 18446744073709551616 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test338 : Nat := case (natEq 18446744073709551616 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree339 : Agreement (natEq 18446744073709551616 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 18446744073709551616 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test339 : Nat := case (natEq 18446744073709551616 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree340 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 0) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 0)
+def test340 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree341 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1)
+def test341 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree342 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2)
+def test342 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree343 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32767) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32767)
+def test343 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree344 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32768) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32768)
+def test344 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree345 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32769) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32769)
+def test345 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree346 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741822) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741822)
+def test346 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree347 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741823) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741823)
+def test347 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree348 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741824) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741824)
+def test348 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree349 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741825) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741825)
+def test349 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree350 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483647) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483647)
+def test350 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree351 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483648) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483648)
+def test351 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree352 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483649) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483649)
+def test352 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree353 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 4611686018427387903) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 4611686018427387903)
+def test353 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree354 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 4611686018427387904) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 4611686018427387904)
+def test354 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree355 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 18446744073709551615) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 18446744073709551615)
+def test355 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree356 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 18446744073709551616) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 18446744073709551616)
+def test356 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree357 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) yes := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test357 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree358 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test358 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree359 : Agreement (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test359 : Nat := case (natEq 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree360 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 0) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 0)
+def test360 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree361 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1)
+def test361 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree362 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2)
+def test362 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree363 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32767) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32767)
+def test363 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree364 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32768) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32768)
+def test364 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree365 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32769) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32769)
+def test365 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree366 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741822) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741822)
+def test366 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree367 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741823) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741823)
+def test367 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree368 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741824) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741824)
+def test368 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree369 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741825) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741825)
+def test369 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree370 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483647) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483647)
+def test370 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree371 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483648) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483648)
+def test371 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree372 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483649) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483649)
+def test372 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree373 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 4611686018427387903) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 4611686018427387903)
+def test373 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree374 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 4611686018427387904) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 4611686018427387904)
+def test374 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree375 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 18446744073709551615) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 18446744073709551615)
+def test375 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree376 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 18446744073709551616) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 18446744073709551616)
+def test376 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree377 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test377 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree378 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) yes := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test378 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def agree379 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test379 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree380 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 0) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 0)
+def test380 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 0) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree381 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1)
+def test381 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree382 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2)
+def test382 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree383 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32767) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32767)
+def test383 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32767) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree384 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32768) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32768)
+def test384 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32768) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree385 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32769) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32769)
+def test385 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 32769) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree386 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741822) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741822)
+def test386 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741822) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree387 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741823) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741823)
+def test387 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741823) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree388 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741824) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741824)
+def test388 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741824) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree389 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741825) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741825)
+def test389 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 1073741825) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree390 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483647) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483647)
+def test390 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483647) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree391 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483648) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483648)
+def test391 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483648) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree392 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483649) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483649)
+def test392 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 2147483649) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree393 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 4611686018427387903) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 4611686018427387903)
+def test393 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 4611686018427387903) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree394 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 4611686018427387904) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 4611686018427387904)
+def test394 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 4611686018427387904) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree395 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 18446744073709551615) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 18446744073709551615)
+def test395 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 18446744073709551615) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree396 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 18446744073709551616) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 18446744073709551616)
+def test396 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 18446744073709551616) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree397 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)
+def test397 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree398 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) no := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+def test398 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) as x return Nat with | 0 (u : Unit) => 1 | 1 (u : Unit) => 0
+def agree399 : Agreement (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) yes := same (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)
+def test399 : Nat := case (natEq 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def main : Nat := (natAdd test0 (natAdd test1 (natAdd test2 (natAdd test3 (natAdd test4 (natAdd test5 (natAdd test6 (natAdd test7 (natAdd test8 (natAdd test9 (natAdd test10 (natAdd test11 (natAdd test12 (natAdd test13 (natAdd test14 (natAdd test15 (natAdd test16 (natAdd test17 (natAdd test18 (natAdd test19 (natAdd test20 (natAdd test21 (natAdd test22 (natAdd test23 (natAdd test24 (natAdd test25 (natAdd test26 (natAdd test27 (natAdd test28 (natAdd test29 (natAdd test30 (natAdd test31 (natAdd test32 (natAdd test33 (natAdd test34 (natAdd test35 (natAdd test36 (natAdd test37 (natAdd test38 (natAdd test39 (natAdd test40 (natAdd test41 (natAdd test42 (natAdd test43 (natAdd test44 (natAdd test45 (natAdd test46 (natAdd test47 (natAdd test48 (natAdd test49 (natAdd test50 (natAdd test51 (natAdd test52 (natAdd test53 (natAdd test54 (natAdd test55 (natAdd test56 (natAdd test57 (natAdd test58 (natAdd test59 (natAdd test60 (natAdd test61 (natAdd test62 (natAdd test63 (natAdd test64 (natAdd test65 (natAdd test66 (natAdd test67 (natAdd test68 (natAdd test69 (natAdd test70 (natAdd test71 (natAdd test72 (natAdd test73 (natAdd test74 (natAdd test75 (natAdd test76 (natAdd test77 (natAdd test78 (natAdd test79 (natAdd test80 (natAdd test81 (natAdd test82 (natAdd test83 (natAdd test84 (natAdd test85 (natAdd test86 (natAdd test87 (natAdd test88 (natAdd test89 (natAdd test90 (natAdd test91 (natAdd test92 (natAdd test93 (natAdd test94 (natAdd test95 (natAdd test96 (natAdd test97 (natAdd test98 (natAdd test99 (natAdd test100 (natAdd test101 (natAdd test102 (natAdd test103 (natAdd test104 (natAdd test105 (natAdd test106 (natAdd test107 (natAdd test108 (natAdd test109 (natAdd test110 (natAdd test111 (natAdd test112 (natAdd test113 (natAdd test114 (natAdd test115 (natAdd test116 (natAdd test117 (natAdd test118 (natAdd test119 (natAdd test120 (natAdd test121 (natAdd test122 (natAdd test123 (natAdd test124 (natAdd test125 (natAdd test126 (natAdd test127 (natAdd test128 (natAdd test129 (natAdd test130 (natAdd test131 (natAdd test132 (natAdd test133 (natAdd test134 (natAdd test135 (natAdd test136 (natAdd test137 (natAdd test138 (natAdd test139 (natAdd test140 (natAdd test141 (natAdd test142 (natAdd test143 (natAdd test144 (natAdd test145 (natAdd test146 (natAdd test147 (natAdd test148 (natAdd test149 (natAdd test150 (natAdd test151 (natAdd test152 (natAdd test153 (natAdd test154 (natAdd test155 (natAdd test156 (natAdd test157 (natAdd test158 (natAdd test159 (natAdd test160 (natAdd test161 (natAdd test162 (natAdd test163 (natAdd test164 (natAdd test165 (natAdd test166 (natAdd test167 (natAdd test168 (natAdd test169 (natAdd test170 (natAdd test171 (natAdd test172 (natAdd test173 (natAdd test174 (natAdd test175 (natAdd test176 (natAdd test177 (natAdd test178 (natAdd test179 (natAdd test180 (natAdd test181 (natAdd test182 (natAdd test183 (natAdd test184 (natAdd test185 (natAdd test186 (natAdd test187 (natAdd test188 (natAdd test189 (natAdd test190 (natAdd test191 (natAdd test192 (natAdd test193 (natAdd test194 (natAdd test195 (natAdd test196 (natAdd test197 (natAdd test198 (natAdd test199 (natAdd test200 (natAdd test201 (natAdd test202 (natAdd test203 (natAdd test204 (natAdd test205 (natAdd test206 (natAdd test207 (natAdd test208 (natAdd test209 (natAdd test210 (natAdd test211 (natAdd test212 (natAdd test213 (natAdd test214 (natAdd test215 (natAdd test216 (natAdd test217 (natAdd test218 (natAdd test219 (natAdd test220 (natAdd test221 (natAdd test222 (natAdd test223 (natAdd test224 (natAdd test225 (natAdd test226 (natAdd test227 (natAdd test228 (natAdd test229 (natAdd test230 (natAdd test231 (natAdd test232 (natAdd test233 (natAdd test234 (natAdd test235 (natAdd test236 (natAdd test237 (natAdd test238 (natAdd test239 (natAdd test240 (natAdd test241 (natAdd test242 (natAdd test243 (natAdd test244 (natAdd test245 (natAdd test246 (natAdd test247 (natAdd test248 (natAdd test249 (natAdd test250 (natAdd test251 (natAdd test252 (natAdd test253 (natAdd test254 (natAdd test255 (natAdd test256 (natAdd test257 (natAdd test258 (natAdd test259 (natAdd test260 (natAdd test261 (natAdd test262 (natAdd test263 (natAdd test264 (natAdd test265 (natAdd test266 (natAdd test267 (natAdd test268 (natAdd test269 (natAdd test270 (natAdd test271 (natAdd test272 (natAdd test273 (natAdd test274 (natAdd test275 (natAdd test276 (natAdd test277 (natAdd test278 (natAdd test279 (natAdd test280 (natAdd test281 (natAdd test282 (natAdd test283 (natAdd test284 (natAdd test285 (natAdd test286 (natAdd test287 (natAdd test288 (natAdd test289 (natAdd test290 (natAdd test291 (natAdd test292 (natAdd test293 (natAdd test294 (natAdd test295 (natAdd test296 (natAdd test297 (natAdd test298 (natAdd test299 (natAdd test300 (natAdd test301 (natAdd test302 (natAdd test303 (natAdd test304 (natAdd test305 (natAdd test306 (natAdd test307 (natAdd test308 (natAdd test309 (natAdd test310 (natAdd test311 (natAdd test312 (natAdd test313 (natAdd test314 (natAdd test315 (natAdd test316 (natAdd test317 (natAdd test318 (natAdd test319 (natAdd test320 (natAdd test321 (natAdd test322 (natAdd test323 (natAdd test324 (natAdd test325 (natAdd test326 (natAdd test327 (natAdd test328 (natAdd test329 (natAdd test330 (natAdd test331 (natAdd test332 (natAdd test333 (natAdd test334 (natAdd test335 (natAdd test336 (natAdd test337 (natAdd test338 (natAdd test339 (natAdd test340 (natAdd test341 (natAdd test342 (natAdd test343 (natAdd test344 (natAdd test345 (natAdd test346 (natAdd test347 (natAdd test348 (natAdd test349 (natAdd test350 (natAdd test351 (natAdd test352 (natAdd test353 (natAdd test354 (natAdd test355 (natAdd test356 (natAdd test357 (natAdd test358 (natAdd test359 (natAdd test360 (natAdd test361 (natAdd test362 (natAdd test363 (natAdd test364 (natAdd test365 (natAdd test366 (natAdd test367 (natAdd test368 (natAdd test369 (natAdd test370 (natAdd test371 (natAdd test372 (natAdd test373 (natAdd test374 (natAdd test375 (natAdd test376 (natAdd test377 (natAdd test378 (natAdd test379 (natAdd test380 (natAdd test381 (natAdd test382 (natAdd test383 (natAdd test384 (natAdd test385 (natAdd test386 (natAdd test387 (natAdd test388 (natAdd test389 (natAdd test390 (natAdd test391 (natAdd test392 (natAdd test393 (natAdd test394 (natAdd test395 (natAdd test396 (natAdd test397 (natAdd test398 (natAdd test399 0))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))

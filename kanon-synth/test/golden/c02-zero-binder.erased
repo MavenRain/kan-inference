@@ -1,0 +1,4 @@
+rec [any]
+fun id (union any) : union any := KVar 0
+rec [nat]
+fun five () : union nat := KTail (KGlobal id) [KLit 5]

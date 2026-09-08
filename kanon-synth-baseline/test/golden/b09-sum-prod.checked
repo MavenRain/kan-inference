@@ -1,0 +1,11 @@
+axiom Nat : Type 1
+def Two : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))
+def Pair : Type 1 := (Ran SColl 2 (Sec SColl 2 [ => Nat;  => Nat]))
+def Triple : Type 1 := (Ran SColl 3 (Sec SColl 3 [ => Nat;  => Nat;  => Nat]))
+def Void : Type 0 := (Lan SColl 0 (Sec SColl 0 []))
+def Unit : Type 1 := (Ran SColl 0 (Sec SColl 0 []))
+def leftOfTwo : Two := (In SColl 2 (ALeg 0) [1])
+def rightOfTwo : Two := (In SColl 2 (ALeg 1) [2])
+def onePair : Pair := (Sec SColl 2 [ => 1;  => 2])
+def oneTriple : Triple := (Sec SColl 3 [ => 1;  => 2;  => 3])
+def star : Unit := (Sec SColl 0 [])

@@ -1,0 +1,8 @@
+rec [nat]
+fun step (union nat, union nat) : union nat := KTail (KGlobal natAdd) [KVar 1; KVar 0]
+rec [nat]
+fun chain (union nat, union nat) : union nat := KTail (KGlobal step) [KApp (KGlobal natAdd) [KVar 1; KLit 1]; KVar 0]
+rec [nat]
+fun outer (union nat, union nat) : union nat := KTail (KGlobal chain) [KApp (KGlobal natAdd) [KVar 1; KLit 2]; KVar 0]
+rec [nat]
+fun main () : union nat := KTail (KGlobal outer) [KLit 3; KLit 4]

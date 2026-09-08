@@ -1,0 +1,8 @@
+-- n04: an injection into a leg the diagram does not have.  The sum
+-- has two legs, numbered 0 and 1.
+
+axiom Nat : Type 0
+
+def Two : Type 0 := sum (Nat, Nat)
+
+def bad : Two := inj 2 of 2 1

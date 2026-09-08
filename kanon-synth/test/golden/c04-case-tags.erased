@@ -1,0 +1,7 @@
+erased Opt
+rec [sum<unit|union nat>]
+fun none () : union sum<unit|union nat> := KTag sum<unit|union nat> 0 []
+rec [sum<unit|union nat>]
+fun some () : union sum<unit|union nat> := KTag sum<unit|union nat> 1 [KLit 7]
+rec [sum<unit|union nat>; nat]
+fun unwrap (union sum<unit|union nat>) : union nat := KCase sum<unit|union nat> (KVar 0) [{0 0 (KLit 0)}; {1 1 (KVar 0)}]

@@ -1,0 +1,2 @@
+rec [mu<Chain>; leg<mu<Chain>,0>; leg<mu<Chain>,1,union mu<Chain>>]
+fun copy (union mu<Chain>) : union mu<Chain> := KCase mu<Chain> (KVar 0) [{0 0 (KTag mu<Chain> 0 [])}; {1 1 (KTag mu<Chain> 1 [KApp (KGlobal copy) [KVar 0]])}]

@@ -1,0 +1,970 @@
+{
+  "schema_version": 1,
+  "name": "diagnostic-v1",
+  "purpose": "diagnostic",
+  "tasks": [
+    {
+      "id": "constant_zero",
+      "family": "constants",
+      "module_id": "constants_direct",
+      "source": "def answer : Nat := synth \"Return zero.\"\n",
+      "candidates": [
+        "0",
+        "1",
+        "natAdd 0 0",
+        "2"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "constant_seven",
+      "family": "constants",
+      "module_id": "constants_direct",
+      "source": "def answer : Nat := synth \"Return seven.\"\n",
+      "candidates": [
+        "3",
+        "7",
+        "9",
+        "natAdd 3 4"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 7
+        }
+      ]
+    },
+    {
+      "id": "constant_twelve",
+      "family": "constants",
+      "module_id": "constants_direct",
+      "source": "def answer : Nat := synth \"Return twelve.\"\n",
+      "candidates": [
+        "10",
+        "13",
+        "12",
+        "14"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 12
+        }
+      ]
+    },
+    {
+      "id": "constant_forty_two",
+      "family": "constants",
+      "module_id": "constants_direct",
+      "source": "def answer : Nat := synth \"Return 42.\"\n",
+      "candidates": [
+        "41",
+        "24",
+        "0",
+        "42"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 42
+        }
+      ]
+    },
+    {
+      "id": "constant_nineteen",
+      "family": "constants",
+      "module_id": "constants_expressions",
+      "source": "def answer : Nat := synth \"Return nineteen.\"\n",
+      "candidates": [
+        "natAdd 10 9",
+        "18",
+        "20",
+        "19"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 19
+        }
+      ]
+    },
+    {
+      "id": "constant_hundred",
+      "family": "constants",
+      "module_id": "constants_expressions",
+      "source": "def answer : Nat := synth \"Return 100.\"\n",
+      "candidates": [
+        "10",
+        "natMul 10 10",
+        "101",
+        "0"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 100
+        }
+      ]
+    },
+    {
+      "id": "constant_five",
+      "family": "constants",
+      "module_id": "constants_expressions",
+      "source": "def answer : Nat := synth \"Return five.\"\n",
+      "candidates": [
+        "natSub 2 7",
+        "6",
+        "natSub 12 7",
+        "12"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 5
+        }
+      ]
+    },
+    {
+      "id": "constant_nine",
+      "family": "constants",
+      "module_id": "constants_expressions",
+      "source": "def answer : Nat := synth \"Return nine.\"\n",
+      "candidates": [
+        "8",
+        "10",
+        "0",
+        "natMul 3 3"
+      ],
+      "tests": [
+        {
+          "arguments": [],
+          "expected": 9
+        }
+      ]
+    },
+    {
+      "id": "project_first",
+      "family": "projections",
+      "module_id": "projections_ordinal",
+      "source": "def answer : (left : Nat) -> (right : Nat) -> Nat := synth \"Return the first argument.\"\n",
+      "candidates": [
+        "fun (left : Nat) (right : Nat) => left",
+        "fun (left : Nat) (right : Nat) => right",
+        "fun (left : Nat) (right : Nat) => natAdd left 1",
+        "fun (left : Nat) (right : Nat) => 0"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 11
+        }
+      ]
+    },
+    {
+      "id": "project_second",
+      "family": "projections",
+      "module_id": "projections_ordinal",
+      "source": "def answer : (first : Nat) -> (second : Nat) -> Nat := synth \"Return the second argument.\"\n",
+      "candidates": [
+        "fun (first : Nat) (second : Nat) => first",
+        "fun (first : Nat) (second : Nat) => second",
+        "fun (first : Nat) (second : Nat) => 0",
+        "fun (first : Nat) (second : Nat) => natAdd 0 second"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            5,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 3
+        }
+      ]
+    },
+    {
+      "id": "project_third",
+      "family": "projections",
+      "module_id": "projections_ordinal",
+      "source": "def answer : (alpha : Nat) -> (beta : Nat) -> (gamma : Nat) -> Nat := synth \"Return the third argument.\"\n",
+      "candidates": [
+        "fun (alpha : Nat) (beta : Nat) (gamma : Nat) => alpha",
+        "fun (alpha : Nat) (beta : Nat) (gamma : Nat) => beta",
+        "fun (alpha : Nat) (beta : Nat) (gamma : Nat) => gamma",
+        "fun (alpha : Nat) (beta : Nat) (gamma : Nat) => natAdd gamma 1"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9,
+            4
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            7,
+            3,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            5,
+            8
+          ],
+          "expected": 8
+        }
+      ]
+    },
+    {
+      "id": "project_last",
+      "family": "projections",
+      "module_id": "projections_ordinal",
+      "source": "def answer : (red : Nat) -> (green : Nat) -> (blue : Nat) -> Nat := synth \"Return the last argument.\"\n",
+      "candidates": [
+        "fun (red : Nat) (green : Nat) (blue : Nat) => red",
+        "fun (red : Nat) (green : Nat) (blue : Nat) => green",
+        "fun (red : Nat) (green : Nat) (blue : Nat) => natAdd blue 1",
+        "fun (red : Nat) (green : Nat) (blue : Nat) => blue"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9,
+            4
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            7,
+            3,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            5,
+            8
+          ],
+          "expected": 8
+        }
+      ]
+    },
+    {
+      "id": "project_earlier",
+      "family": "projections",
+      "module_id": "projections_named",
+      "source": "def answer : (before : Nat) -> (after : Nat) -> Nat := synth \"Return the earlier argument.\"\n",
+      "candidates": [
+        "fun (before : Nat) (after : Nat) => natAdd before 0",
+        "fun (before : Nat) (after : Nat) => after",
+        "fun (before : Nat) (after : Nat) => 0",
+        "fun (before : Nat) (after : Nat) => before"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 11
+        }
+      ]
+    },
+    {
+      "id": "project_later",
+      "family": "projections",
+      "module_id": "projections_named",
+      "source": "def answer : (left : Nat) -> (right : Nat) -> Nat := synth \"Return the later argument.\"\n",
+      "candidates": [
+        "fun (left : Nat) (right : Nat) => left",
+        "fun (left : Nat) (right : Nat) => natMul right 1",
+        "fun (left : Nat) (right : Nat) => natAdd right 1",
+        "fun (left : Nat) (right : Nat) => natAdd left right"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            5,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 3
+        }
+      ]
+    },
+    {
+      "id": "project_unchanged",
+      "family": "projections",
+      "module_id": "projections_named",
+      "source": "def answer : (payload : Nat) -> Nat := synth \"Return the input unchanged.\"\n",
+      "candidates": [
+        "fun (payload : Nat) => natAdd payload 1",
+        "fun (payload : Nat) => 0",
+        "fun (payload : Nat) => payload",
+        "fun (payload : Nat) => natAdd payload 0"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            3
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            17
+          ],
+          "expected": 17
+        }
+      ]
+    },
+    {
+      "id": "project_named",
+      "family": "projections",
+      "module_id": "projections_named",
+      "source": "def answer : (hull : Nat) -> (cargo : Nat) -> Nat := synth \"Return cargo.\"\n",
+      "candidates": [
+        "fun (hull : Nat) (cargo : Nat) => hull",
+        "fun (hull : Nat) (cargo : Nat) => natAdd hull cargo",
+        "fun (hull : Nat) (cargo : Nat) => 0",
+        "fun (hull : Nat) (cargo : Nat) => cargo"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            5,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 3
+        }
+      ]
+    },
+    {
+      "id": "unary_increment",
+      "family": "unary_arithmetic",
+      "module_id": "unary_offset",
+      "source": "def answer : (n : Nat) -> Nat := synth \"Add one to the input.\"\n",
+      "candidates": [
+        "fun (n : Nat) => natAdd n 1",
+        "fun (n : Nat) => n",
+        "fun (n : Nat) => natMul n 2",
+        "fun (n : Nat) => natSub n 1"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 1
+        },
+        {
+          "arguments": [
+            3
+          ],
+          "expected": 4
+        },
+        {
+          "arguments": [
+            17
+          ],
+          "expected": 18
+        }
+      ]
+    },
+    {
+      "id": "unary_add_three",
+      "family": "unary_arithmetic",
+      "module_id": "unary_offset",
+      "source": "def answer : (amount : Nat) -> Nat := synth \"Increase the input by three.\"\n",
+      "candidates": [
+        "fun (amount : Nat) => natAdd amount 2",
+        "fun (amount : Nat) => natAdd 3 amount",
+        "fun (amount : Nat) => natSub amount 3",
+        "fun (amount : Nat) => amount"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 3
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            19
+          ],
+          "expected": 22
+        }
+      ]
+    },
+    {
+      "id": "unary_decrement",
+      "family": "unary_arithmetic",
+      "module_id": "unary_offset",
+      "source": "def answer : (count : Nat) -> Nat := synth \"Subtract one from the input.\"\n",
+      "candidates": [
+        "fun (count : Nat) => count",
+        "fun (count : Nat) => natAdd count 1",
+        "fun (count : Nat) => natSub count 1",
+        "fun (count : Nat) => 0"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            1
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            8
+          ],
+          "expected": 7
+        }
+      ]
+    },
+    {
+      "id": "unary_subtract_five",
+      "family": "unary_arithmetic",
+      "module_id": "unary_offset",
+      "source": "def answer : (fuel : Nat) -> Nat := synth \"Subtract five from the input.\"\n",
+      "candidates": [
+        "fun (fuel : Nat) => natSub 5 fuel",
+        "fun (fuel : Nat) => natAdd fuel 5",
+        "fun (fuel : Nat) => fuel",
+        "fun (fuel : Nat) => natSub fuel 5"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            5
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11
+          ],
+          "expected": 6
+        }
+      ]
+    },
+    {
+      "id": "unary_double",
+      "family": "unary_arithmetic",
+      "module_id": "unary_scale",
+      "source": "def answer : (value : Nat) -> Nat := synth \"Double the input.\"\n",
+      "candidates": [
+        "fun (value : Nat) => natAdd value value",
+        "fun (value : Nat) => natMul value 3",
+        "fun (value : Nat) => value",
+        "fun (value : Nat) => natMul value 2"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            3
+          ],
+          "expected": 6
+        },
+        {
+          "arguments": [
+            17
+          ],
+          "expected": 34
+        }
+      ]
+    },
+    {
+      "id": "unary_triple",
+      "family": "unary_arithmetic",
+      "module_id": "unary_scale",
+      "source": "def answer : (units : Nat) -> Nat := synth \"Multiply the input by three.\"\n",
+      "candidates": [
+        "fun (units : Nat) => natAdd units 3",
+        "fun (units : Nat) => natMul 3 units",
+        "fun (units : Nat) => natMul units 2",
+        "fun (units : Nat) => units"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            4
+          ],
+          "expected": 12
+        },
+        {
+          "arguments": [
+            19
+          ],
+          "expected": 57
+        }
+      ]
+    },
+    {
+      "id": "unary_square",
+      "family": "unary_arithmetic",
+      "module_id": "unary_scale",
+      "source": "def answer : (side : Nat) -> Nat := synth \"Square the input.\"\n",
+      "candidates": [
+        "fun (side : Nat) => natMul side 2",
+        "fun (side : Nat) => natAdd side side",
+        "fun (side : Nat) => natMul side side",
+        "fun (side : Nat) => side"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            3
+          ],
+          "expected": 9
+        },
+        {
+          "arguments": [
+            7
+          ],
+          "expected": 49
+        }
+      ]
+    },
+    {
+      "id": "unary_reverse_subtraction",
+      "family": "unary_arithmetic",
+      "module_id": "unary_scale",
+      "source": "def answer : (used : Nat) -> Nat := synth \"Subtract the input from twelve.\"\n",
+      "candidates": [
+        "fun (used : Nat) => natSub used 12",
+        "fun (used : Nat) => natAdd used 12",
+        "fun (used : Nat) => used",
+        "fun (used : Nat) => natSub 12 used"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2
+          ],
+          "expected": 10
+        },
+        {
+          "arguments": [
+            12
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            19
+          ],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "binary_sum",
+      "family": "binary_arithmetic",
+      "module_id": "binary_basic",
+      "source": "def answer : (a : Nat) -> (b : Nat) -> Nat := synth \"Return the sum of the arguments.\"\n",
+      "candidates": [
+        "fun (a : Nat) (b : Nat) => natAdd a b",
+        "fun (a : Nat) (b : Nat) => natMul a b",
+        "fun (a : Nat) (b : Nat) => a",
+        "fun (a : Nat) (b : Nat) => natAdd b a"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 11
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 14
+        }
+      ]
+    },
+    {
+      "id": "binary_product",
+      "family": "binary_arithmetic",
+      "module_id": "binary_basic",
+      "source": "def answer : (width : Nat) -> (height : Nat) -> Nat := synth \"Return the product of the arguments.\"\n",
+      "candidates": [
+        "fun (width : Nat) (height : Nat) => natAdd width height",
+        "fun (width : Nat) (height : Nat) => natMul height width",
+        "fun (width : Nat) (height : Nat) => width",
+        "fun (width : Nat) (height : Nat) => height"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 18
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 33
+        }
+      ]
+    },
+    {
+      "id": "binary_subtract_second",
+      "family": "binary_arithmetic",
+      "module_id": "binary_basic",
+      "source": "def answer : (stock : Nat) -> (used : Nat) -> Nat := synth \"Subtract the second argument from the first argument.\"\n",
+      "candidates": [
+        "fun (stock : Nat) (used : Nat) => natSub used stock",
+        "fun (stock : Nat) (used : Nat) => natAdd stock used",
+        "fun (stock : Nat) (used : Nat) => natSub stock used",
+        "fun (stock : Nat) (used : Nat) => used"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            5,
+            0
+          ],
+          "expected": 5
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 8
+        }
+      ]
+    },
+    {
+      "id": "binary_subtract_first",
+      "family": "binary_arithmetic",
+      "module_id": "binary_basic",
+      "source": "def answer : (spent : Nat) -> (budget : Nat) -> Nat := synth \"Subtract the first argument from the second argument.\"\n",
+      "candidates": [
+        "fun (spent : Nat) (budget : Nat) => natSub spent budget",
+        "fun (spent : Nat) (budget : Nat) => natAdd spent budget",
+        "fun (spent : Nat) (budget : Nat) => spent",
+        "fun (spent : Nat) (budget : Nat) => natSub budget spent"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 7
+        },
+        {
+          "arguments": [
+            5,
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "binary_weighted_sum",
+      "family": "binary_arithmetic",
+      "module_id": "binary_composite",
+      "source": "def answer : (base : Nat) -> (extra : Nat) -> Nat := synth \"Return the first argument plus two times the second argument.\"\n",
+      "candidates": [
+        "fun (base : Nat) (extra : Nat) => natAdd base (natMul 2 extra)",
+        "fun (base : Nat) (extra : Nat) => natMul base extra",
+        "fun (base : Nat) (extra : Nat) => natAdd base extra",
+        "fun (base : Nat) (extra : Nat) => natAdd (natMul 2 base) extra"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 20
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 10
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 17
+        }
+      ]
+    },
+    {
+      "id": "binary_sum_increment",
+      "family": "binary_arithmetic",
+      "module_id": "binary_composite",
+      "source": "def answer : (left : Nat) -> (right : Nat) -> Nat := synth \"Return the sum of the arguments plus one.\"\n",
+      "candidates": [
+        "fun (left : Nat) (right : Nat) => natAdd left right",
+        "fun (left : Nat) (right : Nat) => natAdd 1 (natAdd right left)",
+        "fun (left : Nat) (right : Nat) => natMul left right",
+        "fun (left : Nat) (right : Nat) => natAdd 2 (natAdd left right)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 12
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 6
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 15
+        }
+      ]
+    },
+    {
+      "id": "binary_product_offset",
+      "family": "binary_arithmetic",
+      "module_id": "binary_composite",
+      "source": "def answer : (rows : Nat) -> (cols : Nat) -> Nat := synth \"Return the product of the arguments plus two.\"\n",
+      "candidates": [
+        "fun (rows : Nat) (cols : Nat) => natAdd rows cols",
+        "fun (rows : Nat) (cols : Nat) => natMul rows cols",
+        "fun (rows : Nat) (cols : Nat) => natAdd (natMul rows cols) 2",
+        "fun (rows : Nat) (cols : Nat) => natMul (natAdd rows 2) cols"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 20
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 2
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 35
+        }
+      ]
+    },
+    {
+      "id": "binary_sum_squares",
+      "family": "binary_arithmetic",
+      "module_id": "binary_composite",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> Nat := synth \"Return the sum of squares of the arguments.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) => natMul (natAdd x y) (natAdd x y)",
+        "fun (x : Nat) (y : Nat) => natMul x y",
+        "fun (x : Nat) (y : Nat) => natAdd x y",
+        "fun (x : Nat) (y : Nat) => natAdd (natMul x x) (natMul y y)"
+      ],
+      "tests": [
+        {
+          "arguments": [
+            2,
+            9
+          ],
+          "expected": 85
+        },
+        {
+          "arguments": [
+            0,
+            5
+          ],
+          "expected": 25
+        },
+        {
+          "arguments": [
+            11,
+            3
+          ],
+          "expected": 130
+        }
+      ]
+    }
+  ]
+}

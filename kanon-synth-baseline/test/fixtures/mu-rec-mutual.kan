@@ -1,0 +1,26 @@
+-- mu-rec-mutual: a structural recursion over the mutual family (M1
+-- Stage I, brief 3.8, M1-PLAN.md:171).  "sizeA" and "sizeB" are one
+-- recursive group, joined by the word "and" of SI-D8, and each member
+-- calls its sibling at a leg binder of a branch whose scrutinee is the
+-- argument at position 0.  One order answers for the whole group, so
+-- both members decrease at the same position (SI-D7, M1-PLAN.md:113).
+--
+-- The erased form is one KCase for each member.  Each member names the
+-- legs of the family it eliminates in its own rec group, and the
+-- sibling family shows up as the repr of a field, so the boundary of
+-- the group reads off the text alone (SJ-D5, D-M1-5).  The checked form
+-- of the file is the SI-G7 reading, and the file stood under erase-neg
+-- until Stage J landed the rows (brief 3.3).
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu A : Type 0 with
+| leaf : A
+| node : B -> A
+and B : Type 0 with
+| cons : A -> B
+
+def rec sizeA : A -> N := fun (a : A) => case a as x in A return N with | leaf => zero | node b => succ (sizeB b)
+and sizeB : B -> N := fun (b : B) => case b as x in B return N with | cons a => succ (sizeA a)

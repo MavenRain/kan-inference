@@ -1,0 +1,5 @@
+-- A polymorphic pair keeps the same layout when instantiated at Nat.
+-- The kernel and wasm must both return 5, without an illegal cast.
+def box : (0 A : Type 0) -> (x : A) -> (a : A) * A :=
+  fun (0 A : Type 0) (x : A) => (x, x)
+def main : Nat := (box Nat 5).1

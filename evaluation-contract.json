@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic_benchmark_implemented_model_selection_gate_unmet",
+  "prepared_on": "2026-09-07",
+  "language": "kanon",
+  "synthesis_phase": "development_time",
+  "primitive_requirement": {
+    "proposed_kernel_type_formers": [
+      "Lan",
+      "Ran"
+    ],
+    "proposed_surface_operation": "synth",
+    "ambient_rule_inventory_required": true,
+    "literal_primitive_minimality": "unproved"
+  },
+  "logical_assurance": {
+    "lean_release": null,
+    "translation_fragment": null,
+    "parity_status": "unproved",
+    "frozen_expected_type_and_context": true,
+    "restricted_term_proposals_only": true,
+    "independent_kernel_check_each_accepted_term": true,
+    "transitive_axiom_allowlist_required": true,
+    "allowlist": null,
+    "unresolved_holes": "elaboration_failure",
+    "resource_limit": "explicit_failure",
+    "recheck_persisted_terms": true,
+    "acceptance_tests": [
+      "well_typed_candidate",
+      "wrong_expected_type",
+      "target_or_dependency_changed",
+      "direct_and_transitive_unapproved_axiom",
+      "malformed_term",
+      "top_level_or_host_code_in_candidate",
+      "candidate_timeout",
+      "checking_budget_exhaustion",
+      "stale_persisted_term",
+      "replay_without_model"
+    ]
+  },
+  "model_selection": {
+    "objective": "minimum_measured_complete_deployment_bytes_among_passing_candidates",
+    "candidate_model_ids": [
+      "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+      "Qwen/Qwen2.5-Coder-1.5B-Instruct"
+    ],
+    "minimum_hardware": null,
+    "minimum_test_tasks_per_claimed_family": 500,
+    "split_unit": "independent_module_before_synthetic_augmentation",
+    "max_candidates_per_task": 8,
+    "context_token_budget": null,
+    "output_token_budget": null,
+    "minimum_verified_task_success": 0.8,
+    "minimum_absolute_improvement_over_baseline": 0.1,
+    "maximum_warm_p95_synthesis_seconds": 5.0,
+    "maximum_peak_memory_bytes": null,
+    "thresholds_are_proposed": true,
+    "evaluate_after_quantization": true,
+    "report_confidence_intervals": true,
+    "report_cold_load_seconds": true,
+    "report_first_attempt_and_bounded_search_success": true,
+    "selected_model": null,
+    "experimental_default": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "measured_results": [
+      {
+        "kind": "six_case_ranking_smoke_only",
+        "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "correct": 4,
+        "total": 6,
+        "candidate_order_baseline_correct": 3,
+        "strong_baseline_evaluated": false,
+        "selection_gate_passed": false,
+        "evidence": "kanon-inference/results/smoke-135m.json"
+      },
+      {
+        "kind": "six_case_ranking_smoke_only",
+        "model": "HuggingFaceTB/SmolLM2-360M-Instruct",
+        "correct": 4,
+        "total": 6,
+        "candidate_order_baseline_correct": 3,
+        "strong_baseline_evaluated": false,
+        "selection_gate_passed": false,
+        "evidence": "kanon-inference/results/smoke-360m.json"
+      },
+      {
+        "kind": "32_task_behavioral_diagnostic",
+        "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "correct": 9,
+        "total": 32,
+        "type_accepted": 32,
+        "candidate_order_baseline_correct": 8,
+        "deterministic_baseline_correct": 32,
+        "baseline_kind": "Symbolic Nat grammar developed together with the diagnostic corpus",
+        "strong_baseline_evaluated": true,
+        "independent_held_out": false,
+        "hosts": [
+          "kernel",
+          "node",
+          "wasmtime"
+        ],
+        "host_disagreements": 0,
+        "selection_gate_passed": false,
+        "evidence": "kanon-inference/results/diagnostic-135m-2026-09-07.json"
+      }
+    ]
+  },
+  "compilation": {
+    "paired_workload_manifest": null,
+    "hardware_and_toolchain_manifest": null,
+    "ocaml_baselines_reported_separately": [
+      "ocamlc",
+      "ocamlopt"
+    ],
+    "maximum_per_workload_median_time_ratio": 1.0,
+    "timing_modes": [
+      "clean",
+      "incremental"
+    ],
+    "report_p95_and_absolute_time": true,
+    "include_required_codegen_and_postprocessing": true,
+    "separate_artifact_and_runnable_deployment_timings": true,
+    "separate_proof_heavy_lean_comparison": true,
+    "report_end_to_end_uncached_synthesis_build_latency": true,
+    "universal_speed_guarantee": false,
+    "measured_results": []
+  },
+  "deployment": {
+    "first_codegen_target": "WasmGC_subject_to_host_validation",
+    "inference_profiles": [
+      "browser_cpu_wasm",
+      "browser_webgpu",
+      "wasm_cli_native_inference",
+      "all_wasm"
+    ],
+    "selected_initial_inference_profile": null,
+    "network_service_required": false,
+    "model_required_in_generated_application": false,
+    "kernel_vs_target_semantic_agreement_required": true,
+    "validated_profiles": []
+  },
+  "updated_on": "2026-09-07",
+  "evaluation_harness": {
+    "entrypoint": "kanon-inference/benchmark.py",
+    "corpus": "kanon-inference/benchmarks/diagnostic-v1.json",
+    "purpose": "diagnostic",
+    "tasks": 32,
+    "families": 4,
+    "correlated_module_groups": 8,
+    "provider_receives_behavioral_oracles": false,
+    "selection": "first compiler-valid candidate, before behavioral tests",
+    "failed_tasks_remain_in_denominator": true,
+    "interrupted_reports_marked_incomplete": true,
+    "supports_task_count_up_to": 10000,
+    "confidence_intervals": "descriptive Wilson intervals; task independence not established"
+  }
+}

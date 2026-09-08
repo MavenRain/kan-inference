@@ -1,0 +1,1 @@
+the term has type (Out SPi w _ (Lan SMu Code [] (Sec SColl 0 [])) (APt w (In SMu Code [] (ACtor code) [Nat])) F) and the expected type is (Out SPi w _ (Lan SMu Code [] (Sec SColl 0 [])) (APt w (In SMu Code [] (ACtor code) [(Ran SPi w _ Nat Nat)])) F)

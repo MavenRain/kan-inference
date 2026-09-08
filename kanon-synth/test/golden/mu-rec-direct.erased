@@ -1,0 +1,2 @@
+rec [mu<N>; leg<mu<N>,0>; leg<mu<N>,1,union mu<N>>]
+fun double (union mu<N>) : union mu<N> := KCase mu<N> (KVar 0) [{0 0 (KTag mu<N> 0 [])}; {1 1 (KTag mu<N> 1 [KTag mu<N> 1 [KApp (KGlobal double) [KVar 0]]])}]

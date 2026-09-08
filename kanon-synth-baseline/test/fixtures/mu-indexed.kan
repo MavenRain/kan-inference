@@ -1,0 +1,22 @@
+-- mu-indexed: a family with an index telescope (A2, A14).  Every index
+-- binder carries the mark 0, so the index erases before run time, and
+-- every constructor gives the result index the declaration asks for.
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu V : (0 i : N) -> Type 0 with
+| vz : V zero
+| vs : (0 i : N) -> V i -> V (succ i)
+
+-- The fibered elimination reads the motive at the index arguments of
+-- each constructor result, so a motive body that names an index is
+-- checked at a different type in every branch (M1 Stage H, SH-D7,
+-- M1-PLAN.md:80).  The elimination sits under a let of a definition at
+-- a universe, because a definition at a type is dropped before erasure
+-- reads its body, and the interim erasure word of a mu shape stays at
+-- test/erase-neg/mu-erase.kan (A6, SG-D7).  SH-M3 drops the index
+-- arguments from that read and this definition stops checking.
+
+def read_index : Type 0 := let d : V zero := case (vz : V zero) as x in V i return V i with | vz => vz | vs 0 j w => vs j w in Nat

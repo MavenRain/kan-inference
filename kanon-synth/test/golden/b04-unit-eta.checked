@@ -1,0 +1,7 @@
+axiom u : ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)
+axiom F : (Ran SPi 0 s ((Ran SColl 0 (Sec SColl 0 [])) : Type 1) Type 0)
+axiom v : (Out SPi 0 s ((Ran SColl 0 (Sec SColl 0 [])) : Type 1) (APt 0 u) F)
+axiom G : (Ran SPi 0 s ((Ran SColl 0 (Sec SColl 0 [])) : Type 1) Type 0)
+axiom w : (Out SPi 0 s ((Ran SColl 0 (Sec SColl 0 [])) : Type 1) (APt 0 (Sec SColl 0 [])) G)
+def unitExpanded : (Out SPi 0 s ((Ran SColl 0 (Sec SColl 0 [])) : Type 1) (APt 0 (Sec SColl 0 [])) F) := v
+def unitContracted : (Out SPi 0 s ((Ran SColl 0 (Sec SColl 0 [])) : Type 1) (APt 0 u) G) := w

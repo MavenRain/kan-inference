@@ -1,0 +1,2 @@
+def read : (Ran SPi w _ (Lan SMu Box [] (Sec SColl 0 [])) Nat) := (Sec SPi w box (Lan SMu Box [] (Sec SColl 0 [])) [box => (Elim SMu Box [] box as x return Nat with | (ACtor wrap) n => n)])
+def main : Nat := (Out SPi w b Nat (APt w 12345678901234567890123456766) (Out SPi w a Nat (APt w (Out SPi w _ (Lan SMu Box [] (Sec SColl 0 [])) (APt w (In SMu Box [] (ACtor wrap) [12345678901234567890123456789])) read)) natSub))

@@ -1,0 +1,5 @@
+erased Two
+rec [sum<union nat|union nat>; nat]
+fun pick (union sum<union nat|union nat>) : union nat := KLet base (KLit 10) (KLet bump (KCase sum<union nat|union nat> (KVar 1) [{0 1 (KApp (KGlobal natAdd) [KVar 0; KLit 1])}; {1 1 (KApp (KGlobal natMul) [KVar 0; KLit 2])}]) (KLet total (KApp (KGlobal natAdd) [KVar 1; KVar 0]) (KTail (KGlobal natAdd) [KVar 0; KLit 100])))
+rec [nat; sum<union nat|union nat>]
+fun main () : union nat := KTail (KGlobal natAdd) [KApp (KGlobal pick) [KTag sum<union nat|union nat> 0 [KLit 3]]; KApp (KGlobal pick) [KTag sum<union nat|union nat> 1 [KLit 4]]]

@@ -1,0 +1,6 @@
+rec [mu<V>; nat; leg<mu<V>,0>; leg<mu<V>,1,union nat,union mu<V>>]
+fun total (union mu<V>) : union nat := KCase mu<V> (KVar 0) [{0 0 (KLit 0)}; {1 2 (KTail (KGlobal natAdd) [KVar 1; KApp (KGlobal total) [KVar 0]])}]
+rec [mu<Box>; nat; leg<mu<Box>,0,union any>]
+fun unbox (union mu<Box>) : union nat := KCase mu<Box> (KVar 0) [{0 1 (KVar 0)}]
+rec [nat; mu<V>; leg<mu<V>,0>; leg<mu<V>,1,union nat,union mu<V>>]
+fun main () : union nat := KTail (KGlobal total) [KTag mu<V> 1 [KLit 17; KTag mu<V> 1 [KLit 25; KTag mu<V> 0 []]]]

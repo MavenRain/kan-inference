@@ -1,0 +1,92 @@
+[
+  {
+    "path": "SYNTHESIS.md",
+    "status": "added",
+    "sha256": "94195473be5f47dcedc1f2afdca1b173863e8c766fbbf8d60f718ca819043a0d"
+  },
+  {
+    "path": "bin/kanon.ml",
+    "status": "modified",
+    "sha256": "ede845065e5ff94ee305ad6b962f8de113db72681958da05e3bb57506d536080"
+  },
+  {
+    "path": "bin/synth_command.ml",
+    "status": "added",
+    "sha256": "1e076755669f72b51597ae699cb1972a26732d51285342e25169a0aac1e3e2eb"
+  },
+  {
+    "path": "dev/synth.py",
+    "status": "added",
+    "sha256": "ae44f48a565b779798e9618b2ae2eb91accd1b0da79a355fa9f2034281966a51"
+  },
+  {
+    "path": "dev/test_synth.py",
+    "status": "added",
+    "sha256": "3a5bc39daae76d7547793b7c32f994c2fdc03caccc26df0746df78a4ccbf197e"
+  },
+  {
+    "path": "examples/synth-choice.candidates.json",
+    "status": "added",
+    "sha256": "f2b77db45f71247672e0790c44a1dbf87685515f8ccb24e11cb34e715d1dd3e9"
+  },
+  {
+    "path": "examples/synth-choice.kan",
+    "status": "added",
+    "sha256": "c697bc0c97ee08235a027b20132b897f6e0cb6facbe63631381b220d52400dfc"
+  },
+  {
+    "path": "examples/synth-identity.kan",
+    "status": "added",
+    "sha256": "9b0f40a42f5be94937fad268246962ef9e3f1ce08009688547d898a6713e6a23"
+  },
+  {
+    "path": "kanon",
+    "status": "added",
+    "sha256": "09760c01747a33ffe8597cf337336ecda8d7b00d431843e1f4da163ac2fdbbcc"
+  },
+  {
+    "path": "surface/elab.ml",
+    "status": "modified",
+    "sha256": "b44b3d0abb88a72eb08af0794ae4def39c300a7a0d49000452ed217ce08df919"
+  },
+  {
+    "path": "surface/lexer.ml",
+    "status": "modified",
+    "sha256": "6e4e2b17df6957a19500e81dd86f24ec6875f639da10b7ce2c5003f86646d1c1"
+  },
+  {
+    "path": "surface/parser.ml",
+    "status": "modified",
+    "sha256": "f97344db5df1cc8671abcb229a71f294f421ba24ae99758e59df0632b0da7f64"
+  },
+  {
+    "path": "surface/syntax.ml",
+    "status": "modified",
+    "sha256": "d5353711ecbd4a4bc54c571f09f6261bfd16ae0c007ec009ce01330f951e7263"
+  },
+  {
+    "path": "surface/synthesis.ml",
+    "status": "added",
+    "sha256": "f22d11e44e59bfd33e66b9adffcfd4ebeebe3977f14403c7d2142393cbadccac"
+  },
+  {
+    "path": "surface/synthesis.mli",
+    "status": "added",
+    "sha256": "f9fc55b7264ae2248015926d6c665fe9aa200674d24e33f19e49fcd9b94391ac"
+  },
+  {
+    "path": "surface/token.ml",
+    "status": "modified",
+    "sha256": "20dccd0349539726e226f88b60d857b055a98321f20b34bf4a77ba63b0e8bac5"
+  },
+  {
+    "path": "test/dune",
+    "status": "modified",
+    "sha256": "5294cc4a75743f92e32bb8a05126f8018ca66c40c4b79594c85e177763213f53"
+  },
+  {
+    "path": "test/synthesis.ml",
+    "status": "added",
+    "sha256": "679f98a5ad6067796a6031fef076215a4edc1d7f1d40a61292651add2d2d126e"
+  }
+]

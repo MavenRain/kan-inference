@@ -1,0 +1,16 @@
+-- a04: inj, and case with a motive and without one.
+-- SB-D1 gives the two-leg type a production, so the sum that Stage A
+-- had to postulate is now written out.
+
+axiom Nat : Type 0
+
+def Two : Type 0 := sum (Nat, Nat)
+
+def left : Two := inj 0 of 2 1
+def right : Two := inj 1 of 2 2
+
+def plain : (x : Two) -> Nat :=
+  fun (x : Two) => case x with | 0 (a : Nat) => a | 1 (b : Nat) => b
+
+def withMotive : (x : Two) -> Nat :=
+  fun (x : Two) => case x as y return Nat with | 0 (a : Nat) => a | 1 (b : Nat) => b

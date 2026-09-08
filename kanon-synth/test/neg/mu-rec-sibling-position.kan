@@ -1,0 +1,18 @@
+-- mu-rec-sibling-position: a mutual group whose sibling call decreases
+-- at a different argument position (brief 3.8, M1-PLAN.md:113).
+-- "left" eliminates its first argument and calls "right" at a smaller
+-- first argument, and "right" eliminates its second argument and calls
+-- "left" at a smaller second argument.  One order answers for the whole
+-- group (SI-D7), so no single position guards both members and the
+-- guard refuses the group with the termination line of SI-D6, which
+-- names the first member.
+--
+-- Mutation SI-M3 lets a sibling call decrease at another position, and
+-- then this file is accepted.
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def rec left : N -> N -> N := fun (a : N) (b : N) => case a as x in N return N with | zero => b | succ p => right p b
+and right : N -> N -> N := fun (a : N) (b : N) => case b as y in N return N with | zero => a | succ q => left a q

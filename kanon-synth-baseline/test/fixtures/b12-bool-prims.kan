@@ -1,0 +1,14 @@
+-- b12: the booleans of the prims.  "natEq" and "natLt" answer at the
+-- two leg sum of the unit type, which SB-D1 now writes out, so the
+-- answer of a prim is a term of a type the surface can spell.
+
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+
+def yes : Bool := natEq 4 4
+def no : Bool := natEq 4 5
+def below : Bool := natLt 1 2
+def true : Bool := inj 0 of 2 ()
+def false : Bool := inj 1 of 2 ()
+
+def toNat : (b : Bool) -> Nat -> Nat :=
+  fun (b : Bool) (n : Nat) => case b with | 0 (x : prod ()) => n | 1 (y : prod ()) => natAdd n 1

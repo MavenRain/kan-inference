@@ -1,0 +1,8 @@
+-- The capture expression is any, but the lifted parameter is Nat.
+-- Registration, construction and the wrapper must agree.  main is 11.
+def id : (0 A : Type 0) -> (x : A) -> A :=
+  fun (0 A : Type 0) (x : A) => x
+def mk : (x : Nat) -> (f : Nat -> Nat) * Nat :=
+  fun (x : Nat) => let z : Nat := id Nat x in
+    ((fun (y : Nat) => natAdd z y), z)
+def main : Nat := (mk 5).1 6

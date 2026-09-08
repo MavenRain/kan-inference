@@ -1,0 +1,4 @@
+rec [mu<Box>; nat; leg<mu<Box>,0,union nat>]
+fun read (union mu<Box>) : union nat := KCase mu<Box> (KVar 0) [{0 1 (KVar 0)}]
+rec [nat; mu<Box>; leg<mu<Box>,0,union nat>]
+fun main () : union nat := KTail (KGlobal natSub) [KApp (KGlobal read) [KTag mu<Box> 0 [KLit 12345678901234567890123456789]]; KLit 12345678901234567890123456766]

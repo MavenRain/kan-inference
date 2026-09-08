@@ -1,0 +1,11 @@
+-- b05: proof irrelevance, the first step of conversion.  Two terms of
+-- one proposition convert, so "G p1" and "G p2" are the same type and
+-- the witness of the first is a witness of the second.
+
+axiom P : Prop
+axiom p1 : P
+axiom p2 : P
+axiom G : (0 z : P) -> Prop
+axiom w : G p1
+
+def irrelevant : G p2 := w

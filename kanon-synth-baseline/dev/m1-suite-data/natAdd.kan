@@ -1,0 +1,18 @@
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+def Bool : Type 0 := sum ((prod () : Type 0), (prod () : Type 0))
+def yes : Bool := inj 1 of 2 ()
+def no : Bool := inj 0 of 2 ()
+def rec uAdd : N -> N -> N := fun (n : N) (m : N) => case n as x in N return N with | zero => m | succ p => succ (uAdd p m)
+def rec observe : N -> Nat := fun (n : N) => case n as x in N return Nat with | zero => 0 | succ m => (case m as y in N return Nat with | zero => 1 | succ p => let r : Nat := observe m in natSub (natMul 2 r) (natSub r 1))
+def Unit : Type 0 := prod ()
+mu Agreement : (0 a : Nat) -> (0 b : Nat) -> Type 0 with
+| same : (0 a : Nat) -> Agreement a a
+def n0 : N := zero
+def n1 : N := succ n0
+def n2 : N := succ n1
+def score : Bool -> Nat := fun (b : Bool) => case b as x return Nat with | 0 (u : Unit) => 0 | 1 (u : Unit) => 1
+def witness : Agreement (observe (uAdd n2 n1)) (natAdd 2 1) := same (observe (uAdd n2 n1))
+def main : Nat := natAdd (score (natEq (observe (uAdd n2 n1)) 3)) (score (natEq (natAdd 2 1) 3))

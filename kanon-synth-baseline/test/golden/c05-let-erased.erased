@@ -1,0 +1,2 @@
+rec [nat]
+fun k () : union nat := KLet m (KLit 4) (KVar 0)

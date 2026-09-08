@@ -1,0 +1,5 @@
+erased Two
+rec [sum<union nat|union nat>; any]
+fun F (union sum<union nat|union nat>) : union any := KErased
+rec [nat; sum<union nat|union nat>; tuple<union nat,union nat>]
+fun n () : union nat := KLet tag (KTag sum<union nat|union nat> 1 [KLit 5]) (KLet v (KStruct tuple<union nat,union nat> [KLit 5; KLit 6]) (KProj tuple<union nat,union nat> 0 (KVar 0)))

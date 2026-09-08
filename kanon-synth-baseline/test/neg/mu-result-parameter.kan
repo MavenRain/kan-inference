@@ -1,0 +1,2 @@
+mu Box (0 A : Type 0) : Type 0 with
+| pack : A -> Box Nat

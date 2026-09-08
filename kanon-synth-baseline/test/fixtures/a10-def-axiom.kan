@@ -1,0 +1,9 @@
+-- a10: def and axiom together.  The auto atom of SA-D3 has no checked
+-- form at M0, so it sits in the negatives (SB-D34).
+
+axiom Nat : Type 0
+axiom zero : Nat
+axiom Eq : (0 A : Type 0) -> (x : A) -> (y : A) -> Prop
+
+def start : Nat := zero
+def eqOfStart : Prop := Eq Nat start start

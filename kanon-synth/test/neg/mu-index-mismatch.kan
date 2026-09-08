@@ -1,0 +1,14 @@
+-- mu-index-mismatch: a constructor result index that does not unify
+-- with the index the type asks for (A14).  vz gives the index zero and
+-- the declared type asks for succ zero, so the introduction rule
+-- refuses it (SG-M3 kills the mutation that drops the unification).
+
+mu N : Type 0 with
+| zero : N
+| succ : N -> N
+
+mu V : (0 i : N) -> Type 0 with
+| vz : V zero
+| vs : (0 i : N) -> V i -> V (succ i)
+
+def one : V (succ zero) := vz

@@ -1,0 +1,6 @@
+-- n03: a section where the expected type is not a right former.  The
+-- lambda is the section of the point shape, so the expected type must
+-- be an arrow and "Nat" is not one.  The parser accepts the file, so
+-- the checker is the one that reports it.
+
+def bad : Nat := fun (x : Nat) => x

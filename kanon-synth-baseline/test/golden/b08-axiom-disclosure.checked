@@ -1,0 +1,4 @@
+axiom Bit : Type 1
+def Pair : Type 1 := (Ran SColl 2 (Sec SColl 2 [ => Bit;  => Bit]))
+def diagonal : (Ran SPi w x Bit Pair) := (Sec SPi w x Bit [x => (Sec SColl 2 [ => x;  => x])])
+def firstOfDiagonal : (Ran SPi w x Bit Bit) := (Sec SPi w x Bit [x => (Out SColl 2 (ALeg 0) (Out SPi w x Bit (APt w x) diagonal))])

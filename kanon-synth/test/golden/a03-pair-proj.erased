@@ -1,0 +1,11 @@
+erased Nat
+rec [pair<union nat,union nat>]
+fun p () : struct pair<union nat,union nat> := KStruct pair<union nat,union nat> [KLit 1; KLit 2]
+rec [nat; pair<union nat,union nat>]
+fun firstOfP () : union nat := KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 1)))
+rec [nat; pair<union nat,union nat>]
+fun secondOfP () : union nat := KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 0)))
+rec [pair<union nat,union nat>]
+fun swapped () : struct pair<union nat,union nat> := KStruct pair<union nat,union nat> [KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 0))); KLet scrut (KGlobal p) (KLet a (KProj pair<union nat,union nat> 0 (KVar 0)) (KLet y (KProj pair<union nat,union nat> 1 (KVar 1)) (KVar 1)))]
+rec [pair<union nat,struct pair<union nat,union nat>>; pair<union nat,union nat>]
+fun nestedPair () : struct pair<union nat,struct pair<union nat,union nat>> := KStruct pair<union nat,struct pair<union nat,union nat>> [KLit 1; KStruct pair<union nat,union nat> [KLit 2; KLit 3]]

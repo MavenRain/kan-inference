@@ -1,0 +1,13 @@
+-- d06: a lambda that captures a local, stored in a pair and applied
+-- later.  One capture is a parameter and the other is a let bound
+-- local, so both capture paths of SD-D2 run.
+-- main is 31.
+
+def mk : (x : Nat) -> (f : Nat -> Nat) * Nat :=
+  fun (x : Nat) => ((fun (y : Nat) => natAdd x y), natMul x 2)
+
+def mkLet : (x : Nat) -> (f : Nat -> Nat) * Nat :=
+  fun (x : Nat) => let z : Nat := natAdd x 1 in ((fun (y : Nat) => natAdd z y), z)
+
+def main : Nat :=
+  natAdd (natAdd ((mk 5).1 6) (mk 5).2) (natAdd ((mkLet 2).1 4) (mkLet 2).2)

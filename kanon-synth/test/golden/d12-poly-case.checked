@@ -1,0 +1,3 @@
+def Bool : Type 1 := (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)]))
+def id : (Ran SPi 0 A Type 1 (Ran SPi w x A A)) := (Sec SPi 0 A Type 1 [A => (Sec SPi w x A [x => x])])
+def main : Nat := (Elim SColl 2 (Out SPi w x (Lan SColl 2 (Sec SColl 2 [ => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1);  => ((Ran SColl 0 (Sec SColl 0 [])) : Type 1)])) (APt w (Out SPi w b Nat (APt w 1) (Out SPi w a Nat (APt w 1) natEq))) (Out SPi 0 A Type 1 (APt 0 Bool) id)) with | (ALeg 0) x => 0 | (ALeg 1) y => 1)

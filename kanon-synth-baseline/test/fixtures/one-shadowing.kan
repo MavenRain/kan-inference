@@ -1,0 +1,4 @@
+def identity : (1 x : Nat) -> Nat := fun (1 x : Nat) => x
+def shadow : (1 x : Nat) -> Nat := fun (1 x : Nat) => let y : Nat := x in let x : Nat := 0 in y
+def closure : (1 x : Nat) -> Nat := fun (1 x : Nat) => let f : (y : Nat) -> Nat := (fun (y : Nat) => x) in f 0
+def main : Nat := shadow 7

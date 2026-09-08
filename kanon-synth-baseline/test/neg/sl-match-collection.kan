@@ -1,0 +1,3 @@
+-- An empty branch list must not let match eliminate an empty collection.
+axiom stuck : sum ()
+def bad : Nat := match stuck as x return Nat with
