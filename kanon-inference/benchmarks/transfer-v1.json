@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "name": "transfer-v1",
+  "purpose": "diagnostic",
+  "tasks": [
+    {
+      "id": "transfer_reject_cartons",
+      "family": "group_rejection",
+      "module_id": "TransferRejectCartons",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"A lab receives x cartons and rejects y whole cartons. If rejection exceeds the delivery, no cartons survive. Each surviving carton supplies z sample tubes. Return the number of tubes supplied.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natSub x y) z",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natSub x (natMul y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natSub y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natAdd x y) z"
+      ],
+      "tests": [
+        {"arguments": [0, 0, 5], "expected": 0},
+        {"arguments": [2, 5, 3], "expected": 0},
+        {"arguments": [5, 2, 4], "expected": 12},
+        {"arguments": [7, 0, 3], "expected": 21},
+        {"arguments": [6, 4, 0], "expected": 0},
+        {"arguments": [9, 3, 2], "expected": 12}
+      ]
+    },
+    {
+      "id": "transfer_reject_labels",
+      "family": "group_rejection",
+      "module_id": "TransferRejectLabels",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"There are x printed sheets. Every sheet starts with y labels, and z labels on each sheet are spoiled. A sheet contributes zero usable labels when z is at least y. How many usable labels do all the sheets contribute?\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natSub (natMul x y) z",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natSub y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natSub x z) y",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd y z)"
+      ],
+      "tests": [
+        {"arguments": [0, 8, 3], "expected": 0},
+        {"arguments": [4, 2, 5], "expected": 0},
+        {"arguments": [3, 7, 2], "expected": 15},
+        {"arguments": [5, 6, 0], "expected": 30},
+        {"arguments": [2, 6, 6], "expected": 0},
+        {"arguments": [6, 9, 4], "expected": 30}
+      ]
+    },
+    {
+      "id": "transfer_reject_cards",
+      "family": "group_rejection",
+      "module_id": "TransferRejectCards",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"Open x bundles containing y cards apiece and combine all the cards into one pile. Discard z cards from that combined pile, or the entire pile if fewer than z exist. Return the number of cards left.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natSub x z) y",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natSub y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natSub (natMul x y) z",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natAdd (natMul x y) z"
+      ],
+      "tests": [
+        {"arguments": [0, 5, 2], "expected": 0},
+        {"arguments": [2, 3, 9], "expected": 0},
+        {"arguments": [4, 6, 5], "expected": 19},
+        {"arguments": [3, 5, 0], "expected": 15},
+        {"arguments": [1, 8, 8], "expected": 0},
+        {"arguments": [6, 4, 7], "expected": 17}
+      ]
+    },
+    {
+      "id": "transfer_reject_badges",
+      "family": "group_rejection",
+      "module_id": "TransferRejectBadges",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"A badge tray holds x red badges and y blue badges. Remove z badges of each color separately; a color with fewer than z is emptied. Count the choices of one surviving red badge together with one surviving blue badge.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natSub (natMul x y) (natMul z z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natSub x z) (natAdd y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natSub (natAdd x y) (natMul z z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natSub x z) (natSub y z)"
+      ],
+      "tests": [
+        {"arguments": [0, 0, 0], "expected": 0},
+        {"arguments": [2, 7, 3], "expected": 0},
+        {"arguments": [8, 3, 4], "expected": 0},
+        {"arguments": [7, 9, 2], "expected": 35},
+        {"arguments": [5, 4, 0], "expected": 20},
+        {"arguments": [9, 8, 3], "expected": 30}
+      ]
+    },
+    {
+      "id": "transfer_ordered_reviewers",
+      "family": "ordered_selection",
+      "module_id": "TransferOrderedReviewers",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> Nat := synth \"For each of y projects, list every assignment of a lead reviewer and a different backup reviewer from the same x people. Swapping the two people makes a different assignment. Count project-and-assignment entries across all lists.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) => natMul y (natMul x (natSub x 1))",
+        "fun (x : Nat) (y : Nat) => natMul y (natMul x (natAdd x 1))",
+        "fun (x : Nat) (y : Nat) => natMul y (natAdd x (natSub x 1))",
+        "fun (x : Nat) (y : Nat) => natMul (natSub y 1) (natMul x (natSub x 1))"
+      ],
+      "tests": [
+        {"arguments": [0, 4], "expected": 0},
+        {"arguments": [1, 8], "expected": 0},
+        {"arguments": [3, 2], "expected": 12},
+        {"arguments": [4, 0], "expected": 0},
+        {"arguments": [5, 3], "expected": 60},
+        {"arguments": [2, 7], "expected": 14}
+      ]
+    },
+    {
+      "id": "transfer_ordered_medals",
+      "family": "ordered_selection",
+      "module_id": "TransferOrderedMedals",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> Nat := synth \"Each of y separate heats has x competitors. A podium awards gold, silver, and bronze to three distinct competitors, with medal order significant. Sum the number of possible podiums for each heat; a heat with fewer than three competitors contributes zero.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) => natMul y (natMul x (natMul (natAdd x 1) (natAdd x 2)))",
+        "fun (x : Nat) (y : Nat) => natMul y (natMul x (natMul (natSub x 1) (natSub x 2)))",
+        "fun (x : Nat) (y : Nat) => natMul y (natMul x (natSub x 1))",
+        "fun (x : Nat) (y : Nat) => natMul y (natMul (natSub x 1) (natMul (natSub x 2) (natSub x 3)))"
+      ],
+      "tests": [
+        {"arguments": [0, 5], "expected": 0},
+        {"arguments": [2, 4], "expected": 0},
+        {"arguments": [3, 2], "expected": 12},
+        {"arguments": [4, 3], "expected": 72},
+        {"arguments": [5, 0], "expected": 0},
+        {"arguments": [5, 2], "expected": 120}
+      ]
+    },
+    {
+      "id": "transfer_ordered_greetings",
+      "family": "ordered_selection",
+      "module_id": "TransferOrderedGreetings",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"At each of z sessions, every one of x hosts sends a greeting to every one of y visitors, and each visitor sends a separate reply greeting to each host. Count individual sent greetings over all sessions.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul z (natMul x y)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul z (natAdd (natAdd x y) (natAdd x y))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul z (natAdd (natMul x y) (natMul x y))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul z (natAdd (natMul x x) (natMul y y))"
+      ],
+      "tests": [
+        {"arguments": [0, 5, 3], "expected": 0},
+        {"arguments": [2, 0, 4], "expected": 0},
+        {"arguments": [3, 4, 2], "expected": 48},
+        {"arguments": [1, 7, 1], "expected": 14},
+        {"arguments": [5, 2, 0], "expected": 0},
+        {"arguments": [2, 3, 5], "expected": 60}
+      ]
+    },
+    {
+      "id": "transfer_ordered_chairs",
+      "family": "ordered_selection",
+      "module_id": "TransferOrderedChairs",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> Nat := synth \"A club has x adults and y juniors, all distinct people. Choose an adult chair, then choose a deputy from everyone except that chair. Return the number of chair-and-deputy assignments. The chair and deputy are different roles.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) => natMul (natAdd x y) (natSub (natAdd x y) 1)",
+        "fun (x : Nat) (y : Nat) => natMul x (natAdd (natAdd x y) 1)",
+        "fun (x : Nat) (y : Nat) => natMul x (natSub y 1)",
+        "fun (x : Nat) (y : Nat) => natMul x (natSub (natAdd x y) 1)"
+      ],
+      "tests": [
+        {"arguments": [0, 5], "expected": 0},
+        {"arguments": [1, 0], "expected": 0},
+        {"arguments": [2, 3], "expected": 8},
+        {"arguments": [4, 0], "expected": 12},
+        {"arguments": [1, 6], "expected": 6},
+        {"arguments": [3, 2], "expected": 12}
+      ]
+    },
+    {
+      "id": "transfer_fanout_topics",
+      "family": "message_fanout",
+      "module_id": "TransferFanoutTopics",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"Each of x gateways sends one temperature message to each of y temperature subscribers and one pressure message to each of z pressure subscribers. Topic messages are counted separately even if a subscriber reads both topics. Return the total deliveries.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natMul y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natAdd x (natAdd y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natAdd x y) z"
+      ],
+      "tests": [
+        {"arguments": [0, 3, 4], "expected": 0},
+        {"arguments": [4, 0, 0], "expected": 0},
+        {"arguments": [3, 2, 5], "expected": 21},
+        {"arguments": [2, 0, 6], "expected": 12},
+        {"arguments": [5, 4, 0], "expected": 20},
+        {"arguments": [1, 7, 3], "expected": 10}
+      ]
+    },
+    {
+      "id": "transfer_fanout_tree",
+      "family": "message_fanout",
+      "module_id": "TransferFanoutTree",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"A trace records x root jobs. Each root creates y branch jobs, and each branch creates z leaf jobs. Every root, branch, and leaf receives one trace entry, and there are no other entries. Return the trace entry count.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd y (natMul y z))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd 1 (natAdd y (natMul y z)))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd 1 (natMul y z))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul (natAdd x 1) (natAdd y (natMul y z))"
+      ],
+      "tests": [
+        {"arguments": [0, 3, 4], "expected": 0},
+        {"arguments": [3, 0, 8], "expected": 3},
+        {"arguments": [2, 4, 0], "expected": 10},
+        {"arguments": [2, 3, 4], "expected": 32},
+        {"arguments": [1, 2, 5], "expected": 13},
+        {"arguments": [4, 1, 2], "expected": 16}
+      ]
+    },
+    {
+      "id": "transfer_fanout_archives",
+      "family": "message_fanout",
+      "module_id": "TransferFanoutArchives",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"Each of x source packets reaches each of y relay stations. For every source packet it receives, a relay stores one local archive copy and emits z remote copies. Count those local and remote copies together.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natAdd (natMul x (natMul y z)) 1",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd y (natAdd z 1))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natMul y (natAdd z 1))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natMul (natAdd y 1) z)"
+      ],
+      "tests": [
+        {"arguments": [0, 3, 5], "expected": 0},
+        {"arguments": [4, 0, 7], "expected": 0},
+        {"arguments": [2, 3, 0], "expected": 6},
+        {"arguments": [2, 3, 4], "expected": 30},
+        {"arguments": [1, 5, 2], "expected": 15},
+        {"arguments": [3, 2, 1], "expected": 12}
+      ]
+    },
+    {
+      "id": "transfer_fanout_endpoints",
+      "family": "message_fanout",
+      "module_id": "TransferFanoutEndpoints",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"Keep one original copy of each of x messages. A message also goes through y transient relays, each of which stores z destination copies. Relays retain no copies themselves. Count the originals plus all stored destination copies.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd 1 (natAdd y z))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natMul y z)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd 1 (natAdd y (natMul y z)))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul x (natAdd 1 (natMul y z))"
+      ],
+      "tests": [
+        {"arguments": [0, 2, 3], "expected": 0},
+        {"arguments": [5, 0, 4], "expected": 5},
+        {"arguments": [3, 2, 0], "expected": 3},
+        {"arguments": [2, 3, 4], "expected": 26},
+        {"arguments": [4, 1, 2], "expected": 12},
+        {"arguments": [1, 5, 3], "expected": 16}
+      ]
+    },
+    {
+      "id": "transfer_pairwise_isolated",
+      "family": "pairwise_analysis",
+      "module_id": "TransferPairwiseIsolated",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> Nat := synth \"Analyze a red collection of x records and a blue collection of y records separately. Inside each collection, compare every ordered pair, including a record with itself. Do no comparisons between collections. Return the total comparisons.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) => natAdd (natMul x x) (natMul y y)",
+        "fun (x : Nat) (y : Nat) => natMul (natAdd x y) (natAdd x y)",
+        "fun (x : Nat) (y : Nat) => natAdd (natMul x y) (natMul x y)",
+        "fun (x : Nat) (y : Nat) => natAdd (natMul x x) (natAdd y y)"
+      ],
+      "tests": [
+        {"arguments": [0, 0], "expected": 0},
+        {"arguments": [0, 4], "expected": 16},
+        {"arguments": [3, 0], "expected": 9},
+        {"arguments": [2, 5], "expected": 29},
+        {"arguments": [4, 3], "expected": 25},
+        {"arguments": [1, 6], "expected": 37}
+      ]
+    },
+    {
+      "id": "transfer_pairwise_merged",
+      "family": "pairwise_analysis",
+      "module_id": "TransferPairwiseMerged",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> Nat := synth \"Append y new records to x existing records, with no duplicates removed. On the merged collection, compare every record to every record. Direction matters and self-comparisons are included. How many comparisons run?\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) => natAdd (natMul x x) (natMul y y)",
+        "fun (x : Nat) (y : Nat) => natMul (natAdd x y) (natAdd x y)",
+        "fun (x : Nat) (y : Nat) => natMul x y",
+        "fun (x : Nat) (y : Nat) => natMul (natAdd x y) (natSub (natAdd x y) 1)"
+      ],
+      "tests": [
+        {"arguments": [0, 0], "expected": 0},
+        {"arguments": [0, 3], "expected": 9},
+        {"arguments": [4, 0], "expected": 16},
+        {"arguments": [2, 5], "expected": 49},
+        {"arguments": [3, 4], "expected": 49},
+        {"arguments": [1, 8], "expected": 81}
+      ]
+    },
+    {
+      "id": "transfer_pairwise_repeated",
+      "family": "pairwise_analysis",
+      "module_id": "TransferPairwiseRepeated",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> (z : Nat) -> Nat := synth \"An experiment runs z times. In each run it performs every ordered comparison within a group of x records and separately within a group of y records. Each self-comparison is performed; cross-group comparisons are omitted. Count comparisons across every run.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul z (natMul (natAdd x y) (natAdd x y))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natAdd (natMul z (natMul x x)) (natMul y y)",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul z (natAdd (natMul x x) (natMul y y))",
+        "fun (x : Nat) (y : Nat) (z : Nat) => natMul z (natAdd (natMul x x) (natAdd y y))"
+      ],
+      "tests": [
+        {"arguments": [0, 0, 5], "expected": 0},
+        {"arguments": [3, 4, 0], "expected": 0},
+        {"arguments": [0, 3, 2], "expected": 18},
+        {"arguments": [2, 0, 4], "expected": 16},
+        {"arguments": [2, 5, 3], "expected": 87},
+        {"arguments": [4, 3, 2], "expected": 50}
+      ]
+    },
+    {
+      "id": "transfer_pairwise_forward",
+      "family": "pairwise_analysis",
+      "module_id": "TransferPairwiseForward",
+      "source": "def answer : (x : Nat) -> (y : Nat) -> Nat := synth \"A comparison job has x original records and y added records. It compares all ordered pairs within each set, including self-pairs, then compares each original record to each added record once. It does not compare added records back to originals. Return the total comparisons.\"\n",
+      "candidates": [
+        "fun (x : Nat) (y : Nat) => natAdd (natAdd (natMul x x) (natMul y y)) (natAdd x y)",
+        "fun (x : Nat) (y : Nat) => natAdd (natAdd (natMul x x) (natMul y y)) (natMul y y)",
+        "fun (x : Nat) (y : Nat) => natAdd (natMul x x) (natMul x y)",
+        "fun (x : Nat) (y : Nat) => natAdd (natAdd (natMul x x) (natMul y y)) (natMul x y)"
+      ],
+      "tests": [
+        {"arguments": [0, 0], "expected": 0},
+        {"arguments": [0, 4], "expected": 16},
+        {"arguments": [3, 0], "expected": 9},
+        {"arguments": [2, 5], "expected": 39},
+        {"arguments": [4, 3], "expected": 37},
+        {"arguments": [1, 6], "expected": 43}
+      ]
+    }
+  ]
+}

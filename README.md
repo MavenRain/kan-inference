@@ -51,6 +51,15 @@ only 1/8 on train. All selected terms type-checked and all three hosts agreed.
 This small, previously exposed corpus still does not establish model usefulness;
 the provider default remains unchanged.
 
+The [development transfer comparison on newly authored tasks](kanon-inference/experiments/transfer.md)
+then scored 1/16 for conditional ranking and 4/16 for calibrated ranking, against
+4/16 for each unchanged baseline. All selected terms type-checked and all three
+hosts agreed. The authorship record discloses that the tasks were authored in
+a separate same-project agent session; the disclosure and exposure limits were
+frozen before measurement. Both
+methods were fixed in advance; no winner was selected. These results provide
+no basis for promoting a model or scoring method.
+
 | Location | Purpose |
 | --- | --- |
 | [kanon-synth](kanon-synth/SYNTHESIS.md) | Compiler snapshot, checked synthesis CLI, tests and saved demonstration |
@@ -58,6 +67,7 @@ the provider default remains unchanged.
 | [Diagnostic benchmark](kanon-inference/benchmarks/README.md) | Behavioral corpus and deterministic baseline |
 | [Prompt experiment](kanon-inference/experiments/README.md) | Train demonstrations, validation selection and checked test replay |
 | [Ranking experiment](kanon-inference/experiments/ranking.md) | Hint-calibrated scoring, frozen comparison and numerical evidence checks |
+| [Development transfer](kanon-inference/experiments/transfer.md) | Newly authored tasks, both fixed ranking methods and paired outcome verification |
 | [Implementation status](implementation-status.md) | Completed work, measured results and remaining milestones |
 | [Evaluation contract](evaluation-contract.json) | Proposed model, correctness and performance requirements |
 | [Design](kanon-llm-design.md) | Trust boundary and broader language goals |

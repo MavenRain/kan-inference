@@ -15,9 +15,13 @@ RANKING_PLAN ?= kanon-inference/experiments/challenge-ranking-v1.json
 RANKING_OUTPUT ?= kanon-inference/results/local/challenge-ranking-v1
 SELECTION ?=
 FROZEN_OUTPUT ?= kanon-inference/results/local/challenge-frozen-test.json
+TRANSFER_PLAN ?= kanon-inference/experiments/transfer-v1.json
+TRANSFER_OUTPUT ?= kanon-inference/results/local/transfer-v1
+TRANSFER_REPORT ?= $(TRANSFER_OUTPUT)/transfer.json
 
 .PHONY: build test test-all test-unit test-provider benchmark-baseline benchmark-135m benchmark-challenge-baseline benchmark-challenge-135m
 .PHONY: experiment-challenge experiment-ranking experiment-test
+.PHONY: experiment-transfer verify-transfer
 
 build:
 	cd kanon-synth && dune build bin/kanon.exe test/synthesis.exe
@@ -56,6 +60,12 @@ experiment-challenge:
 
 experiment-ranking:
 	$(PYTHON) kanon-inference/experiment.py run --plan "$(RANKING_PLAN)" --compiler "$(COMPILER)" --output-dir "$(RANKING_OUTPUT)"
+
+experiment-transfer:
+	$(PYTHON) kanon-inference/transfer.py run --plan "$(TRANSFER_PLAN)" --compiler "$(COMPILER)" --output-dir "$(TRANSFER_OUTPUT)"
+
+verify-transfer:
+	$(PYTHON) kanon-inference/transfer.py verify --report "$(TRANSFER_REPORT)"
 
 experiment-test:
 	$(if $(SELECTION),,$(error Set SELECTION=path/to/selection.json))$(PYTHON) kanon-inference/experiment.py test --selection "$(SELECTION)" --output "$(FROZEN_OUTPUT)"

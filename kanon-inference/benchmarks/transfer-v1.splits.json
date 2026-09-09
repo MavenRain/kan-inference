@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "name": "transfer-v1-development",
+  "corpus_sha256": "fca112bd8b1c887a36849cf92668129ff48e05bf10f0ea8a38852ebaa86f7956",
+  "split_unit": "independent_module_before_synthetic_augmentation",
+  "modules": [
+    {
+      "module_id": "TransferFanoutArchives",
+      "split": "train",
+      "template_group": "message_fanout"
+    },
+    {
+      "module_id": "TransferFanoutEndpoints",
+      "split": "train",
+      "template_group": "message_fanout"
+    },
+    {
+      "module_id": "TransferFanoutTopics",
+      "split": "train",
+      "template_group": "message_fanout"
+    },
+    {
+      "module_id": "TransferFanoutTree",
+      "split": "train",
+      "template_group": "message_fanout"
+    },
+    {
+      "module_id": "TransferOrderedChairs",
+      "split": "train",
+      "template_group": "ordered_selection"
+    },
+    {
+      "module_id": "TransferOrderedGreetings",
+      "split": "train",
+      "template_group": "ordered_selection"
+    },
+    {
+      "module_id": "TransferOrderedMedals",
+      "split": "train",
+      "template_group": "ordered_selection"
+    },
+    {
+      "module_id": "TransferOrderedReviewers",
+      "split": "train",
+      "template_group": "ordered_selection"
+    },
+    {
+      "module_id": "TransferPairwiseForward",
+      "split": "train",
+      "template_group": "pairwise_analysis"
+    },
+    {
+      "module_id": "TransferPairwiseIsolated",
+      "split": "train",
+      "template_group": "pairwise_analysis"
+    },
+    {
+      "module_id": "TransferPairwiseMerged",
+      "split": "train",
+      "template_group": "pairwise_analysis"
+    },
+    {
+      "module_id": "TransferPairwiseRepeated",
+      "split": "train",
+      "template_group": "pairwise_analysis"
+    },
+    {
+      "module_id": "TransferRejectBadges",
+      "split": "train",
+      "template_group": "group_rejection"
+    },
+    {
+      "module_id": "TransferRejectCards",
+      "split": "train",
+      "template_group": "group_rejection"
+    },
+    {
+      "module_id": "TransferRejectCartons",
+      "split": "train",
+      "template_group": "group_rejection"
+    },
+    {
+      "module_id": "TransferRejectLabels",
+      "split": "train",
+      "template_group": "group_rejection"
+    }
+  ]
+}

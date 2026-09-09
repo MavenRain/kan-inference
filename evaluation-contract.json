@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "frozen_calibrated_ranking_implemented_model_selection_gate_unmet",
+  "status": "fixed_development_transfer_implemented_model_selection_gate_unmet",
   "prepared_on": "2026-09-08",
   "language": "kanon",
   "synthesis_phase": "development_time",
@@ -141,6 +141,24 @@
         "parameters_fitted": false,
         "selection_gate_passed": false,
         "evidence": "kanon-inference/results/challenge-ranking-v1-2026-09-08/experiment.json"
+      },
+      {
+        "kind": "fixed_development_transfer_comparison",
+        "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "prompt_profile": "source-v3",
+        "tasks_per_split": 16,
+        "semantic_correct": {"conditional-v1": 1, "hint-calibrated-v1": 4},
+        "candidate_order_correct_per_split": 4,
+        "deterministic_correct_per_split": 4,
+        "all_selected_terms_type_accepted": true,
+        "host_disagreements": 0,
+        "paired_methods": {"both_correct": 1, "conditional_only": 0, "calibrated_only": 3, "neither_correct": 12},
+        "comparison_rule": "fixed_development_comparison_no_selection",
+        "separate_task_authoring_context_disclosed": true,
+        "independent_held_out": false,
+        "parameters_fitted": false,
+        "selection_gate_passed": false,
+        "evidence": "kanon-inference/results/transfer-v1-2026-09-08/transfer.json"
       }
     ]
   },
@@ -192,6 +210,30 @@
     "interrupted_reports_marked_incomplete": true,
     "supports_task_count_up_to": 10000,
     "confidence_intervals": "descriptive Wilson intervals; task independence not established",
+    "development_transfer": {
+      "runner": "kanon-inference/transfer.py",
+      "plan": "kanon-inference/experiments/transfer-v1.json",
+      "corpus": "kanon-inference/benchmarks/transfer-v1.json",
+      "split_manifest": "kanon-inference/benchmarks/transfer-v1.splits.json",
+      "authorship": "kanon-inference/benchmarks/transfer-v1.authorship.json",
+      "tasks": 16,
+      "modules": 16,
+      "semantic_families": 4,
+      "examples": 96,
+      "development_split": "train",
+      "parameters_fitted": false,
+      "validation_selection": false,
+      "separate_task_authoring_context_disclosed": true,
+      "external_independent_evaluation": false,
+      "corpus_and_authorship_hash_bound": true,
+      "numerical_ranking_evidence_checked": true,
+      "paired_outcomes_reported": true,
+      "verification_requires_model": false,
+      "verification_reexecutes_programs": false,
+      "selection_gate_passed": false,
+      "validation_evidence": "validation-transfer-2026-09-08.json",
+      "model_evidence": "validation-transfer-2026-09-08.json"
+    },
     "challenge": {
       "corpus": "kanon-inference/benchmarks/challenge-v1.json",
       "split_manifest": "kanon-inference/benchmarks/challenge-v1.splits.json",

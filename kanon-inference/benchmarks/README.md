@@ -1,5 +1,11 @@
 # Diagnostic corpus
 
+The newer [transfer development corpus](../experiments/transfer.md) records a
+disclosed separate task-authoring session and compares the two existing ranking methods
+without fitting parameters or selecting a winner. Its authorship disclosure,
+corpus and development-only module assignments are frozen before measurement.
+It remains same-project diagnostic coverage, not a sealed external evaluation.
+
 `diagnostic-v1.json` is an authored development corpus of 32 small Nat tasks.
 It expands the original six smoke cases with compiler validation and executable
 behavioral examples. It is not an independent held-out evaluation, a 500-task

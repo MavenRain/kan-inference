@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "name": "transfer-v1",
+  "corpus": "kanon-inference/benchmarks/transfer-v1.json",
+  "split_manifest": "kanon-inference/benchmarks/transfer-v1.splits.json",
+  "authorship": "kanon-inference/benchmarks/transfer-v1.authorship.json",
+  "approaches": [
+    {
+      "id": "source-v3",
+      "provider": "kanon-inference/provider",
+      "prompt_profile": "source-v3",
+      "scoring_profile": "conditional-v1"
+    },
+    {
+      "id": "hint-calibrated-v1",
+      "provider": "kanon-inference/provider-calibrated",
+      "prompt_profile": "source-v3",
+      "scoring_profile": "hint-calibrated-v1"
+    }
+  ],
+  "hosts": ["kernel", "node", "wasmtime"],
+  "provider_timeout": 60,
+  "check_timeout": 5,
+  "comparison_rule": "fixed_development_comparison_no_selection",
+  "exposure_disclosure": "A separate AI collaborator authored these development tasks without reading the earlier corpora, candidate pools, model results, prompts, scoring or baseline implementations. The coordinator knew the earlier ranking results and specified the language fragment, task count, quality requirements and excluded earlier semantic families. This is separation of task authoring within the same project, not external independent authorship or a sealed test. Compiler-backed oracle checks and corpus repairs precede the first model run. All modules are assigned to train as development data; no fitting, validation selection or test split is used. Both previously implemented 135M scoring methods and their order are fixed before measurement. All task outcomes, unchanged baselines and paired disagreements are reported. These results cannot promote a method or establish the model usefulness contract."
+}

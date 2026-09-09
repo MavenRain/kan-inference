@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-08",
+  "complete": true,
+  "scope": "Fixed development transfer comparison with separate task authoring, numerical evidence verification and paired outcomes",
+  "base_commit": "95a24616dafa98f84efb9a23e167c887aa72ddae",
+  "execution_note": "Implementation and tests used /Users/oobi/Documents/gpt9/kan-inference-work, an isolated checkout of the recorded base. Existing compiler and synthesis test executables were copied byte for byte from /Users/oobi/Documents/kanon-inference; no compiler source changed or rebuild was needed. After validation the implementation was applied and staged in /Users/oobi/Documents/kanon-inference. The model comparison and its verification executed from that canonical checkout, writing results into the implementation workspace. The four result files are retained unchanged here. Frozen compiler scope is root, with a relative path. Detailed benchmark paths identify the canonical execution checkout, and timing-dependent report hashes are not expected to reproduce. The recorded commands used PYTHON='python3 -P', which needs PYTHONPATH=<checkout>/kanon-inference because -P drops the script directory from sys.path; the Makefile defaults (plain python3, no PYTHONPATH) run the same targets, as reproduce_command and verify_command show.",
+  "capture_note": "Full command captures remain in the operator workspace /Users/oobi/Documents/gpt9/.kanon-exec, outside this repository. Relative artifact IDs below identify these local logs. The retained reports and their hashes provide the measured evidence; these are local integrity records, not signed authorship or an independently administered evaluation.",
+  "reproduce_command": "make experiment-transfer TRANSFER_OUTPUT=/tmp/kan-transfer-run",
+  "verify_command": "make verify-transfer TRANSFER_REPORT=kanon-inference/results/transfer-v1-2026-09-08/transfer.json",
+  "compiler": {
+    "path": "kanon-synth/_build/default/bin/kanon.exe",
+    "scope": "root",
+    "sha256": "ba750e67cad5714606de0eec9b7bacb9248a140784d4d0bb42c7c65e13b27b67"
+  },
+  "model_identity": {
+    "backend": "onnxruntime-cpu",
+    "backend_version": "1.29.0",
+    "cpu_threads": 4,
+    "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "model_size_bytes": 137147867,
+    "numpy_version": "2.5.3",
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "python": "3.12.12",
+    "quantization": "publisher-onnx-int8",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "sha256": "a7c33f9ef85d06734cc9d1f943f7e2ba57c77e769df727f4d3e217d9f672b0cc",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+    "tokenizer_size_bytes": 2104556,
+    "tokenizers_version": "0.22.2"
+  },
+  "scoring_identities": {
+    "hint-calibrated-v1": {
+      "scoring_code_sha256": "96ca44988ff44deb0801050512a1ee800ae18e3992b4bd186e8bb9ffb79700e2",
+      "scoring_profile": "hint-calibrated-v1",
+      "scoring_version": "hint-free-mean-logprob-difference-v1"
+    },
+    "source-v3": {
+      "scoring_code_sha256": "96ca44988ff44deb0801050512a1ee800ae18e3992b4bd186e8bb9ffb79700e2",
+      "scoring_profile": "conditional-v1",
+      "scoring_version": "mean-token-logprob-v1"
+    }
+  },
+  "source_hashes": {
+    "kanon-inference/baseline.py": "1d75e5b5479dc73f28d2f5ff3ed8d5db534974f66dddca4e04c0a3a3d8e5bed6",
+    "kanon-inference/benchmark.py": "b06dd9b47f7d4dc67e40af29f4e1a544770872983efcb50b94f3f48ce87d2f9d",
+    "kanon-inference/benchmarks/transfer-v1.authorship.json": "79513947ee8b87d4c0526cf08e2e33b274bc6f57a9f86bf6f8d182ba5726a0ca",
+    "kanon-inference/benchmarks/transfer-v1.json": "fca112bd8b1c887a36849cf92668129ff48e05bf10f0ea8a38852ebaa86f7956",
+    "kanon-inference/benchmarks/transfer-v1.splits.json": "9dd84a1b02b442589b0101dfb9fdb441ea06e25763be589c154a3daf96e0bf5b",
+    "kanon-inference/experiment.py": "3bd22d3048cc2e0bbb0a42e49da87922043b23dfaba84d6fc6f84500d702ee9f",
+    "kanon-inference/experiments/transfer-v1.json": "ccf2f06ddde529f0ae461f88b611803d5e9297be7e9a874ef48f873e5bd2ca9e",
+    "kanon-inference/prompts.py": "7b260176e7953ecd72900bb68e0d27bf2907f0bc53dabb7ce39f18b60b118915",
+    "kanon-inference/provider": "a5e3ce694a9bfc5a0557684ff14023b985ede4d575aab73705be04689ce811c6",
+    "kanon-inference/provider-calibrated": "f6e8f3f716f26cec76c565a5f1e5c6d10b4b994e1c715760b29e7da73679949c",
+    "kanon-inference/provider-primer": "ba89fc9e4c9a6f21ea4fb6b0450d84213ba993c2e0754353eb4266a69157f7ef",
+    "kanon-inference/runtime.py": "e10131f976a6b723e84f3fcb76d2c61e831f093359384e614494cb94906a232b",
+    "kanon-inference/scoring.py": "96ca44988ff44deb0801050512a1ee800ae18e3992b4bd186e8bb9ffb79700e2",
+    "kanon-inference/splits.py": "fae5bb76fc1f7e34d767f6e9404ed70835edb441136421a01b91766cec66c23e",
+    "kanon-inference/transfer.py": "bcfe4aff86adf8467fc0438ea2a983bb9b77bde206b6857c5ab7f42a01d11e7c",
+    "kanon-synth/dev/synth.py": "21abd39fe42689fc3230317c6555fc50969ef348987f7f10b4f349018fca3d97"
+  },
+  "test_source_hashes": {
+    "kanon-inference/tests/test_transfer.py": "3305fc5d7b5628fc463115e98f68119b89198c23679ebf682cdfb10ffb50db48",
+    "kanon-inference/tests/test_transfer_corpus.py": "a6c2bec17dbb5b187f42d1d15b827e4aad2198203ae6adc32c09250f40a80e07"
+  },
+  "report_sha256": {
+    "kanon-inference/results/transfer-v1-2026-09-08/development-hint-calibrated-v1.json": "55889a8ff96424fe10ec6353cada7f3b1d534508c0fbc8aa25eaeba76265f918",
+    "kanon-inference/results/transfer-v1-2026-09-08/development-source-v3.json": "5eafaad74f598700f3ba5e39c9aac83de9f3987af36825f9bb7c6f965b4c50a7",
+    "kanon-inference/results/transfer-v1-2026-09-08/plan.json": "ccf2f06ddde529f0ae461f88b611803d5e9297be7e9a874ef48f873e5bd2ca9e",
+    "kanon-inference/results/transfer-v1-2026-09-08/transfer.json": "4c0c4ccd651e175eef1203b9a919e8bf60a53e0e1a4db114e92c9a632fbb568b"
+  },
+  "checks": [
+    {
+      "name": "Existing baseline suites before additions",
+      "cwd": "/Users/oobi/Documents/gpt9/kan-inference-work",
+      "command": "make test-all PYTHON='python3 -P'",
+      "exit_code": 0,
+      "python_tests": 157,
+      "synthesis_boundary_cases": 114,
+      "driver_tests": 47,
+      "provider_protocol_tests": 13,
+      "skipped_tests": 0,
+      "local_capture": "run-RdGqn7"
+    },
+    {
+      "name": "Complete evaluator suite with transfer additions",
+      "cwd": "/Users/oobi/Documents/kanon-inference",
+      "command": "make test-unit",
+      "exit_code": 0,
+      "python_tests": 186,
+      "transfer_runner_tests": 23,
+      "transfer_corpus_tests": 6,
+      "skipped_tests": 0,
+      "rerun_note": "Rerun from the canonical checkout after the review added three transfer runner tests; the earlier local capture run-bk7Dyn recorded 183 tests with 20 transfer runner tests"
+    },
+    {
+      "name": "Corpus quality audit included in evaluator suite",
+      "tasks": 16,
+      "candidates_checked": 64,
+      "all_candidates_type_accepted": true,
+      "intended_semantic_passes": 16,
+      "semantic_decoys": 48,
+      "distinct_examples": 96,
+      "candidate_example_checks": 384,
+      "corpus_sha256": "fca112bd8b1c887a36849cf92668129ff48e05bf10f0ea8a38852ebaa86f7956"
+    },
+    {
+      "name": "Compiler request and tokenizer preflight",
+      "cwd": "/Users/oobi/Documents/gpt9",
+      "command": "/Users/oobi/Documents/kanon-inference/kanon-inference/.venv/bin/python -I /Users/oobi/Documents/gpt9/transfer-preflight.py",
+      "exit_code": 0,
+      "tasks": 16,
+      "model_loaded": false,
+      "max_candidate_tokens": 42,
+      "max_prompt_tokens": 117,
+      "max_reference_prompt_tokens": 69,
+      "candidate_limit": 96,
+      "prompt_limit": 1024,
+      "local_capture": "run-drYsrp",
+      "script_retained": false,
+      "derivation": "tokenizers.Tokenizer from kanon-inference/models/SmolLM2-135M-Instruct-int8/tokenizer.json on each corpus candidate and on runtime.build_prompt of each saved strategies.provider.request in the two development reports (hint and hint='')"
+    },
+    {
+      "name": "Fixed real-model comparison",
+      "cwd": "/Users/oobi/Documents/kanon-inference",
+      "command": "PYTHONPATH=/Users/oobi/Documents/kanon-inference/kanon-inference make experiment-transfer PYTHON='python3 -P' TRANSFER_OUTPUT=/Users/oobi/Documents/gpt9/kan-inference-work/kanon-inference/results/transfer-v1-2026-09-08",
+      "exit_code": 0,
+      "local_capture": "run-GKcMRD",
+      "hosts": [
+        "kernel",
+        "node",
+        "wasmtime"
+      ]
+    },
+    {
+      "name": "Saved comparison verification without model or compiler execution",
+      "cwd": "/Users/oobi/Documents/kanon-inference",
+      "command": "PYTHONPATH=/Users/oobi/Documents/kanon-inference/kanon-inference make verify-transfer PYTHON='python3 -P' TRANSFER_REPORT=/Users/oobi/Documents/gpt9/kan-inference-work/kanon-inference/results/transfer-v1-2026-09-08/transfer.json",
+      "exit_code": 0,
+      "local_capture": "run-kj9PNp",
+      "frozen_sources_checked": 16
+    },
+    {
+      "name": "Historical ranking selection compatibility",
+      "entrypoint": "experiment.validate_selection",
+      "selection": "kanon-inference/results/challenge-ranking-v1-2026-09-08/selection.json",
+      "exit_code": 0,
+      "frozen_sources_checked": 14,
+      "selected_approach": "hint-calibrated-v1",
+      "local_capture": "run-hjswAb"
+    },
+    {
+      "name": "Focused review",
+      "scope": "New transfer runner and tests",
+      "fixed_findings": [
+        "Keep the public report incomplete until final validation succeeds",
+        "Bind the privately verified candidate to the exact object published"
+      ],
+      "remaining_confirmed_findings": 0
+    }
+  ],
+  "comparison_rule": "fixed_development_comparison_no_selection",
+  "counts": {
+    "source-v3": {
+      "candidate_order": {
+        "tasks": 16,
+        "completed": 16,
+        "semantic_correct": 4,
+        "type_accepted": 16,
+        "failures": 12,
+        "host_disagreements": 0,
+        "by_family": {
+          "group_rejection": 1,
+          "message_fanout": 1,
+          "ordered_selection": 1,
+          "pairwise_analysis": 1
+        }
+      },
+      "deterministic": {
+        "tasks": 16,
+        "completed": 16,
+        "semantic_correct": 4,
+        "type_accepted": 16,
+        "failures": 12,
+        "host_disagreements": 0,
+        "by_family": {
+          "group_rejection": 1,
+          "message_fanout": 1,
+          "ordered_selection": 1,
+          "pairwise_analysis": 1
+        }
+      },
+      "provider": {
+        "tasks": 16,
+        "completed": 16,
+        "semantic_correct": 1,
+        "type_accepted": 16,
+        "failures": 15,
+        "host_disagreements": 0,
+        "by_family": {
+          "group_rejection": 0,
+          "message_fanout": 1,
+          "ordered_selection": 0,
+          "pairwise_analysis": 0
+        }
+      }
+    },
+    "hint-calibrated-v1": {
+      "candidate_order": {
+        "tasks": 16,
+        "completed": 16,
+        "semantic_correct": 4,
+        "type_accepted": 16,
+        "failures": 12,
+        "host_disagreements": 0,
+        "by_family": {
+          "group_rejection": 1,
+          "message_fanout": 1,
+          "ordered_selection": 1,
+          "pairwise_analysis": 1
+        }
+      },
+      "deterministic": {
+        "tasks": 16,
+        "completed": 16,
+        "semantic_correct": 4,
+        "type_accepted": 16,
+        "failures": 12,
+        "host_disagreements": 0,
+        "by_family": {
+          "group_rejection": 1,
+          "message_fanout": 1,
+          "ordered_selection": 1,
+          "pairwise_analysis": 1
+        }
+      },
+      "provider": {
+        "tasks": 16,
+        "completed": 16,
+        "semantic_correct": 4,
+        "type_accepted": 16,
+        "failures": 12,
+        "host_disagreements": 0,
+        "by_family": {
+          "group_rejection": 1,
+          "message_fanout": 3,
+          "ordered_selection": 0,
+          "pairwise_analysis": 0
+        }
+      }
+    }
+  },
+  "paired_methods": {
+    "both_correct": 1,
+    "denominator": 16,
+    "left_minus_right": -3,
+    "left_only_correct": 0,
+    "neither_correct": 12,
+    "right_only_correct": 3
+  },
+  "separate_task_authoring_context": true,
+  "external_independent_evaluation": false,
+  "independent_held_out": false,
+  "parameters_fitted": false,
+  "selection_gate_passed": false,
+  "default_changed": false,
+  "limitation": "Calibrated ranking scored 4/16 and did not outperform either unchanged baseline. Conditional ranking scored 1/16. All methods are measured on a small same-project development corpus with disclosed author exposure and related mathematical patterns. Verification checks saved numerical evidence and byte integrity without regenerating model scores or executing programs again. No independent usefulness, model promotion or warm performance claim is established. check_frozen binds the loaded benchmark, experiment, prompts, scoring, splits, synth and transfer modules to the frozen hashes but not the lazily imported baseline module; the run used the Makefile invocation from the checkout, where the script directory precedes PYTHONPATH. Binding baseline is a follow-up shared with experiment.check_frozen, which has the same omission and is outside this slice."
+}

@@ -1,4 +1,46 @@
-Update, 2026-09-08: hint-calibrated ranking and checked numerical evidence
+Update, 2026-09-08: fixed development transfer comparison
+
+The [transfer runner](kanon-inference/experiments/transfer.md) compares the two
+existing 135M scoring methods on 16 newly authored development tasks. The
+authorship record reports that a same-project agent, in a separate session,
+wrote the corpus before it read prior task specifications, model results,
+prompts or scoring implementations. This is the author's disclosure, hash-bound
+but not verified. Its exposure limits are frozen in the authorship record. All tasks are development material; separate
+authoring within this project does not establish external independence or
+disjoint mathematical templates.
+
+The new additive runner freezes 16 source and input files plus the compiler
+binary, preserves incomplete outputs until all checks pass, and reports paired
+outcomes and per-family results. Its verification command rechecks source and
+report hashes, task coverage, model identity, numerical scores and summaries
+without loading a model or executing the compiler. Both fixed methods run on the
+same corpus; there is no validation selection or winner publication.
+
+The [completed comparison](kanon-inference/results/transfer-v1-2026-09-08/transfer.json)
+scored 1/16 for conditional ranking and 4/16 for calibrated ranking. Candidate
+order and the unchanged deterministic baseline each scored 4/16. Both methods
+succeeded on one task, calibrated scoring alone succeeded on three, and both
+missed twelve. All selected terms type-checked, all three hosts agreed, and
+every miss was a semantic mismatch. No model, prompt, score or corpus parameter
+was adjusted after measurement began.
+
+[Validation evidence](validation-transfer-2026-09-08.json) records 186 evaluator
+tests, 114 synthesis boundary cases, 47 driver tests and 13 provider protocol
+tests passing without skips. Corpus validation checks all 64 candidates over
+96 examples: 16 intended answers pass and 48 decoys fail behavior. The earlier
+ranking selection still verifies, and every previously frozen implementation
+source and historical result remains unchanged.
+
+This completes a first comparison with separate task authoring. Calibrated
+ranking did not beat either baseline on these tasks. The default remains
+conditional 135M and the usefulness gate remains unmet. Next, freeze a stronger
+compatible code-model comparison on development data before deciding whether
+adaptation is justified. A larger, independently administered evaluation and
+stronger baselines remain necessary for a usefulness claim. Live Kanon
+integration, Lean parity, Kan-only foundations, OCaml speed comparisons and
+browser/all-Wasm inference remain open.
+
+Historical update, 2026-09-08: hint-calibrated ranking and checked numerical evidence
 
 The [ranking experiment](kanon-inference/experiments/ranking.md) adds an opt-in
 `hint-calibrated-v1` scoring profile. It subtracts each candidate's mean token

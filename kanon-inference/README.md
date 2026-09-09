@@ -68,6 +68,14 @@ final scores, scoring profile/version/code hash and reference prompt hash.
 See the [ranking experiment](experiments/ranking.md) for the fixed comparison
 plan, evidence checks and prior test-exposure disclosure.
 
+The [development transfer comparison](experiments/transfer.md) runs both existing
+scoring profiles on a newly authored corpus whose authorship record discloses a
+separate same-project authoring session. It
+freezes the authoring disclosure and all evaluation inputs, retains paired
+outcomes and verifies saved evidence without loading the model. Run
+`make experiment-transfer` and `make verify-transfer` from the repository root.
+This comparison fits no parameters and does not select or promote a provider.
+
 The provider enforces these limits:
 
 - 65,536 request bytes and a 1,024-token model prompt, without silent truncation.
@@ -76,7 +84,10 @@ The provider enforces these limits:
 - Four inference threads, one inter-op thread and CPU execution only.
 - A separate inference worker with a 60-second outer deadline and a CPU-time limit. The compiler driver may impose a shorter timeout. The token and fixed graph limits bound the workload; there is no portable hard RSS limit in this prototype.
 
-Run the protocol tests and small frozen smoke comparison:
+Run the protocol tests and small frozen smoke comparison (for the unit suite,
+`make test-unit`, the transfer corpus test fails without a built compiler unless
+`KANON_SKIP_COMPILER_TESTS=1` is set, and `KANON_TEST_CHECK_TIMEOUT` overrides
+its 10-second per-candidate compiler timeout):
 
 ```sh
 .venv/bin/python -I test_protocol.py
