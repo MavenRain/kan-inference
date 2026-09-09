@@ -1,4 +1,45 @@
-Update, 2026-09-08: reproducible prompt comparison and validation selection
+Update, 2026-09-08: hint-calibrated ranking and checked numerical evidence
+
+The [ranking experiment](kanon-inference/experiments/ranking.md) adds an opt-in
+`hint-calibrated-v1` scoring profile. It subtracts each candidate's mean token
+log-likelihood under the same request with an empty hint from its ordinary
+conditional mean. Both passes use the unchanged `source-v3` prompt and pinned
+135M model. No examples, parameters or weights are fitted. Generation remains
+available through the default conditional profile; calibrated scoring requires
+a candidate pool and shares the existing deadline and token limits.
+
+Experiment plans now bind prompt and scoring profiles to fixed provider
+wrappers. Reports and selections pin the scoring version and source hash.
+Replay verifies recorded compiler requests and their hashes, reconstructs both
+prompts, checks the component means and their differences, and checks stable
+ranked indices against the candidate pool. Edited scores, prompt hashes, scoring
+identity or ranking evidence are rejected. Existing prompt plans still default
+to conditional scoring when the new optional field is absent.
+
+The [frozen comparison](kanon-inference/results/challenge-ranking-v1-2026-09-08/experiment.json)
+selected calibrated scoring: it scored 5/8 on validation against 3/8 for
+conditional scoring, despite scoring only 1/8 on train against 3/8. The selected
+method then scored 4/8 on test against 2/8 for each unchanged baseline. All
+selected terms type-checked and kernel, Node and Wasmtime agreed across all
+five comparisons. Every model miss was a semantic mismatch. Earlier test
+exposure, including the previous conditional score of 0/8, is disclosed in the
+new plan. No rule was adjusted after this comparison began.
+
+[Validation evidence](validation-ranking-2026-09-08.json) records 157 Python
+tests, 114 synthesis boundary cases, 47 driver tests and 13 provider protocol
+tests, passing without skips, plus frozen-byte checks and selected test replay.
+The compiler, corpora, split manifest, prompts and deterministic baseline were
+unchanged. The prior unsuccessful prompt evidence is retained byte for byte;
+its saved selection requires the matching `8e2d89e` checkout for replay.
+
+This completes the next ranking-method experiment. The new score is opt-in and
+the usefulness gate remains unmet: 4/8 is below the proposed success threshold,
+and this corpus is neither large nor independently held out. The next slice
+should test transfer on independently authored development tasks before fitting
+or promoting an approach. Live Kanon integration, Lean parity, Kan-only
+foundations, OCaml speed comparisons and browser/all-Wasm inference remain open.
+
+Historical update, 2026-09-08: reproducible prompt comparison and validation selection
 
 The [prompt experiment](kanon-inference/experiments/README.md) now freezes an
 explicit plan, implementation hashes, compiler identity and split evidence.

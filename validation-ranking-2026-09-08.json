@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-08",
+  "scope": "Opt-in hint-calibrated ranking, numerical evidence verification and frozen validation selection",
+  "complete": true,
+  "base_commit": "8e2d89e",
+  "execution_note": "Commands ran in this repository root, /Users/oobi/Documents/kanon-inference, using the built compiler, the provider virtual environment and the pinned model data. The nine reports were then copied into kanon-inference/results/challenge-ranking-v1-2026-09-08, and the replay report was copied to replay-test.json in that directory. The compiler was inside the run root, so frozen.compiler has scope root with a path relative to the repository root. These operator paths are execution provenance; frozen content hashes bind the retained evidence. Timing-dependent report hashes are not expected to reproduce.",
+  "checks": [
+    {
+      "name": "Combined test suites",
+      "command": "make test-all PYTHON='python3 -P'",
+      "exit_code": 0,
+      "python_tests": 157,
+      "synthesis_boundary_cases": 114,
+      "driver_tests": 47,
+      "provider_protocol_tests": 13,
+      "skipped_tests": 0,
+      "local_capture": "suite-r1.log"
+    },
+    {
+      "name": "Frozen ranking experiment",
+      "command": "make experiment-ranking RANKING_OUTPUT=/Users/oobi/Documents/kan-inference-ranking-review/regenerated-r1 PYTHON=python3",
+      "exit_code": 0,
+      "local_capture": "regenerate-r1.log"
+    },
+    {
+      "name": "Frozen selected test replay",
+      "command": "make experiment-test SELECTION=/Users/oobi/Documents/kan-inference-ranking-review/regenerated-r1/selection.json FROZEN_OUTPUT=/Users/oobi/Documents/kan-inference-ranking-review/regenerated-r1/replay-test.json",
+      "exit_code": 0,
+      "local_capture": "replay-r1.log",
+      "retained_report": "kanon-inference/results/challenge-ranking-v1-2026-09-08/replay-test.json",
+      "same_summary_counts": true,
+      "same_rankings_and_selected_terms": true,
+      "same_model_scores_and_provenance": true
+    },
+    {
+      "name": "Default ranking compatibility",
+      "historical_commit": "8e2d89e",
+      "compared_tasks": 16,
+      "splits": [
+        "train",
+        "validation"
+      ],
+      "identical_conditional_scores_and_rankings": true,
+      "local_capture": "verify-r1.txt"
+    },
+    {
+      "name": "Frozen byte integrity",
+      "source_hashes_checked": 14,
+      "selection_and_test_hashes_checked": true,
+      "local_capture": "verify-r1.txt",
+      "preserved_paths": [
+        "kanon-synth",
+        "kanon-synth-baseline",
+        "kanon-inference/prompts.py",
+        "kanon-inference/baseline.py",
+        "kanon-inference/benchmarks",
+        "kanon-inference/experiments/challenge-prompts-v1.json",
+        "kanon-inference/results/challenge-prompts-v1-2026-09-08",
+        "validation-prompts-2026-09-08.json"
+      ]
+    }
+  ],
+  "capture_note": "Local captures are command logs retained in the operator workspace named by local_capture_base, outside this repository. The commands, counts, frozen dependencies and copied replay report above describe the checked bytes.",
+  "local_capture_base": "/Users/oobi/Documents/kan-inference-ranking-review",
+  "reproduce_command": "make experiment-ranking RANKING_OUTPUT=/tmp/challenge-ranking-v1 PYTHON=python3",
+  "replay_command": "make experiment-test SELECTION=kanon-inference/results/challenge-ranking-v1-2026-09-08/selection.json FROZEN_OUTPUT=/tmp/challenge-ranking-test-replay.json",
+  "compiler": {
+    "path": "kanon-synth/_build/default/bin/kanon.exe",
+    "scope": "root",
+    "sha256": "ba750e67cad5714606de0eec9b7bacb9248a140784d4d0bb42c7c65e13b27b67"
+  },
+  "source_hashes": {
+    "kanon-inference/baseline.py": "1d75e5b5479dc73f28d2f5ff3ed8d5db534974f66dddca4e04c0a3a3d8e5bed6",
+    "kanon-inference/benchmark.py": "b06dd9b47f7d4dc67e40af29f4e1a544770872983efcb50b94f3f48ce87d2f9d",
+    "kanon-inference/benchmarks/challenge-v1.json": "9210f281dc8109c1bbbcc4e1b5fa5b4f9e19b418f6722cb7a736fbd3c9d5d7d8",
+    "kanon-inference/benchmarks/challenge-v1.splits.json": "930779ceb4fd081238fdfbdc1e3c36670a9e62d9c6abad1f498d882b62528d6a",
+    "kanon-inference/experiment.py": "3bd22d3048cc2e0bbb0a42e49da87922043b23dfaba84d6fc6f84500d702ee9f",
+    "kanon-inference/experiments/challenge-ranking-v1.json": "953a6f8ee60d79ac8317501d5c4068d0b24c3f50395560642aa98ea96f2066cb",
+    "kanon-inference/prompts.py": "7b260176e7953ecd72900bb68e0d27bf2907f0bc53dabb7ce39f18b60b118915",
+    "kanon-inference/provider": "a5e3ce694a9bfc5a0557684ff14023b985ede4d575aab73705be04689ce811c6",
+    "kanon-inference/provider-calibrated": "f6e8f3f716f26cec76c565a5f1e5c6d10b4b994e1c715760b29e7da73679949c",
+    "kanon-inference/provider-primer": "ba89fc9e4c9a6f21ea4fb6b0450d84213ba993c2e0754353eb4266a69157f7ef",
+    "kanon-inference/runtime.py": "e10131f976a6b723e84f3fcb76d2c61e831f093359384e614494cb94906a232b",
+    "kanon-inference/scoring.py": "96ca44988ff44deb0801050512a1ee800ae18e3992b4bd186e8bb9ffb79700e2",
+    "kanon-inference/splits.py": "fae5bb76fc1f7e34d767f6e9404ed70835edb441136421a01b91766cec66c23e",
+    "kanon-synth/dev/synth.py": "21abd39fe42689fc3230317c6555fc50969ef348987f7f10b4f349018fca3d97"
+  },
+  "model_identity": {
+    "backend": "onnxruntime-cpu",
+    "backend_version": "1.29.0",
+    "cpu_threads": 4,
+    "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "model_size_bytes": 137147867,
+    "numpy_version": "2.5.3",
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "python": "3.12.12",
+    "quantization": "publisher-onnx-int8",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "sha256": "a7c33f9ef85d06734cc9d1f943f7e2ba57c77e769df727f4d3e217d9f672b0cc",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+    "tokenizer_size_bytes": 2104556,
+    "tokenizers_version": "0.22.2"
+  },
+  "scoring_identities": {
+    "hint-calibrated-v1": {
+      "scoring_code_sha256": "96ca44988ff44deb0801050512a1ee800ae18e3992b4bd186e8bb9ffb79700e2",
+      "scoring_profile": "hint-calibrated-v1",
+      "scoring_version": "hint-free-mean-logprob-difference-v1"
+    },
+    "source-v3": {
+      "scoring_code_sha256": "96ca44988ff44deb0801050512a1ee800ae18e3992b4bd186e8bb9ffb79700e2",
+      "scoring_profile": "conditional-v1",
+      "scoring_version": "mean-token-logprob-v1"
+    }
+  },
+  "selected_approach": "hint-calibrated-v1",
+  "validation_scores": [
+    {
+      "approach_id": "source-v3",
+      "denominator": 8,
+      "failures": 5,
+      "semantic_correct": 3
+    },
+    {
+      "approach_id": "hint-calibrated-v1",
+      "denominator": 8,
+      "failures": 3,
+      "semantic_correct": 5
+    }
+  ],
+  "report_sha256": {
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/experiment.json": "b0b4827222290294ce03a5c76d010cf970332335a9a79952e7c8518ebe641180",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/plan.json": "953a6f8ee60d79ac8317501d5c4068d0b24c3f50395560642aa98ea96f2066cb",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/replay-test.json": "84db06c232aabc6b08d4445d9e9335a80d0b1f87f8ec564ca76971917f821c2c",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/selection.json": "99ad3b53613537246dc7fbc04188aceac25c9123ffe09198a4bbf51c57a4282f",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/test.json": "c7a75bd930f9131e7ce89f425ab2ac0d849fac802d650dc685d9e5af948196e6",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/train-hint-calibrated-v1.json": "38feeec0004d39fab3bf082e6747bab043647c36465e89cea1db5ce57e9be918",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/train-source-v3.json": "67700722c4f584559b2be9b992063faa27e9a9d6a7579a411ab1806ea7d85fd8",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/validation-hint-calibrated-v1.json": "35abdef0e1f1e877e7471937738d0259ff328bdd8425c17dc86be730c4ceebb5",
+    "kanon-inference/results/challenge-ranking-v1-2026-09-08/validation-source-v3.json": "67c4a8f45bee2d24db91523f401d90e69f548135845f5077dc7f2e674319f2de"
+  },
+  "counts": {
+    "replay-test.json": {
+      "candidate_order": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "deterministic": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "provider": {
+        "semantic_correct": 4,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 4,
+        "first_attempt_type_accepted": 8
+      }
+    },
+    "test.json": {
+      "candidate_order": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "deterministic": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "provider": {
+        "semantic_correct": 4,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 4,
+        "first_attempt_type_accepted": 8
+      }
+    },
+    "train-hint-calibrated-v1.json": {
+      "candidate_order": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "deterministic": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "provider": {
+        "semantic_correct": 1,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 1,
+        "first_attempt_type_accepted": 8
+      }
+    },
+    "train-source-v3.json": {
+      "candidate_order": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "deterministic": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "provider": {
+        "semantic_correct": 3,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 3,
+        "first_attempt_type_accepted": 8
+      }
+    },
+    "validation-hint-calibrated-v1.json": {
+      "candidate_order": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "deterministic": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "provider": {
+        "semantic_correct": 5,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 5,
+        "first_attempt_type_accepted": 8
+      }
+    },
+    "validation-source-v3.json": {
+      "candidate_order": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "deterministic": {
+        "semantic_correct": 2,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 2,
+        "first_attempt_type_accepted": 8
+      },
+      "provider": {
+        "semantic_correct": 3,
+        "type_accepted": 8,
+        "host_disagreement": 0,
+        "first_attempt_semantic_correct": 3,
+        "first_attempt_type_accepted": 8
+      }
+    }
+  },
+  "independent_held_out": false,
+  "selection_gate_passed": false,
+  "default_changed": false,
+  "limitation": "The selected method scored 4/8 on previously exposed test tasks, below the proposed 80% threshold. Train fell to 1/8. No fitted parameters, independent usefulness or warm performance claim. Historical prompt evidence requires its matching 8e2d89e checkout. Replay of this selection needs the recorded compiler binary at kanon-synth/_build/default/bin/kanon.exe and the pinned model data in the checkout; the reports are local execution evidence, not a portable compiler build receipt."
+}

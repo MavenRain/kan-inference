@@ -1,5 +1,11 @@
 # Prompt selection experiment
 
+The next [ranking experiment](ranking.md) compares conditional and
+hint-calibrated scores while keeping the `source-v3` prompt fixed. The prompt
+results below remain historical evidence from commit `8e2d89e`; replaying their
+saved selection requires that checkout and the recorded compiler/runtime.
+The commands below can still run a fresh prompt comparison with current code.
+
 `challenge-prompts-v1.json` fixes two 135M prompt profiles, their order, the
 corpus and split manifest, execution hosts, deadlines, and selection rule before
 any comparison. It uses the installed pinned model and the existing behavioral

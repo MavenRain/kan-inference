@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "name": "challenge-ranking-v1",
+  "corpus": "kanon-inference/benchmarks/challenge-v1.json",
+  "split_manifest": "kanon-inference/benchmarks/challenge-v1.splits.json",
+  "approaches": [
+    {
+      "id": "source-v3",
+      "provider": "kanon-inference/provider",
+      "prompt_profile": "source-v3",
+      "scoring_profile": "conditional-v1"
+    },
+    {
+      "id": "hint-calibrated-v1",
+      "provider": "kanon-inference/provider-calibrated",
+      "prompt_profile": "source-v3",
+      "scoring_profile": "hint-calibrated-v1"
+    }
+  ],
+  "hosts": ["kernel", "node", "wasmtime"],
+  "provider_timeout": 60,
+  "check_timeout": 5,
+  "selection_rule": "maximum_validation_semantic_count_then_plan_order",
+  "exposure_disclosure": "Developer-authored diagnostic corpus with prior exposure of every split during corpus validation and the challenge-prompts-v1 experiment. The earlier source-v3 test score of 0/8 was known when this scoring experiment was designed. This experiment fixes an unweighted difference between mean candidate token log-likelihood with the task hint and with an empty hint, using the same source-v3 prompt. No examples, weights or parameters are fitted. The scoring rule, reference construction, approaches and tie rule are fixed before the new train and validation comparisons. Validation alone selects an approach; its test run starts only after selection is saved. Neither independent authorship, an unseen test nor a model usefulness claim is asserted."
+}

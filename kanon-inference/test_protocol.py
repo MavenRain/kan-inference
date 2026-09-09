@@ -60,6 +60,20 @@ class ProtocolTests(unittest.TestCase):
                             ["--prompt-profile", "source-v3"],
                             provider=PROVIDER.with_name("provider-primer"))
 
+    def test_invalid_scoring_profile_is_rejected_before_model_load(self):
+        self.assert_failure((json.dumps(VALID) + "\n").encode(), "invalid_request",
+                            ["--scoring-profile", "unknown"])
+
+    def test_calibrated_generation_without_candidates_is_rejected(self):
+        self.assert_failure((json.dumps(VALID) + "\n").encode(), "invalid_request",
+                            provider=PROVIDER.with_name("provider-calibrated"))
+
+    def test_calibrated_wrapper_rejects_a_second_scoring_profile_option(self):
+        request = {**VALID, "candidates": ["0", "1"]}
+        self.assert_failure((json.dumps(request) + "\n").encode(), "invalid_request",
+                            ["--scoring-profile", "conditional-v1"],
+                            provider=PROVIDER.with_name("provider-calibrated"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "frozen_prompt_comparison_implemented_model_selection_gate_unmet",
+  "status": "frozen_calibrated_ranking_implemented_model_selection_gate_unmet",
   "prepared_on": "2026-09-08",
   "language": "kanon",
   "synthesis_phase": "development_time",
@@ -121,6 +121,26 @@
         "independent_held_out": false,
         "selection_gate_passed": false,
         "evidence": "kanon-inference/results/challenge-prompts-v1-2026-09-08/experiment.json"
+      },
+      {
+        "kind": "challenge_ranking_comparison",
+        "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "prompt_profile": "source-v3",
+        "tasks_per_split": 8,
+        "semantic_correct": {
+          "conditional-v1": {"train": 3, "validation": 3, "test": null},
+          "hint-calibrated-v1": {"train": 1, "validation": 5, "test": 4}
+        },
+        "selected_scoring_profile": "hint-calibrated-v1",
+        "selection_rule": "maximum_validation_semantic_count_then_plan_order",
+        "candidate_order_correct_per_split": 2,
+        "deterministic_correct_per_split": 2,
+        "all_selected_terms_type_accepted": true,
+        "host_disagreements": 0,
+        "independent_held_out": false,
+        "parameters_fitted": false,
+        "selection_gate_passed": false,
+        "evidence": "kanon-inference/results/challenge-ranking-v1-2026-09-08/experiment.json"
       }
     ]
   },
@@ -187,8 +207,8 @@
       "model_evaluated": true,
       "selection_gate_passed": false,
       "validation_evidence": "validation-2026-09-08.json",
-      "model_evidence": "validation-prompts-2026-09-08.json",
-      "model_evaluated_scope": "prompt comparison only; the corpus record covers no model run",
+      "model_evidence": "validation-ranking-2026-09-08.json",
+      "model_evaluated_scope": "prompt and ranking comparisons; the corpus record covers no model run",
       "prompt_experiment": {
         "plan": "kanon-inference/experiments/challenge-prompts-v1.json",
         "runner": "kanon-inference/experiment.py",
@@ -198,6 +218,17 @@
         "training_demonstrations": ["tariff_3_2", "capacity_5"],
         "prior_test_exposure_disclosed": true,
         "selection_saved_before_test": true
+      },
+      "ranking_experiment": {
+        "plan": "kanon-inference/experiments/challenge-ranking-v1.json",
+        "runner": "kanon-inference/experiment.py",
+        "selection": "kanon-inference/results/challenge-ranking-v1-2026-09-08/selection.json",
+        "validation_evidence": "validation-ranking-2026-09-08.json",
+        "prompt_profile": "source-v3",
+        "selected_scoring_profile": "hint-calibrated-v1",
+        "prior_test_exposure_disclosed": true,
+        "selection_saved_before_test": true,
+        "numerical_ranking_evidence_checked": true
       }
     }
   }

@@ -16,10 +16,13 @@ import time
 
 
 ROOT = Path(__file__).resolve().parent
-# The provider uses python -I, so load only this trusted sibling by absolute path.
+# The provider uses python -I, so load trusted siblings by absolute path.
 _prompts_spec = importlib.util.spec_from_file_location("kanon_inference_prompts", ROOT / "prompts.py")
 prompts = importlib.util.module_from_spec(_prompts_spec)
 _prompts_spec.loader.exec_module(prompts)
+_scoring_spec = importlib.util.spec_from_file_location("kanon_inference_scoring", ROOT / "scoring.py")
+scoring = importlib.util.module_from_spec(_scoring_spec)
+_scoring_spec.loader.exec_module(scoring)
 MODEL_DIR = ROOT / "models" / "SmolLM2-135M-Instruct-int8"
 MODEL_ID = "HuggingFaceTB/SmolLM2-135M-Instruct"
 REVISION = "12fd25f77366fa6b3b4b768ec3050bf629380bac"
@@ -117,11 +120,15 @@ def build_prompt(request, profile=prompts.DEFAULT_PROFILE):
 
 
 class Engine:
-    def __init__(self, profile="135m", prompt_profile=prompts.DEFAULT_PROFILE):
+    def __init__(self, profile="135m", prompt_profile=prompts.DEFAULT_PROFILE,
+                 scoring_profile=scoring.DEFAULT_PROFILE):
         self.started = time.monotonic()
         if prompt_profile not in prompts.PROFILES:
             raise Failure("invalid_profile", "prompt profile must be source-v3 or kanon-primer-v1")
         self.prompt_profile = prompt_profile
+        if scoring_profile not in scoring.PROFILES:
+            raise Failure("invalid_profile", "scoring profile must be conditional-v1 or hint-calibrated-v1")
+        self.scoring_profile = scoring_profile
         if profile == "135m":
             model_id, revision, expected_sha, model_dir = MODEL_ID, REVISION, MODEL_SHA256, MODEL_DIR
         elif profile == "360m":
@@ -165,7 +172,7 @@ class Engine:
             "numpy_version": np.__version__, "quantization": "publisher-onnx-int8",
             "model_size_bytes": model_path.stat().st_size,
             "tokenizer_size_bytes": tokenizer_path.stat().st_size,
-            **prompts.provenance(prompt_profile), "cpu_threads": 4,
+            **prompts.provenance(prompt_profile), **scoring.provenance(scoring_profile), "cpu_threads": 4,
             "python": platform.python_version(), "platform": platform.platform(),
             "provider_code_sha256": sha256(Path(__file__).resolve()),
         }
@@ -186,38 +193,46 @@ class Engine:
 
     def propose(self, request):
         started = time.monotonic()
+        if self.scoring_profile != scoring.DEFAULT_PROFILE and "candidates" not in request:
+            raise Failure("invalid_request", "hint-calibrated scoring requires candidates")
         prompt = build_prompt(request, self.prompt_profile)
         prompt_ids = self.tokenizer.encode(prompt, add_special_tokens=False).ids
         if len(prompt_ids) > MAX_PROMPT_TOKENS:
             raise Failure("prompt_budget", f"prompt has {len(prompt_ids)} tokens; maximum is {MAX_PROMPT_TOKENS}")
         np = self.np
+        extra_provenance = {}
         if "candidates" in request:
             candidate_ids = [self.tokenizer.encode(candidate, add_special_tokens=False).ids for candidate in request["candidates"]]
             for ids in candidate_ids:
                 if not ids or len(ids) > request["max_new_tokens"]:
                     raise Failure("candidate_budget", "candidate exceeds the requested token budget")
-            logits, cache = self.forward(prompt_ids)
-            scores = []
-            for ids in candidate_ids:
-                continuation = [logits]
-                if len(ids) > 1:
-                    tail_logits, _ = self.forward(ids[:-1], cache, len(prompt_ids), all_logits=True)
-                    continuation.extend(tail_logits)
-                token_scores = []
-                for distribution, token in zip(continuation, ids):
-                    maximum = float(np.max(distribution))
-                    normalizer = maximum + math.log(float(np.sum(np.exp(distribution - maximum), dtype=np.float64)))
-                    token_scores.append(float(distribution[token]) - normalizer)
-                scores.append(sum(token_scores) / len(token_scores))
-            if not all(math.isfinite(score) for score in scores):
-                raise Failure("nonfinite_logits", "model produced nonfinite choice scores")
-            order = sorted(range(len(scores)), key=lambda index: (-scores[index], index))
+            reference_ids = None
+            if self.scoring_profile == "hint-calibrated-v1":
+                reference_prompt = build_prompt(scoring.reference_request(request), self.prompt_profile)
+                reference_ids = self.tokenizer.encode(reference_prompt, add_special_tokens=False).ids
+                if len(reference_ids) > MAX_PROMPT_TOKENS:
+                    raise Failure("prompt_budget", f"reference prompt has {len(reference_ids)} tokens; maximum is {MAX_PROMPT_TOKENS}")
+                extra_provenance["reference_prompt_sha256"] = hashlib.sha256(reference_prompt.encode()).hexdigest()
+            conditional_scores = self.mean_token_logprobs(prompt_ids, candidate_ids)
+            reference_scores = (self.mean_token_logprobs(reference_ids, candidate_ids)
+                                if reference_ids is not None else None)
+            try:
+                scores = scoring.rank_scores(conditional_scores, reference_scores, self.scoring_profile)
+                order = scoring.ranked_indices(scores)
+            except ValueError as error:
+                raise Failure("nonfinite_logits", str(error)) from error
             candidates = [request["candidates"][index] for index in order[:request["max_candidates"]]]
             detail = {
-                "mode": "conditional-loglikelihood", "mean_token_logprobs": scores,
+                "mode": "conditional-loglikelihood", "mean_token_logprobs": conditional_scores,
+                "ranking_scores": scores,
                 "ranked_indices": order, "generated_tokens": 0,
                 "scored_tokens": sum(len(ids) for ids in candidate_ids),
             }
+            if reference_ids is not None:
+                detail.update(mode="hint-calibrated-loglikelihood",
+                              reference_mean_token_logprobs=reference_scores,
+                              reference_prompt_tokens=len(reference_ids),
+                              scored_tokens=2 * detail["scored_tokens"])
         else:
             generated = []
             logits, cache = self.forward(prompt_ids)
@@ -241,12 +256,32 @@ class Engine:
         peak_bytes = max_rss if sys.platform == "darwin" else max_rss * 1024
         return {
             "protocol_version": 1, "candidates": candidates,
-            "provenance": {**self.provenance, "decoding": detail["mode"], "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()},
+            "provenance": {**self.provenance, **extra_provenance, "decoding": detail["mode"], "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest()},
             "metrics": {
                 "load_seconds": self.load_seconds, "inference_seconds": time.monotonic() - started,
                 "prompt_tokens": len(prompt_ids), "peak_rss_bytes": peak_bytes, **detail,
             },
         }
+
+    def mean_token_logprobs(self, prompt_ids, candidate_ids):
+        """Keep the original conditional calculation identical for either prompt."""
+        np = self.np
+        logits, cache = self.forward(prompt_ids)
+        scores = []
+        for ids in candidate_ids:
+            continuation = [logits]
+            if len(ids) > 1:
+                tail_logits, _ = self.forward(ids[:-1], cache, len(prompt_ids), all_logits=True)
+                continuation.extend(tail_logits)
+            token_scores = []
+            for distribution, token in zip(continuation, ids):
+                maximum = float(np.max(distribution))
+                normalizer = maximum + math.log(float(np.sum(np.exp(distribution - maximum), dtype=np.float64)))
+                token_scores.append(float(distribution[token]) - normalizer)
+            scores.append(sum(token_scores) / len(token_scores))
+        if not all(math.isfinite(score) for score in scores):
+            raise Failure("nonfinite_logits", "model produced nonfinite choice scores")
+        return scores
 
 
 def read_request():
@@ -269,8 +304,10 @@ def deadline(_signal, _frame):
 def parse_arguments(arguments):
     worker = bool(arguments and arguments[0] == "--worker")
     arguments = arguments[1:] if worker else arguments
-    options = {"--profile": "135m", "--prompt-profile": prompts.DEFAULT_PROFILE}
-    allowed = {"--profile": ("135m", "360m"), "--prompt-profile": prompts.PROFILES}
+    options = {"--profile": "135m", "--prompt-profile": prompts.DEFAULT_PROFILE,
+               "--scoring-profile": scoring.DEFAULT_PROFILE}
+    allowed = {"--profile": ("135m", "360m"), "--prompt-profile": prompts.PROFILES,
+               "--scoring-profile": scoring.PROFILES}
     seen = set()
     if len(arguments) % 2:
         raise Failure("invalid_request", "each provider option requires a value")
@@ -279,7 +316,7 @@ def parse_arguments(arguments):
             raise Failure("invalid_request", "invalid or duplicate provider option")
         seen.add(name)
         options[name] = value
-    return worker, options["--profile"], options["--prompt-profile"]
+    return worker, options["--profile"], options["--prompt-profile"], options["--scoring-profile"]
 
 
 def main():
@@ -287,16 +324,19 @@ def main():
     signal.alarm(WALL_SECONDS)
     try:
         request, raw = read_request()
-        worker, profile, prompt_profile = parse_arguments(sys.argv[1:])
+        worker, profile, prompt_profile, scoring_profile = parse_arguments(sys.argv[1:])
+        if scoring_profile != scoring.DEFAULT_PROFILE and "candidates" not in request:
+            raise Failure("invalid_request", "hint-calibrated scoring requires candidates")
         if worker:
             resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
             resource.setrlimit(resource.RLIMIT_CPU, (WALL_SECONDS, WALL_SECONDS))
-            emit(Engine(profile, prompt_profile).propose(request))
+            emit(Engine(profile, prompt_profile, scoring_profile).propose(request))
         else:
             # A separate process makes the deadline cover native inference calls.
             process = subprocess.Popen(
                 [sys.executable, "-I", str(Path(__file__).resolve()), "--worker",
-                 "--profile", profile, "--prompt-profile", prompt_profile],
+                 "--profile", profile, "--prompt-profile", prompt_profile,
+                 "--scoring-profile", scoring_profile],
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 cwd=ROOT,
             )

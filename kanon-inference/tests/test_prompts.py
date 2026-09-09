@@ -122,16 +122,16 @@ class PromptTests(unittest.TestCase):
 
 class ArgumentTests(unittest.TestCase):
     def test_defaults_and_independent_profile_selection(self):
-        self.assertEqual(runtime.parse_arguments([]), (False, "135m", "source-v3"))
+        self.assertEqual(runtime.parse_arguments([]), (False, "135m", "source-v3", "conditional-v1"))
         for worker in ([], ["--worker"]):
             for model in ("135m", "360m"):
                 for profile in prompts.PROFILES:
                     for options in (["--profile", model, "--prompt-profile", profile],
                                     ["--prompt-profile", profile, "--profile", model]):
                         self.assertEqual(runtime.parse_arguments(worker + options),
-                                         (bool(worker), model, profile))
+                                         (bool(worker), model, profile, "conditional-v1"))
         self.assertEqual(runtime.parse_arguments(["--profile", "360m"]),
-                         (False, "360m", "source-v3"))
+                         (False, "360m", "source-v3", "conditional-v1"))
 
     def test_invalid_and_duplicate_options_are_rejected(self):
         cases = [
@@ -163,7 +163,8 @@ class ArgumentTests(unittest.TestCase):
                 runtime.main()
             self.assertEqual(popen.call_args.args[0],
                              [sys.executable, "-I", str(ROOT / "runtime.py"), "--worker",
-                              "--profile", "360m", "--prompt-profile", profile])
+                              "--profile", "360m", "--prompt-profile", profile,
+                              "--scoring-profile", "conditional-v1"])
             process.communicate.assert_called_once_with(raw, timeout=runtime.WALL_SECONDS - 1)
             emit.assert_called_once_with(response)
 
@@ -178,7 +179,7 @@ class ArgumentTests(unittest.TestCase):
                 patch.object(runtime.signal, "signal"), patch.object(runtime.signal, "alarm"), \
                 patch.object(runtime, "emit"):
             runtime.main()
-        factory.assert_called_once_with("360m", "kanon-primer-v1")
+        factory.assert_called_once_with("360m", "kanon-primer-v1", "conditional-v1")
         engine.propose.assert_called_once_with(REQUEST)
 
 
@@ -186,12 +187,13 @@ class BudgetTests(unittest.TestCase):
     def engine(self, profile, prompt_tokens):
         engine = runtime.Engine.__new__(runtime.Engine)
         engine.prompt_profile = profile
+        engine.scoring_profile = runtime.scoring.DEFAULT_PROFILE
         engine.tokenizer = SimpleNamespace(
             encode=Mock(return_value=SimpleNamespace(ids=[0] * prompt_tokens)),
             decode=Mock(return_value="0"))
         engine.np = SimpleNamespace(argmax=lambda values: values.index(max(values)))
         engine.forward = Mock(side_effect=[([1, 0, 0], []), ([0, 0, 1], [])])
-        engine.provenance = {**prompts.provenance(profile),
+        engine.provenance = {**prompts.provenance(profile), **runtime.scoring.provenance(),
                              "provider_code_sha256": runtime.sha256(ROOT / "runtime.py")}
         engine.load_seconds = 0.0
         return engine
@@ -212,6 +214,9 @@ class BudgetTests(unittest.TestCase):
             self.assertEqual(response["candidates"], ["0"])
             self.assertEqual(response["metrics"]["prompt_tokens"], runtime.MAX_PROMPT_TOKENS)
             self.assertEqual(response["provenance"]["prompt_profile"], profile)
+            self.assertEqual(response["provenance"]["scoring_profile"], "conditional-v1")
+            self.assertEqual(response["provenance"]["scoring_code_sha256"],
+                             runtime.sha256(ROOT / "scoring.py"))
             self.assertEqual(response["provenance"]["prompt_sha256"],
                              hashlib.sha256(prompt.encode()).hexdigest())
             self.assertEqual(response["provenance"]["provider_code_sha256"],

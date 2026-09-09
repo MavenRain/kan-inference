@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare frozen prompt profiles on train/validation, then replay the winner.
+"""Compare frozen prompt and scoring profiles, then replay the validation winner.
 
 Hashes detect local changes. They do not authenticate an author, conceal test
 data, or establish independence of developer-authored diagnostic tasks.
@@ -17,6 +17,8 @@ import tempfile
 from typing import Any
 
 import benchmark
+import prompts
+import scoring
 import splits
 
 
@@ -29,10 +31,15 @@ PROVIDERS = {
     "source-v3": "kanon-inference/provider",
     "kanon-primer-v1": "kanon-inference/provider-primer",
 }
+APPROACH_PROVIDERS = {
+    ("source-v3", "conditional-v1"): "kanon-inference/provider",
+    ("kanon-primer-v1", "conditional-v1"): "kanon-inference/provider-primer",
+    ("source-v3", "hint-calibrated-v1"): "kanon-inference/provider-calibrated",
+}
 PROMPT_VERSIONS = {"source-v3": "kanon-source-completion-v3", "kanon-primer-v1": "kanon-primer-v1"}
 IMPLEMENTATION = (
-    "kanon-inference/runtime.py", "kanon-inference/prompts.py",
-    "kanon-inference/provider", "kanon-inference/provider-primer",
+    "kanon-inference/runtime.py", "kanon-inference/prompts.py", "kanon-inference/scoring.py",
+    "kanon-inference/provider", "kanon-inference/provider-primer", "kanon-inference/provider-calibrated",
     "kanon-inference/benchmark.py", "kanon-inference/splits.py",
     "kanon-inference/baseline.py", "kanon-inference/experiment.py",
     "kanon-synth/dev/synth.py",
@@ -66,6 +73,10 @@ def keys(value: Any, expected: set[str], label: str) -> None:
 
 def digest(value: Any) -> bool:
     return type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None
+
+
+def finite_number(value: Any) -> bool:
+    return type(value) in (int, float) and -sys.float_info.max <= value <= sys.float_info.max and math.isfinite(value)
 
 
 def relative_path(value: Any, directory: Path = ROOT) -> Path:
@@ -110,23 +121,44 @@ def validate_plan(value: Any) -> dict[str, Any]:
         require(type(value[field]) in (int, float) and math.isfinite(value[field])
                 and 0 < value[field] <= 3600, f"Invalid {field}")
     approaches = value["approaches"]
-    require(type(approaches) is list and len(approaches) == len(PROVIDERS),
-            "Declare both supported prompt approaches exactly once")
+    require(type(approaches) is list and 2 <= len(approaches) <= len(APPROACH_PROVIDERS),
+            "Declare two or three distinct supported approaches")
     seen_ids: set[str] = set()
-    seen_profiles: set[str] = set()
+    seen_profiles: set[tuple[str, str]] = set()
     for approach in approaches:
-        keys(approach, {"id", "provider", "prompt_profile"}, "approach")
+        required = {"id", "provider", "prompt_profile"}
+        require(type(approach) is dict and required <= set(approach)
+                and set(approach) <= required | {"scoring_profile"}, "Malformed approach fields")
         identifier = approach["id"]
         profile = approach["prompt_profile"]
+        score_profile = scoring_profile(approach)
         require(type(identifier) is str and re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,63}", identifier)
                 is not None and identifier not in seen_ids, "Invalid or duplicate approach id")
-        require(type(profile) is str and profile in PROVIDERS and profile not in seen_profiles,
-                "Invalid or duplicate prompt profile")
-        require(approach["provider"] == PROVIDERS[profile], "Prompt profile requires its fixed provider")
+        require(type(profile) is str and type(score_profile) is str,
+                "Invalid prompt or scoring profile")
+        combination = (profile, score_profile)
+        require(combination in APPROACH_PROVIDERS and combination not in seen_profiles,
+                "Invalid or duplicate prompt and scoring combination")
+        require(approach["provider"] == APPROACH_PROVIDERS[combination],
+                "Prompt and scoring combination requires its fixed provider")
         source_path(approach["provider"])
         seen_ids.add(identifier)
-        seen_profiles.add(profile)
+        seen_profiles.add(combination)
     return value
+
+
+def scoring_profile(approach: dict[str, Any]) -> str:
+    return approach.get("scoring_profile", scoring.DEFAULT_PROFILE)
+
+
+def scoring_identity(approach: dict[str, Any], frozen: dict[str, Any]) -> dict[str, str]:
+    profile = scoring_profile(approach)
+    return {"scoring_profile": profile, "scoring_version": scoring.PROFILES[profile]["version"],
+            "scoring_code_sha256": frozen["sources"]["kanon-inference/scoring.py"]}
+
+
+def scoring_identities(plan: dict[str, Any], frozen: dict[str, Any]) -> dict[str, dict[str, str]]:
+    return {approach["id"]: scoring_identity(approach, frozen) for approach in plan["approaches"]}
 
 
 def configuration(plan: dict[str, Any]) -> dict[str, Any]:
@@ -200,6 +232,8 @@ def check_frozen(frozen: dict[str, Any], plan: dict[str, Any], directory: Path) 
             == frozen["sources"][frozen["plan_path"]] and copied == plan, "Frozen plan changed")
     # Bind executing modules as well as their source paths, including driver overrides.
     for module, path in ((benchmark, "kanon-inference/benchmark.py"),
+                         (prompts, "kanon-inference/prompts.py"),
+                         (scoring, "kanon-inference/scoring.py"),
                          (splits, "kanon-inference/splits.py"),
                          (driver, "kanon-synth/dev/synth.py")):
         require(driver.file_sha256(Path(module.__file__)) == frozen["sources"][path],
@@ -210,6 +244,10 @@ def check_frozen(frozen: dict[str, Any], plan: dict[str, Any], directory: Path) 
 def validate_result(result: Any, task: dict[str, Any], hosts: list[str]) -> None:
     require(type(result) is dict and all(type(result.get(key)) is bool for key in METRICS),
             "Incomplete or malformed strategy metrics")
+    if "request" in result or "ranking" in result:
+        require(type(result.get("request")) is dict and driver.validate_request(result["request"]) is not None
+                and result.get("request_sha256") == driver.sha256(driver.canonical_json(result["request"])),
+                "Missing or inconsistent compiler request evidence")
     require("failure" in result and (result["failure"] is None or
             (type(result["failure"]) is dict and type(result["failure"].get("code")) is str)),
             "Missing strategy outcome")
@@ -294,9 +332,12 @@ def provider_identity(result: dict[str, Any], approach: dict[str, Any], frozen: 
     require(provenance.get("prompt_profile") == approach["prompt_profile"]
             and provenance.get("provider_code_sha256") == frozen["sources"]["kanon-inference/runtime.py"]
             and provenance.get("prompts_code_sha256") == frozen["sources"]["kanon-inference/prompts.py"]
-            and digest(provenance.get("prompt_sha256"))
+            and provenance.get("prompt_sha256") == driver.sha256(
+                prompts.build_prompt(result["request"], approach["prompt_profile"]).encode())
             and provenance.get("prompt_version") == PROMPT_VERSIONS[approach["prompt_profile"]],
             "Prompt or runtime provenance differs from frozen approach")
+    require(all(provenance.get(key) == value for key, value in scoring_identity(approach, frozen).items()),
+            "Scoring provenance differs from frozen approach")
     identity = {key: provenance[key] for key in IDENTITY_KEYS}
     for key, value in identity.items():
         if key in ("model_size_bytes", "tokenizer_size_bytes", "cpu_threads"):
@@ -305,6 +346,43 @@ def provider_identity(result: dict[str, Any], approach: dict[str, Any], frozen: 
             require(type(value) is str and 0 < len(value) <= 1000, "Invalid model runtime text provenance")
     require(digest(identity["sha256"]) and digest(identity["tokenizer_sha256"]), "Invalid model hashes")
     return identity
+
+
+def validate_scoring(result: dict[str, Any], task: dict[str, Any], approach: dict[str, Any]) -> None:
+    if "ranking" not in result:
+        return
+    profile = scoring_profile(approach)
+    calibrated = profile == "hint-calibrated-v1"
+    metrics = result.get("provider_metrics")
+    require(type(metrics) is dict, "Missing provider scoring evidence")
+    mode = "hint-calibrated-loglikelihood" if calibrated else "conditional-loglikelihood"
+    require(metrics.get("mode") == mode and result["provenance"].get("decoding") == mode,
+            "Scoring mode differs from frozen approach")
+    expected_fields = ["mean_token_logprobs", "ranking_scores"]
+    if calibrated:
+        expected_fields.append("reference_mean_token_logprobs")
+        reference = prompts.build_prompt(scoring.reference_request(result["request"]), approach["prompt_profile"])
+        require(result["provenance"].get("reference_prompt_sha256") == driver.sha256(reference.encode()),
+                "Calibrated reference prompt hash disagrees with request")
+    else:
+        require("reference_mean_token_logprobs" not in metrics
+                and "reference_prompt_sha256" not in result["provenance"],
+                "Conditional approach contains calibrated evidence")
+    for field in expected_fields:
+        values = metrics.get(field)
+        require(type(values) is list and len(values) == len(task["candidates"])
+                and all(finite_number(value) and (field == "ranking_scores" or value <= 0) for value in values),
+                f"Invalid scoring evidence: {field}")
+    expected_scores = [conditional - reference for conditional, reference in
+                       zip(metrics["mean_token_logprobs"], metrics["reference_mean_token_logprobs"])] if calibrated else metrics["mean_token_logprobs"]
+    require(all(finite_number(value) for value in expected_scores)
+            and metrics["ranking_scores"] == expected_scores, "Ranking scores disagree with component evidence")
+    indices = metrics.get("ranked_indices")
+    expected_indices = sorted(range(len(expected_scores)), key=lambda index: (-expected_scores[index], index))
+    require(type(indices) is list and all(type(index) is int for index in indices)
+            and indices == expected_indices, "Ranking indices disagree with scores or stable tie order")
+    require(result["ranking"] == [task["candidates"][index] for index in indices],
+            "Ranked candidates disagree with scoring indices")
 
 
 def validate_report(report: Any, plan: dict[str, Any], frozen: dict[str, Any],
@@ -367,7 +445,11 @@ def validate_report(report: Any, plan: dict[str, Any], frozen: dict[str, Any],
                 require(type(result["ranking"]) is list and len(result["ranking"]) == len(task["candidates"])
                         and all(type(value) is str for value in result["ranking"])
                         and set(result["ranking"]) == set(task["candidates"]), "Ranking changed the candidate pool")
+        requests = {driver.canonical_json(result["request"]) for result in item["strategies"].values()
+                    if "request" in result}
+        require(len(requests) <= 1, "Compiler request differs between strategies")
         observed = provider_identity(item["strategies"]["provider"], approach, frozen)
+        validate_scoring(item["strategies"]["provider"], task, approach)
         if observed is not None:
             require(identity is None or identity == observed, "Model runtime identity changed between tasks or approaches")
             identity = observed
@@ -393,7 +475,7 @@ def evidence_data(record: Any, directory: Path, approach: dict[str, Any], split:
 def validate_selection(path: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
     _, selection = read_json(path, "selection")
     keys(selection, {"schema_version", "complete", "plan", "frozen", "evidence",
-                     "model_identity", "scores", "winner", "integrity_note"}, "selection")
+                     "model_identity", "scoring_identities", "scores", "winner", "integrity_note"}, "selection")
     require(type(selection["schema_version"]) is int and selection["schema_version"] == 1
             and selection["complete"] is True and selection["integrity_note"] == INTEGRITY_NOTE,
             "Incomplete or unsupported selection")
@@ -426,6 +508,8 @@ def validate_selection(path: Path) -> tuple[dict[str, Any], dict[str, Any], dict
                            "failures": overall["failures"]})
     winner = max(scores, key=lambda item: item["semantic_correct"])["approach_id"]
     require(driver.canonical_json(selection["model_identity"]) == driver.canonical_json(identity)
+            and driver.canonical_json(selection["scoring_identities"])
+                == driver.canonical_json(scoring_identities(plan, selection["frozen"]))
             and driver.canonical_json(selection["scores"]) == driver.canonical_json(scores)
             and selection["winner"] == winner, "Edited selection disagrees with deterministic evidence")
     check_frozen(selection["frozen"], plan, directory)
@@ -482,6 +566,7 @@ def replay(args: argparse.Namespace) -> dict[str, Any]:
             output_file.write(incomplete)
             raise
     return {"complete": True, "winner": approach["id"], "selection_sha256": driver.sha256(selection_raw),
+            "scoring_identity": scoring_identity(approach, frozen),
             "output": args.output.name, "sha256": driver.file_sha256(args.output),
             "summary": report["summary"]["provider"]["overall"]}
 
@@ -498,6 +583,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise Error("output_exists", "Experiment directory already exists; choose a new directory") from exc
     report_file = benchmark.ReportFile(directory / "experiment.json")
     report: dict[str, Any] = {"schema_version": 1, "complete": False, "plan": plan, "frozen": frozen,
+                              "scoring_identities": scoring_identities(plan, frozen),
                               "evidence": [], "selection": None, "test": None,
                               "failure": None, "integrity_note": INTEGRITY_NOTE}
     report_file.write(report)
@@ -528,6 +614,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             if split == "train":
                 require(identity is not None, "No successful provider protocol on train; model runtime cannot be pinned")
         selection = {"schema_version": 1, "complete": True, "plan": plan, "frozen": frozen,
+                     "scoring_identities": scoring_identities(plan, frozen),
                      "evidence": report["evidence"], "model_identity": identity, "scores": scores,
                      "winner": max(scores, key=lambda item: item["semantic_correct"])["approach_id"],
                      "integrity_note": INTEGRITY_NOTE}

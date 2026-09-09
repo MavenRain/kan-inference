@@ -78,17 +78,32 @@ class ExperimentTests(unittest.TestCase):
     def write(path, value):
         path.write_bytes(driver.canonical_json(value) + b"\n")
 
+    @staticmethod
+    def request():
+        return {"protocol_version": 1, "declaration": "target", "hint": "Return one.",
+                "expected_type": "Nat", "context": "", "allowed_axioms": ["Nat"]}
+
     def provenance(self, args):
-        profile = "source-v3" if args.provider.name == "provider" else "kanon-primer-v1"
+        profile = "kanon-primer-v1" if args.provider.name == "provider-primer" else "source-v3"
+        calibrated = args.provider.name == "provider-calibrated"
+        scoring_profile = "hint-calibrated-v1" if calibrated else "conditional-v1"
         identity = {key: "fixture" for key in experiment.IDENTITY_KEYS}
         identity.update(sha256="1" * 64, tokenizer_sha256="2" * 64,
                         model_size_bytes=100, tokenizer_size_bytes=100, cpu_threads=4)
         if self.change_identity and args.split == "validation":
             identity["model_id"] = "different model"
-        return {**identity, "prompt_profile": profile, "prompt_version": experiment.PROMPT_VERSIONS[profile],
+        result = {**identity, "prompt_profile": profile, "prompt_version": experiment.PROMPT_VERSIONS[profile],
             "provider_code_sha256": driver.file_sha256(self.root / "kanon-inference/runtime.py"),
             "prompts_code_sha256": driver.file_sha256(self.root / "kanon-inference/prompts.py"),
-            "prompt_sha256": "3" * 64}
+            "scoring_profile": scoring_profile,
+            "scoring_version": experiment.scoring.PROFILES[scoring_profile]["version"],
+            "scoring_code_sha256": driver.file_sha256(self.root / "kanon-inference/scoring.py"),
+            "decoding": "hint-calibrated-loglikelihood" if calibrated else "conditional-loglikelihood",
+            "prompt_sha256": driver.sha256(prompts.build_prompt(self.request(), profile).encode())}
+        if calibrated:
+            reference = prompts.build_prompt(experiment.scoring.reference_request(self.request()), profile)
+            result["reference_prompt_sha256"] = driver.sha256(reference.encode())
+        return result
 
     def evaluate(self, task, strategy, args, compiler, work):
         result = benchmark.empty_result()
@@ -98,6 +113,7 @@ class ExperimentTests(unittest.TestCase):
             return result
         candidate_hash = driver.sha256(b"1")
         result.update(first_attempt_type_accepted=True, type_accepted=True,
+            request=self.request(), request_sha256=driver.sha256(driver.canonical_json(self.request())),
             first_attempt_semantic_correct=True, semantic_correct=True,
             attempts=[{"index": 0, "candidate_sha256": candidate_hash, "type_valid": True, "error": None}],
             selected={"index": 0, "candidate": "1", "candidate_sha256": candidate_hash}, ranking=["1", "0"],
@@ -105,7 +121,22 @@ class ExperimentTests(unittest.TestCase):
                     "passed": True, "host_disagreement": False}])
         if strategy == "provider":
             result.update(provider_exit_status=0, provenance=self.provenance(args))
+            result["provider_metrics"] = {"mode": result["provenance"]["decoding"],
+                "mean_token_logprobs": [-3.0, -1.0], "ranking_scores": [-3.0, -1.0],
+                "ranked_indices": [1, 0]}
+            if args.provider.name == "provider-calibrated":
+                result["provider_metrics"].update(reference_mean_token_logprobs=[-2.0, -2.0],
+                                                   ranking_scores=[-1.0, 1.0])
         return result
+
+    def ranking_plan(self):
+        self.plan["approaches"] = [
+            {"id": "source-v3", "prompt_profile": "source-v3", "scoring_profile": "conditional-v1",
+             "provider": "kanon-inference/provider"},
+            {"id": "hint-calibrated-v1", "prompt_profile": "source-v3", "scoring_profile": "hint-calibrated-v1",
+             "provider": "kanon-inference/provider-calibrated"},
+        ]
+        self.write(self.plan_path, self.plan)
 
     def run_benchmark(self, args):
         self.calls.append((args.split, args.provider.name))
@@ -167,6 +198,9 @@ class ExperimentTests(unittest.TestCase):
             {"approach_id": "source-v3", "semantic_correct": 1, "denominator": 2, "failures": 1},
             {"approach_id": "kanon-primer-v1", "semantic_correct": 1, "denominator": 2, "failures": 1}])
         self.assertTrue(all(not Path(item["path"]).is_absolute() for item in selection["evidence"]))
+        self.assertTrue(all("scoring_profile" not in approach for approach in selection["plan"]["approaches"]))
+        self.assertEqual({value["scoring_profile"] for value in selection["scoring_identities"].values()},
+                         {"conditional-v1"})
 
     def test_replay_evaluates_only_frozen_winner(self):
         self.completed()
@@ -177,6 +211,145 @@ class ExperimentTests(unittest.TestCase):
         self.assertTrue(self.replay()["complete"])
         self.assertEqual(self.calls[-1], ("test", "provider"))
         self.assertEqual(len(self.calls), 6)
+
+    def test_validation_selects_scoring_approach_and_replay_binds_its_identity(self):
+        self.ranking_plan()
+        original = self.evaluate
+        def differing_splits(task, strategy, args, compiler, work):
+            if strategy == "provider" and ((args.split == "train" and args.provider.name == "provider-calibrated")
+                    or (args.split == "validation" and args.provider.name == "provider")):
+                result = benchmark.empty_result()
+                result.update(total_seconds=0.0, failure={"code": "process_timeout", "message": "fixture timeout"})
+                return result
+            return original(task, strategy, args, compiler, work)
+        with patch.object(benchmark, "evaluate", side_effect=differing_splits):
+            selection = json.loads(self.completed().read_text())
+            self.assertEqual(selection["winner"], "hint-calibrated-v1")
+            self.assertEqual([score["semantic_correct"] for score in selection["scores"]], [0, 1])
+            self.assertNotIn("scoring_profile", selection["model_identity"])
+            identities = selection["scoring_identities"]
+            self.assertEqual(identities["source-v3"]["scoring_profile"], "conditional-v1")
+            self.assertEqual(identities["hint-calibrated-v1"]["scoring_profile"], "hint-calibrated-v1")
+            published = json.loads((self.directory / "experiment.json").read_text())
+            self.assertEqual(published["scoring_identities"], identities)
+            (self.directory / "experiment.json").rename(self.directory / "published.json")
+            self.assertEqual(self.replay()["scoring_identity"], identities["hint-calibrated-v1"])
+        self.assertEqual(self.calls, [("train", "provider"), ("train", "provider-calibrated"),
+            ("validation", "provider"), ("validation", "provider-calibrated"),
+            ("test", "provider-calibrated"), ("test", "provider-calibrated")])
+
+    def test_scoring_provenance_components_and_ranking_tampering_is_rejected(self):
+        self.ranking_plan()
+        selection_path = self.completed()
+        original_selection = selection_path.read_bytes()
+        record = json.loads(original_selection)["evidence"][3]
+        report_path = self.directory / record["path"]
+        original_report = report_path.read_bytes()
+        mutations = [
+            lambda result: result["provenance"].pop("scoring_profile"),
+            lambda result: result["provenance"].update(scoring_profile="conditional-v1"),
+            lambda result: result["provenance"].update(scoring_version="changed-v2"),
+            lambda result: result["provenance"].update(scoring_code_sha256="5" * 64),
+            lambda result: result["provenance"].pop("reference_prompt_sha256"),
+            lambda result: result["provenance"].update(reference_prompt_sha256="not a hash"),
+            lambda result: result["provenance"].update(reference_prompt_sha256="4" * 64),
+            lambda result: result["provenance"].update(prompt_sha256="3" * 64),
+            lambda result: result["provenance"].update(decoding="conditional-loglikelihood"),
+            lambda result: result["provider_metrics"].update(mode="conditional-loglikelihood"),
+            lambda result: result["provider_metrics"].update(mean_token_logprobs=[-3.0, -2.0]),
+            lambda result: result["provider_metrics"].update(reference_mean_token_logprobs=[-3.0, -2.0]),
+            lambda result: result["provider_metrics"].update(reference_mean_token_logprobs=[-2.0]),
+            lambda result: result["provider_metrics"].update(reference_mean_token_logprobs=[True, -2.0]),
+            lambda result: result["provider_metrics"].update(reference_mean_token_logprobs=[10 ** 400, -2.0]),
+            lambda result: result["provider_metrics"].update(mean_token_logprobs=[1.0, -1.0],
+                                                             ranking_scores=[3.0, 1.0], ranked_indices=[0, 1]),
+            lambda result: result["provider_metrics"].update(reference_mean_token_logprobs=[1.0, -2.0],
+                                                             ranking_scores=[-4.0, 1.0]),
+            lambda result: result["provider_metrics"].update(ranking_scores=[-1.0, 2.0]),
+            lambda result: result["provider_metrics"].update(ranked_indices=[0, 1]),
+            lambda result: result["provider_metrics"].update(ranked_indices=[True, 0]),
+            lambda result: result["provider_metrics"].update(mean_token_logprobs=[-2.0, -2.0],
+                                                             ranking_scores=[0.0, 0.0]),
+            lambda result: result["provider_metrics"].update(mean_token_logprobs=[-1.0, -3.0],
+                ranking_scores=[1.0, -1.0], ranked_indices=[0, 1]),
+        ]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(mutation=index):
+                selection_path.write_bytes(original_selection)
+                report_path.write_bytes(original_report)
+                self.edit_evidence(lambda report: mutate(report["results"][0]["strategies"]["provider"]), index=3)
+                self.reject_replay()
+
+    def test_missing_or_malformed_provider_scoring_block_rejects_replay(self):
+        self.ranking_plan()
+        selection_path = self.completed()
+        original_selection = selection_path.read_bytes()
+        record = json.loads(original_selection)["evidence"][3]
+        report_path = self.directory / record["path"]
+        original_report = report_path.read_bytes()
+        mutations = [
+            lambda result: result.update(provider_metrics=None),
+            lambda result: result.update(provider_metrics=[]),
+            lambda result: result.pop("provider_metrics", None),
+        ]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(mutation=index):
+                selection_path.write_bytes(original_selection)
+                report_path.write_bytes(original_report)
+                self.edit_evidence(lambda report: mutate(report["results"][0]["strategies"]["provider"]), index=3)
+                self.reject_replay("Missing provider scoring evidence")
+
+    def test_changed_scoring_identity_or_loaded_version_rejects_replay(self):
+        self.ranking_plan()
+        path = self.completed()
+        original = path.read_bytes()
+        mutations = [lambda value: value.pop("scoring_identities"),
+                     lambda value: value["scoring_identities"].pop("source-v3"),
+                     lambda value: value["scoring_identities"]["source-v3"].update(scoring_version="edited-v2"),
+                     lambda value: value["scoring_identities"]["hint-calibrated-v1"].update(scoring_profile="conditional-v1")]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(mutation=index):
+                path.write_bytes(original)
+                self.edit_selection(mutate)
+                self.reject_replay()
+        path.write_bytes(original)
+        with patch.dict(experiment.scoring.PROFILES["hint-calibrated-v1"], version="changed-v2"):
+            self.reject_replay("Scoring provenance differs from frozen approach")
+
+    def test_conditional_scores_must_match_components_without_calibrated_evidence(self):
+        path = self.completed()
+        original_selection = path.read_bytes()
+        report_path = self.directory / "validation-source-v3.json"
+        original_report = report_path.read_bytes()
+        mutations = [
+            lambda result: result["provider_metrics"].update(ranking_scores=[-1.0, 1.0]),
+            lambda result: result["provider_metrics"].update(reference_mean_token_logprobs=[-2.0, -2.0]),
+            lambda result: result["provenance"].update(reference_prompt_sha256="4" * 64),
+        ]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(mutation=index):
+                path.write_bytes(original_selection)
+                report_path.write_bytes(original_report)
+                self.edit_evidence(lambda report: mutate(report["results"][0]["strategies"]["provider"]))
+                self.reject_replay()
+
+    def test_request_evidence_requires_digest_and_agreement_between_strategies(self):
+        path = self.completed()
+        original_selection = path.read_bytes()
+        report_path = self.directory / "validation-source-v3.json"
+        original_report = report_path.read_bytes()
+        def changed_request(result):
+            result["request"]["hint"] = "Return zero."
+            result["request_sha256"] = driver.sha256(driver.canonical_json(result["request"]))
+        mutations = [lambda result: result.pop("request"),
+                     lambda result: result.update(request_sha256="4" * 64),
+                     changed_request]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(mutation=index):
+                path.write_bytes(original_selection)
+                report_path.write_bytes(original_report)
+                self.edit_evidence(lambda report: mutate(report["results"][0]["strategies"]["candidate_order"]))
+                self.reject_replay()
 
     def test_selection_rule_uses_plan_order_for_ties(self):
         self.plan["approaches"].reverse()
@@ -393,6 +566,15 @@ class ExperimentTests(unittest.TestCase):
             lambda plan: plan["approaches"][1].update(prompt_profile="source-v3",
                                                       provider="kanon-inference/provider"),
             lambda plan: plan["approaches"][1].update(prompt_profile="unknown-v1"),
+            lambda plan: plan["approaches"][0].update(scoring_profile="unknown-v1"),
+            lambda plan: plan["approaches"][0].update(scoring_profile=[]),
+            lambda plan: plan["approaches"][0].update(scoring_profile=None),
+            lambda plan: plan["approaches"][0].update(scoring_profile="hint-calibrated-v1"),
+            lambda plan: plan["approaches"][1].update(scoring_profile="hint-calibrated-v1",
+                                                      provider="kanon-inference/provider-calibrated"),
+            lambda plan: plan["approaches"][0].update(provider="kanon-inference/provider-calibrated"),
+            lambda plan: plan["approaches"][0].update(scoring_version="arbitrary-v1"),
+            lambda plan: plan["approaches"].pop(),
             lambda plan: plan.update(schema_version=2),
             lambda plan: plan.update(split_manifest=plan["corpus"]),
         ]
@@ -465,6 +647,24 @@ class ExperimentTests(unittest.TestCase):
         with patch.object(driver, "__file__", str(other)):
             self.reject_replay(
                 "Loaded implementation does not match frozen source: kanon-synth/dev/synth.py")
+
+    def test_loaded_prompt_module_must_match_the_frozen_source(self):
+        self.completed()
+        (self.directory / "experiment.json").rename(self.directory / "published.json")
+        other = Path(self.temporary.name) / "prompts-copy.py"
+        other.write_bytes((self.root / "kanon-inference/prompts.py").read_bytes() + b"\n# override\n")
+        with patch.object(experiment.prompts, "__file__", str(other)):
+            self.reject_replay(
+                "Loaded implementation does not match frozen source: kanon-inference/prompts.py")
+
+    def test_loaded_scoring_module_must_match_the_frozen_source(self):
+        self.completed()
+        (self.directory / "experiment.json").rename(self.directory / "published.json")
+        other = Path(self.temporary.name) / "scoring-copy.py"
+        other.write_bytes((self.root / "kanon-inference/scoring.py").read_bytes() + b"\n# override\n")
+        with patch.object(experiment.scoring, "__file__", str(other)):
+            self.reject_replay(
+                "Loaded implementation does not match frozen source: kanon-inference/scoring.py")
 
     def test_selection_bytes_changed_during_test_evaluation_are_rejected(self):
         self.completed()
@@ -547,6 +747,41 @@ class ExperimentTests(unittest.TestCase):
         for profile in experiment.PROVIDERS:
             self.assertEqual(experiment.PROMPT_VERSIONS[profile],
                              prompts.PROFILES[profile]["version"])
+
+    def test_published_ranking_plan_declares_fixed_scoring_and_wrapper_pairs(self):
+        plan = json.loads((SOURCE / "experiments/challenge-ranking-v1.json").read_text())
+        with patch.object(experiment, "ROOT", SOURCE.parent):
+            self.assertEqual(experiment.validate_plan(plan), plan)
+        self.assertEqual([(approach["prompt_profile"], approach["scoring_profile"], approach["provider"])
+                          for approach in plan["approaches"]], [
+            ("source-v3", "conditional-v1", "kanon-inference/provider"),
+            ("source-v3", "hint-calibrated-v1", "kanon-inference/provider-calibrated")])
+
+    def test_approach_providers_bind_supported_profiles_to_existing_wrappers(self):
+        for combination, provider in experiment.APPROACH_PROVIDERS.items():
+            prompt_profile, score_profile = combination
+            with self.subTest(combination=combination):
+                self.assertIn(prompt_profile, prompts.PROFILES)
+                self.assertIn(prompt_profile, experiment.PROMPT_VERSIONS)
+                self.assertIn(score_profile, experiment.scoring.PROFILES)
+                self.assertTrue(experiment.source_path(provider).is_file())
+
+    def test_published_prompt_plan_still_validates_under_default_scoring(self):
+        plan = json.loads((SOURCE / "experiments/challenge-prompts-v1.json").read_text())
+        with patch.object(experiment, "ROOT", SOURCE.parent):
+            self.assertEqual(experiment.validate_plan(plan), plan)
+        for approach in plan["approaches"]:
+            with self.subTest(approach=approach["id"]):
+                self.assertEqual(experiment.scoring_profile(approach), "conditional-v1")
+
+    def test_all_three_distinct_supported_approaches_can_be_compared(self):
+        self.plan["approaches"].append({"id": "hint-calibrated-v1", "prompt_profile": "source-v3",
+            "scoring_profile": "hint-calibrated-v1", "provider": "kanon-inference/provider-calibrated"})
+        self.write(self.plan_path, self.plan)
+        selection = json.loads(self.completed().read_text())
+        self.assertEqual(len(selection["evidence"]), 6)
+        self.assertEqual(len(selection["scoring_identities"]), 3)
+        self.assertEqual(selection["winner"], "source-v3")
 
 
 if __name__ == "__main__":

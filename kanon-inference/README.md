@@ -57,6 +57,17 @@ primer's training task IDs and frozen corpus hashes. See the
 [experiment procedure](experiments/README.md) for validation selection and test
 replay with the default 135M model.
 
+The default scoring profile is `conditional-v1`. `provider-calibrated` selects
+`hint-calibrated-v1`, also available as
+`provider --scoring-profile hint-calibrated-v1`. For each pool expression it
+subtracts the mean token log-likelihood under the same request with an empty
+hint from the ordinary conditional mean. The reference keeps the goal and
+context. This profile requires a candidate pool and performs two scoring
+passes within the existing deadline. Responses include both component means,
+final scores, scoring profile/version/code hash and reference prompt hash.
+See the [ranking experiment](experiments/ranking.md) for the fixed comparison
+plan, evidence checks and prior test-exposure disclosure.
+
 The provider enforces these limits:
 
 - 65,536 request bytes and a 1,024-token model prompt, without silent truncation.

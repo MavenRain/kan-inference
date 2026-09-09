@@ -11,11 +11,13 @@ CHALLENGE_SPLITS := kanon-inference/benchmarks/challenge-v1.splits.json
 CHALLENGE_OUTPUT ?= kanon-inference/results/local/challenge-$(SPLIT).json
 EXPERIMENT_PLAN ?= kanon-inference/experiments/challenge-prompts-v1.json
 EXPERIMENT_OUTPUT ?= kanon-inference/results/local/challenge-prompts-v1
+RANKING_PLAN ?= kanon-inference/experiments/challenge-ranking-v1.json
+RANKING_OUTPUT ?= kanon-inference/results/local/challenge-ranking-v1
 SELECTION ?=
 FROZEN_OUTPUT ?= kanon-inference/results/local/challenge-frozen-test.json
 
 .PHONY: build test test-all test-unit test-provider benchmark-baseline benchmark-135m benchmark-challenge-baseline benchmark-challenge-135m
-.PHONY: experiment-challenge experiment-test
+.PHONY: experiment-challenge experiment-ranking experiment-test
 
 build:
 	cd kanon-synth && dune build bin/kanon.exe test/synthesis.exe
@@ -51,6 +53,9 @@ benchmark-challenge-135m:
 
 experiment-challenge:
 	$(PYTHON) kanon-inference/experiment.py run --plan "$(EXPERIMENT_PLAN)" --compiler "$(COMPILER)" --output-dir "$(EXPERIMENT_OUTPUT)"
+
+experiment-ranking:
+	$(PYTHON) kanon-inference/experiment.py run --plan "$(RANKING_PLAN)" --compiler "$(COMPILER)" --output-dir "$(RANKING_OUTPUT)"
 
 experiment-test:
 	$(if $(SELECTION),,$(error Set SELECTION=path/to/selection.json))$(PYTHON) kanon-inference/experiment.py test --selection "$(SELECTION)" --output "$(FROZEN_OUTPUT)"
